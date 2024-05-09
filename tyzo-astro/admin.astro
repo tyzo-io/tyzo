@@ -1,0 +1,29 @@
+---
+import { Editor } from "./Editor";
+import type { TyzoConfig } from "./tyzo-service/config";
+const importPath = "../../" + __TYZO_COMPONENT_IMPORT__;
+// const components = await import(importPath);
+
+export const prerender = false;
+
+declare global {
+  const __TYZO_SPACE_ID__: string;
+  const __TYZO_TREE_ID__: string;
+  const __TYZO_COMPONENT_IMPORT__: string;
+}
+const spaceId = __TYZO_SPACE_ID__;
+
+// // import config from "__TYZO_CONFIG_PATH__"
+
+// const storeUrl = __TYZO_CONFIG_PATH__;
+// const config = (await import(storeUrl)) as {
+//   default: ({ spaceId }: { spaceId: string }) => TyzoConfig;
+// };
+// <!-- config={config.default({ spaceId: "abc" })}  -->
+---
+
+<Editor
+  client:only="react"
+  spaceId={spaceId}
+  componentsImportPath={importPath}
+/>

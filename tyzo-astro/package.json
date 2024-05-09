@@ -1,0 +1,15 @@
+{
+  "name": "@tyzo/astro",
+  "version": "1.0.0",
+  "description": "A website builder for react and astro",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

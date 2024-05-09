@@ -1,0 +1,71 @@
+---
+import type { Data } from "@measured/puck";
+import { Page } from "./Page";
+import serviceClientConfig from "./tyzo-service/serviceClient";
+
+export const prerender = false;
+
+const spaceId = __TYZO_SPACE_ID__;
+const treeId = __TYZO_TREE_ID__;
+
+const client = serviceClientConfig({ spaceId });
+const { data } = await client.pages.list({
+  filters: { treeId: { equals: treeId } },
+});
+
+const path = "/" + Astro.params.path;
+const page = data.find((page) => page.path === path);
+
+const title = "Test";
+
+const { default: components } = await import(__TYZO_COMPONENT_IMPORT__);
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Astro description" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body>
+    {
+      page ? (
+        <Page components={components} data={page.content as Data} />
+      ) : (
+        <div>Not found</div>
+      )
+    }
+  </body>
+</html>
+<style is:global>
+  /* :root {
+    --accent: 136, 58, 234;
+    --accent-light: 224, 204, 250;
+    --accent-dark: 49, 10, 101;
+    --accent-gradient: linear-gradient(
+      45deg,
+      rgb(var(--accent)),
+      rgb(var(--accent-light)) 30%,
+      white 60%
+    );
+  }
+  html {
+    font-family: system-ui, sans-serif;
+    background: #13151a;
+    background-size: 224px;
+  }
+  code {
+    font-family:
+      Menlo,
+      Monaco,
+      Lucida Console,
+      Liberation Mono,
+      DejaVu Sans Mono,
+      Bitstream Vera Sans Mono,
+      Courier New,
+      monospace;
+  } */
+</style>
