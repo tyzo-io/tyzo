@@ -27,10 +27,7 @@ const config: Config = {
     HeadingBlock: {
       id: "HeadingBlock",
       name: "Heading Block",
-      groupId: "Typography",
-      source: {
-        type: "builtin",
-      },
+      groupName: "Typography",
 
       properties: {
         children: {
@@ -61,10 +58,7 @@ const config: Config = {
     HeadingBlock: {
       id: "HeadingBlock",
       name: "Heading Block",
-      groupId: "Typography",
-      source: {
-        type: "builtin",
-      },
+      groupName: "Typography",
 
       properties: {
         children: {

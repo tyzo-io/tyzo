@@ -16,10 +16,7 @@ const config: Config = {
     HeadingBlock: {
       id: "HeadingBlock",
       name: "Heading Block",
-      groupId: "Typography",
-      source: {
-        type: "builtin",
-      },
+      groupName: "Typography",
 
       properties: {
         children: {
@@ -33,10 +30,7 @@ const config: Config = {
     Stack: {
       id: "Stack",
       name: "Stack",
-      groupId: "Layout",
-      source: {
-        type: "builtin",
-      },
+      groupName: "Layout",
 
       properties: {
         children: {
@@ -52,10 +46,7 @@ const config: Config = {
     TestInputs: {
       id: "TestInputs",
       name: "Test Inputs",
-      groupId: "Test",
-      source: {
-        type: "builtin",
-      },
+      groupName: "Test",
       properties: {
         checked: {
           name: "checked",
@@ -102,10 +93,7 @@ const config: Config = {
     Container: withCss({
       id: "Container",
       name: "Container",
-      groupId: "Layout",
-      source: {
-        type: "builtin",
-      },
+      groupName: "Layout",
 
       properties: {
         children: {

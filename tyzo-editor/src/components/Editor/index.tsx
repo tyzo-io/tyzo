@@ -184,7 +184,7 @@ export function Editor({
 
         async loadComponentGroups() {
           const groups = Object.values(config.components).reduce(
-            (all, comp) => Object.assign(all, { [comp.groupId]: true }),
+            (all, comp) => Object.assign(all, { [comp.groupName]: true }),
             {} as Record<string, boolean>
           );
           return Object.keys(groups).map((id) => ({ id, name: id }));

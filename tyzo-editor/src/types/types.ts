@@ -62,17 +62,17 @@ export type ComponentProperty =
 
 export type StoredComponentInfo = {
   id: ComponentId;
-  groupId: ComponentGroupId;
-  source:
-    | {
-        type: "file";
-        path: string;
-        content?: string;
-      }
-    | {
-        type: "builtin";
-        content?: string;
-      };
+  groupName: string
+  // source:
+  //   | {
+  //       type: "file";
+  //       path: string;
+  //       content?: string;
+  //     }
+  //   | {
+  //       type: "builtin";
+  //       content?: string;
+  //     };
   name: string;
   properties?: Record<string, ComponentProperty>;
 };

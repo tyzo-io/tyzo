@@ -59,7 +59,7 @@ function LibraryComponentGroup({
     () =>
       components.filter(
         (component) =>
-          component.groupId === group.id &&
+          component.groupName === group.name &&
           (!availableComponentIds ||
             availableComponentIds.includes(component.id))
       ),
@@ -157,12 +157,12 @@ export function ComponentsList({
       return [];
     }
 
-    const groupIds = availableComponentIds.map(
-      (id) => componentsById[id]?.groupId
+    const groupNames = availableComponentIds.map(
+      (id) => componentsById[id]?.groupName
     );
 
     const groups = componentGroups.filter((group) =>
-      groupIds.includes(group.id)
+      groupNames.includes(group.name)
     );
     return groups;
   }, [componentsById, availableComponentIds, componentGroups]);
