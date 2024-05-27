@@ -1,0 +1,110 @@
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    /* align-items: center; */
+    margin-bottom: 25px;
+
+    padding: 10px;
+    border-bottom: 1px solid rgba(127, 127, 127, 0.2);
+}
+
+.fieldTitle {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.arrayTitle {
+    margin-bottom: 5px;
+}
+
+.field input {
+    border: none;
+    border: 1px solid rgba(127, 127, 127, 0.2);
+    padding: 0;
+    padding-left: 5px;
+    border-radius: 5px;
+    /* padding-bottom: 5px; */
+}
+
+.arrayItems {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.object {
+    /* border-left: 1px solid rgba(127, 127, 127, 0.2); */
+    /* padding: 10px; */
+    border: 1px solid rgba(127, 127, 127, 0.2);
+    border-radius: 15px;
+    box-shadow: -1px 9px 14px 0px rgba(17, 17, 26, 0.04);
+    background-color: white;
+}
+
+.objectHeader {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 10px;
+}
+
+.expandedObject.objectHeader {
+    border-bottom: 1px solid rgba(127, 127, 127, 0.2);
+    margin-bottom: 5px;
+}
+
+.cardHeaderTitle {
+    flex: 1;
+}
+
+.objectBody {
+    padding: 10px;
+}
+
+.field .labels {
+    flex: 1;
+}
+
+.labels {
+    display: flex;
+    flex-direction: column;
+    /* text-align: right; */
+    /* text-align: right; */
+}
+
+.field input {
+    flex: 5;
+}
+
+.code {
+    font-family: monospace;
+    opacity: 0.8;
+    font-size: 0.8em;
+    /* font-weight: bold; */
+    padding-left: 2px;
+}
+
+.treeDeeper {
+    border-left: 1px solid #bbb;
+    padding-left: 10px;
+    margin-left: 10px;
+}
+
+.button {
+    /* background-color: hsl(var(--foreground)); */
+    /* color: hsl(var(--background)); */
+    background-color: white;
+    border-radius: 5px;
+    padding: 5px 1em;
+    border: 1px solid hsl(var(--foreground));
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+}

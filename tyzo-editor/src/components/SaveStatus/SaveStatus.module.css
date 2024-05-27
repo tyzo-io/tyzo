@@ -1,0 +1,19 @@
+.saveInfo {
+    opacity: 0.7;
+    font-size: 0.8em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    /* justify-content: center; */
+    gap: 0.5rem;
+    width: 150px;
+}
+
+.saveInfo p {
+    font-size: 0.8em;
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+}

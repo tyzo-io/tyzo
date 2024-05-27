@@ -1,0 +1,22 @@
+.documentActions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.documentActions button {
+    margin: 0;
+}
+
+.button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+
+/* .simple .documentActions {
+    justify-content: flex-start;
+    flex: 1;
+} */

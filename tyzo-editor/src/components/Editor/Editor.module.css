@@ -1,0 +1,144 @@
+.backHeader {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+    padding: 1em;
+}
+
+.field {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    padding: 10px;
+}
+
+.field label {
+    flex: 1;
+    text-align: right;
+}
+
+.field input {
+    flex: 5;
+}
+
+.center {
+    flex: 1;
+    background-color: white;
+}
+
+.smallIcon {
+    width: 20px;
+    height: 20px;
+}
+
+.tree {
+    /* padding: 10px; */
+    margin-bottom: 20px;
+}
+
+.emptyPage {
+    padding: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    opacity: 0.7;
+    pointer-events: none;
+    user-select: none;
+}
+
+.componentControls h3 {
+    padding-left: 10px;
+}
+
+.sectionTitle {
+    font-size: 1.4em;
+}
+
+.editor {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    --theme-secondary: #3a64d8;
+    --theme-surface-1: #3a64d831;
+    /* --bg-color-elevated: red;
+            --primary: yellow; */
+}
+
+.header {
+    position: relative;
+    z-index: 100;
+    background-color: white;
+    border-bottom: 1px solid #ccc;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+.headerCenter {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    align-items: center;
+}
+
+.belowHeader {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+.maxWidthSelector {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: center;
+}
+
+.maxWidthSelector>button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.center {
+    flex: 1;
+    background: #eee;
+    position: "relative";
+    z-index: 10;
+    overflow-y: auto;
+}
+
+.leftSide {
+    background-color: white;
+    position: relative;
+    border-right: 1px solid #ccc;
+    z-index: 100;
+    width: 300px;
+    overflow: auto;
+    /* flex: 1;
+    display: flex;
+    flex-direction: row; */
+}
+
+.rightSide {
+    background-color: white;
+    position: relative;
+    border-left: 1px solid #ccc;
+    z-index: 100;
+    width: 250px;
+    overflow: auto;
+}
+
+.pageContainer {
+    position: relative;
+}

@@ -1,0 +1,17 @@
+.dropZone {
+    text-align: center;
+    margin: 1em;
+    padding: 1em;
+    border-radius: 10px;
+    border: 3px dashed var(--bg-color-elevated);
+    display: none;
+}
+
+.dropZone.isDragging {
+    display: block;
+    border: 1px dashed var(--theme-secondary);
+}
+
+.hover {
+    background-color: var(--theme-surface-1);
+}
