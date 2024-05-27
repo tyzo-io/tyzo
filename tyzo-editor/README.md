@@ -96,3 +96,16 @@ export function App() {
   );
 }
 ```
+
+## Roadmap
+
+- [x] Drag and drop editor
+- [x] Custom components
+- [x] Breakpoints
+- [x] Pan & zoom page
+- [x] Render page
+- [x] Custom properties
+- [x] Css properties
+- [x] Nested component support with drag and drop support
+- [] Good documentation
+- [] Multiplayer mode

@@ -2,7 +2,7 @@
   "name": "@tyzo/page-editor",
   "version": "0.0.0",
   "type": "module",
-  "main": "dist/tyzo-editor.js",
+  "main": "dist/page-editor.js",
   "types": "dist/lib.d.ts",
   "files": [
     "dist"
@@ -27,8 +27,8 @@
     "yjs": "^13.6.15"
   },
   "peerDependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@types/node": "^20.12.12",
@@ -40,8 +40,8 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
     "vite-plugin-dts": "^3.9.1"
