@@ -79,7 +79,6 @@ function HackTyzoIdAttribute({ id }: { id: string }) {
       {!didHack && (
         <div
           ref={(el) => {
-            console.log(el?.nextSibling);
             if (
               el?.nextSibling &&
               !didHack &&
@@ -190,7 +189,12 @@ export function Render({
         return (
           <Fragment key={el.id}>
             {mode === "edit" && <HackTyzoIdAttribute id={el.id} />}
-            <Comp {...overriddenData} {...textData} {...childrenData} />
+            <Comp
+              {...overriddenData}
+              {...textData}
+              {...childrenData}
+              tyzo={el}
+            />
           </Fragment>
         );
       })}

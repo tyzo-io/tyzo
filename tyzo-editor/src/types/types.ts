@@ -109,20 +109,19 @@ export interface Page extends ElementContainer {
   title: string;
 }
 
-export type InputMap = Record<
-  string,
-  <
-    T extends {
-      property: ComponentProperty;
-      element: PageElement;
-      elementContainer: ElementContainer;
-      components: ComponentInfo[];
-      inputs: InputMap;
-      value: any;
-      setValue: (value: any) => void;
-    },
-  >({}: T) => React.ReactNode | null
->;
+export type EditorInput<
+  T extends {
+    property: ComponentProperty;
+    element: PageElement;
+    elementContainer: ElementContainer;
+    components: ComponentInfo[];
+    inputs: InputMap;
+    value: any;
+    setValue: (value: any) => void;
+  }
+> = (props: T) => React.ReactNode | null;
+
+export type InputMap = Record<string, EditorInput<any>>;
 
 export type EditorBackend = {
   loadComponentGroups(): Promise<ComponentGroup[]>;

@@ -139,6 +139,11 @@
     overflow: auto;
 }
 
+.rightSide button {
+    border: none;
+    background-color: white;
+}
+
 .pageContainer {
     position: relative;
 }

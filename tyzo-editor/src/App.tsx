@@ -1,3 +1,4 @@
+import { CssEdit, withCss } from "./CssProps";
 import { Editor } from "./components/Editor";
 import { Config } from "./components/Editor/types";
 // import { Render } from "./components/Render";
@@ -8,6 +9,9 @@ const config: Config = {
   },
   headerLeft: <div>Back</div>,
   headerRight: <div>Publish</div>,
+  additionalInputs: {
+    css: CssEdit,
+  },
   components: {
     HeadingBlock: {
       id: "HeadingBlock",
@@ -95,7 +99,7 @@ const config: Config = {
         return <pre>{JSON.stringify(props, null, 2)}</pre>;
       },
     },
-    Container: {
+    Container: withCss({
       id: "Container",
       name: "Container",
       groupId: "Layout",
@@ -123,7 +127,7 @@ const config: Config = {
         children: string;
         margin: string;
       }) => <div style={{ margin }}>{children}</div>,
-    },
+    }),
   },
 };
 

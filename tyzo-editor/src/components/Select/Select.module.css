@@ -1,0 +1,97 @@
+.TriggerIcon {
+  height: 16px;
+  width: 16px;
+  opacity: 0.5;
+}
+
+.SelectTrigger {
+  display: flex;
+  height: 1em;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+
+  border-radius: 10px;
+  border: 1px solid #eee;
+  /* border-input  */
+  background-color: white;
+  /* bg-background  */
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  /* font-size: 0.9em; */
+  /* ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 */
+}
+
+.LeanSelectTrigger {
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  font-size: 0.9em;
+}
+
+.Content {
+  position: relative;
+  z-index: 500;
+  max-height: 20em;
+  min-width: 10rem;
+  overflow: hidden;
+  border-radius: 6px;
+  border: 1px solid #eee;
+  background-color: white;
+  color: black;
+  box-shadow: 0 1px 2px #eee;
+  padding: 2px;
+  /* data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 */
+
+}
+
+.Label {
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.Item {
+  position: relative;
+  display: flex;
+  width: 100%;
+  cursor: default;
+  user-select: none;
+  align-items: center;
+  border-radius: 4px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-left: 8px;
+  padding-right: 2px;
+  font-size: 0.9em;
+  outline: none;
+  padding-left: 20px;
+  box-sizing: border-box;
+
+      /* focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 */
+}
+
+.Item:focus {
+  background-color: #eaeaea;
+}
+
+.SelectItem {
+  position: absolute;
+  left: 6px;
+  display: flex;
+  height: 7px;
+  width: 7px;
+  align-items: center;
+  justify-content: center;
+}
+
+.CheckIcon {
+  height: 16px;
+  width: 16px;
+}

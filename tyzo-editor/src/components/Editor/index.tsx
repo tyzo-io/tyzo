@@ -200,6 +200,7 @@ export function Editor({
           children: DefaultChildrenInput,
           object: DefaultObjectInput,
           array: DefaultArrayInput,
+          ...config.additionalInputs,
         },
       }}
     >
