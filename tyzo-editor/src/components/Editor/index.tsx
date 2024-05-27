@@ -87,7 +87,7 @@ export function EditorContent({
     <EditorProvider elementContainer={page}>
       <div className={s.editor}>
         <div className={s.header}>
-          {headerLeft}
+          {headerLeft ?? <div></div>}
           <div className={s.headerCenter}>
             <div className={s.maxWidthSelector}>
               <button
@@ -112,7 +112,7 @@ export function EditorContent({
             <UndoControls undoManager={undoManager} />
             <SaveStatus isSaving={isSaving} hasChanges={hasChanges} />
           </div>
-          {headerRight}
+          {headerRight ?? <div></div>}
         </div>
 
         <div className={s.belowHeader}>
