@@ -30,7 +30,11 @@ export type DataModel<
   name: Name;
   list: (options?: {
     // filters?: Filters<T>,
-    filters?: { treeId?: { equals?: string }; userId?: { equals?: string } };
+    filters?: {
+      treeId?: { equals?: string };
+      alias?: { equals?: string };
+      userId?: { equals?: string };
+    };
     pagination?: PaginationParams;
   }) => Promise<{ data: T[]; totalCount?: number }>;
   get: (id: T["id"]) => Promise<T>;

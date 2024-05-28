@@ -1,12 +1,5 @@
-import {
-  DropZone,
-  type ComponentConfig,
-  type ComponentData,
-} from "@measured/puck";
 import { Stack } from "./Stack";
 import { Heading } from "./Heading";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import { Paragraph } from "./Paragraph";
 import {
   Card,
@@ -19,7 +12,15 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import { useConfig } from "@/Editor/Context";
-import { withCss } from "@/Editor/CssProps";
+import { withCss } from "@tyzo/page-editor";
+import type {
+  EditorInput,
+  PageElement,
+  ElementContainer,
+  InputMap,
+  ComponentInfo,
+  StringProperty,
+} from "@tyzo/page-editor";
 
 function Image({
   value,
@@ -39,6 +40,7 @@ function Image({
         </TabsList>
         <TabsContent value="file">
           <Input
+            className="mx-2"
             type="file"
             disabled={isUploading}
             onChange={async (e) => {
@@ -59,6 +61,7 @@ function Image({
         </TabsContent>
         <TabsContent value="url">
           <Input
+            className="mx-2"
             value={value}
             type="url"
             onChange={(e) => onChange(e.target.value)}
@@ -70,166 +73,180 @@ function Image({
 }
 
 export const StandardComponents: {
-  [x: string]: Omit<
-    ComponentConfig<any, any, Omit<ComponentData<any>, "type">>,
-    "type"
-  >;
+  [x: string]: ComponentInfo;
 } = {
-  Heading: withCss(
+  heading: withCss(
     {
-      fields: {
-        children: { type: "text", label: "Text" },
+      id: "heading",
+      name: "Heading",
+      groupName: "Typography",
+      properties: {
+        children: { type: "string", name: "children", defaultData: "Heading" },
         size: {
-          type: "select",
-          options: [
-            { value: "h1", label: "H1" },
-            { value: "h2", label: "H2" },
-            { value: "h3", label: "H3" },
-            { value: "h4", label: "H4" },
-            { value: "h5", label: "H5" },
-            { value: "h6", label: "H6" },
-          ],
+          name: "size",
+          type: "string",
+          enum: ["h1", "h2", "h3", "h4", "h5", "h6"],
+          defaultData: "h1",
+          // options: [
+          //   { value: "h1", label: "H1" },
+          //   { value: "h2", label: "H2" },
+          //   { value: "h3", label: "H3" },
+          //   { value: "h4", label: "H4" },
+          //   { value: "h5", label: "H5" },
+          //   { value: "h6", label: "H6" },
+          // ],
         },
       },
-      defaultProps: {
-        size: "h1",
-      },
-      render: Heading,
+      component: Heading,
     },
     [{ fontSize: "1.5em" }, { fontWeight: "bold" }]
   ),
-  Paragraph: {
-    fields: {
-      children: { type: "text" },
-      textAlign: {
-        type: "select",
-        options: [
-          { value: "left", label: "Left" },
-          { value: "center", label: "Center" },
-          { value: "right", label: "Right" },
-        ],
-      },
+  paragraph: withCss({
+    id: "paragraph",
+    name: "Paragraph",
+    groupName: "Typography",
+    properties: {
+      children: { name: "children", type: "string", defaultData: "" },
     },
-    render: Paragraph,
-  },
-  Stack: {
-    fields: {
-      isContainer: {
-        type: "custom",
-        render(props) {
-          return (
-            <Label className="flex flex-row items-center gap-2">
-              <Checkbox
-                checked={props.value}
-                name={props.name}
-                onCheckedChange={(checked) =>
-                  props.onChange(
-                    checked === "indeterminate" ? false : (true as any)
-                  )
-                }
-              />{" "}
-              Is Container
-            </Label>
-          );
-        },
+    component: Paragraph,
+  }),
+  stack: withCss({
+    id: "stack",
+    name: "Stack",
+    groupName: "Layout",
+    properties: {
+      children: { name: "children", type: "children", defaultData: undefined },
+      direction: {
+        name: "direction",
+        type: "string",
+        defaultData: "horizontal",
+        enum: [
+          "horizontal",
+          "vertical",
+          // { value: "horizontal", label: "Horizontal" },
+          // { value: "vertical", label: "Vertical" },
+        ],
       },
       gap: {
-        type: "text",
+        name: "gap",
+        type: "string",
+        defaultData: "",
       },
-      direction: {
-        type: "select",
-        options: [
-          { value: "horizontal", label: "Horizontal" },
-          { value: "vertical", label: "Vertical" },
+      justifyContent: {
+        name: "justifyContent",
+        type: "string",
+        enum: [
+          "flex-start",
+          "flex-end",
+          "center",
+          "space-between",
+          "space-evenly",
         ],
+        defaultData: "flex-start",
       },
-      // description: { type: "text" },
+      alignItems: {
+        name: "alignItems",
+        type: "string",
+        enum: ["flex-start", "flex-end", "center", "baseline", "stretch"],
+        defaultData: "flex-start",
+      },
     },
-    defaultProps: {
-      direction: "vertical",
+    component: (props) => {
+      return <Stack {...props}>{props.children}</Stack>;
     },
-    render: (props) => {
-      return (
-        <Stack {...props}>
-          {props.editMode && (
-            <style>{` #${props.id}\\:children {
-              display: flex;
-              flex-direction: row;
-              ${props.gap ? `gap: ${props.gap};` : ""}
-            }`}</style>
-          )}
-          <DropZone zone="children" />
-        </Stack>
-      );
+  }),
+  section: withCss({
+    id: "section",
+    name: "Section",
+    groupName: "Layout",
+    properties: {
+      id: { name: "id", type: "string", defaultData: undefined },
+      children: { name: "children", type: "children", defaultData: undefined },
     },
-  },
-  Section: {
-    fields: {
-      id: { type: "text" },
+    component: (props) => {
+      return <section id={props.id}>{props.children}</section>;
     },
-    render: (props) => {
-      return (
-        <section id={props.id}>
-          <DropZone zone="content" />
-        </section>
-      );
+  }),
+  link: withCss({
+    id: "link",
+    name: "Link",
+    groupName: "Typography",
+    properties: {
+      children: { name: "children", type: "children", defaultData: undefined },
+      href: { name: "href", type: "string", defaultData: "" },
     },
-  },
-  Link: {
-    fields: {
-      href: { type: "text" },
+    component: (props) => {
+      return <a href={props.href}>{props.children}</a>;
     },
-    render: (props) => {
-      return (
-        <a href={props.href}>
-          <DropZone zone="content" />
-        </a>
-      );
+  }),
+  card: withCss({
+    id: "card",
+    name: "Card",
+    groupName: "Layout",
+    properties: {
+      children: { name: "children", type: "children", defaultData: undefined },
+      title: { name: "title", type: "string", defaultData: "" },
+      description: { name: "description", type: "string", defaultData: "" },
     },
-  },
-  Card: {
-    fields: {
-      title: { type: "text" },
-      description: { type: "text" },
-    },
-    render: (props) => {
+    component: (props) => {
       return (
         <Card>
-          <CardHeader>
-            <CardTitle>{props.title}</CardTitle>
-            {props.description && (
-              <CardDescription>{props.description}</CardDescription>
-            )}
-          </CardHeader>
-          <CardContent>
-            <DropZone zone="content" />
-          </CardContent>
+          {(props.title || props.description) && (
+            <CardHeader>
+              {props.title && <CardTitle>{props.title}</CardTitle>}
+              {props.description && (
+                <CardDescription>{props.description}</CardDescription>
+              )}
+            </CardHeader>
+          )}
+          {props.children && <CardContent>{props.children}</CardContent>}
           {/* <CardFooter>
-            <DropZone zone="footer" />
           </CardFooter> */}
         </Card>
       );
     },
-  },
+  }),
 
-  Image: {
-    fields: {
+  image: withCss({
+    id: "image",
+    name: "Image",
+    groupName: "Media",
+    properties: {
       src: {
-        type: "custom",
-        render(props) {
-          return (
-            <Image
-              value={props.value}
-              onChange={(value) => props.onChange(value as any)}
-            />
-          );
-        },
+        name: "src",
+        type: "image",
+        defaultData: undefined,
       },
-      width: { type: "number" },
-      height: { type: "number" },
+      width: { name: "width", type: "number", defaultData: undefined },
+      height: { name: "height", type: "number", defaultData: undefined },
     },
-    render: (props) => {
-      return <img {...props} />;
+    component: ({
+      src,
+      width,
+      height,
+    }: {
+      src: string;
+      width: number;
+      height: number;
+    }) => {
+      return <img src={src} width={width} height={height} />;
     },
-  },
+  }),
+};
+
+export const ImageProps: EditorInput<{
+  property: StringProperty;
+  element: PageElement;
+  elementContainer: ElementContainer;
+  components: ComponentInfo[];
+  inputs: InputMap;
+  value: any;
+  setValue: (value: any) => void;
+}> = function ImageProps(props) {
+  return (
+    <Image
+      value={props.value}
+      onChange={(value) => props.setValue(value as any)}
+    />
+  );
 };

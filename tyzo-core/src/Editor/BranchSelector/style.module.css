@@ -1,0 +1,48 @@
+:global(.tyzo) .Container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+:global(.tyzo) .JustifyBetween {
+  justify-content: space-between;
+}
+
+:global(.tyzo) .Chevrons {
+  margin-left: 0.5rem;
+  height: 1rem;
+  width: 1rem;
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+:global(.tyzo) .NoPad {
+  padding: 0;
+}
+
+:global(.tyzo) .Checks {
+  margin-right: 0.5rem;
+  height: 1rem;
+  width: 1rem;
+}
+
+:global(.tyzo) .AddBranch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:global(.tyzo) .PlusIcon {
+  margin-right: 0.5rem;
+  height: 1rem;
+  width: 1rem;
+}
+
+:global(.tyzo) .Opacity100 {
+  opacity: 1;
+}
+
+:global(.tyzo) .Opacity0 {
+  opacity: 0;
+}

@@ -1,4 +1,7 @@
+import serviceClientConfig from "./tyzo-service/serviceClient";
+export type { ElementContainer, Page as PageType } from "@tyzo/page-editor";
 export { Page } from "./Page";
 export { Editor } from "./Editor";
 export { StandardComponents } from "./std";
-export { withCss } from "./Editor/CssProps";
+export { withCss } from "@tyzo/page-editor";
+export { serviceClientConfig };

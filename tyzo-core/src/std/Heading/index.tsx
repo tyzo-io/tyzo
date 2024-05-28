@@ -1,14 +1,3 @@
-import { cn } from "@/lib/utils";
-
-const sizes = {
-  h1: "text-5xl",
-  h2: "text-4xl",
-  h3: "text-3xl",
-  h4: "text-2xl",
-  h5: "text-xl",
-  h6: "text-lg",
-};
-
 export function Heading({
   size,
   children,
@@ -17,5 +6,5 @@ export function Heading({
   children: string;
 }) {
   const Tag = size ?? "h1";
-  return <Tag className={cn(sizes[size ?? "h1"], "font-bold")}>{children}</Tag>;
+  return <Tag>{children}</Tag>;
 }

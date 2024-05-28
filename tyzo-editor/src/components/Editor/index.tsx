@@ -86,7 +86,7 @@ export function EditorContent({
   return (
     <EditorProvider elementContainer={page}>
       <div className={s.editor}>
-        <div className={s.header}>
+        <div className={classNames("tyzo", s.header)}>
           {headerLeft ?? <div></div>}
           <div className={s.headerCenter}>
             <div className={s.maxWidthSelector}>
@@ -116,7 +116,7 @@ export function EditorContent({
         </div>
 
         <div className={s.belowHeader}>
-          <div className={s.leftSide}>
+          <div className={classNames("tyzo", s.leftSide)}>
             <ComponentsList elementContainer={page} />
             <ElementTree elementsContainer={page} />
           </div>
@@ -140,7 +140,7 @@ export function EditorContent({
               <Center page={page} />
             </div>
           </div>
-          <div className={s.rightSide}>
+          <div className={classNames("tyzo", s.rightSide)}>
             <Props />
           </div>
         </div>
@@ -167,7 +167,6 @@ export function Editor({
 }) {
   return (
     <EditorBackendProvider
-      basePath="/"
       backend={{
         async loadPage() {
           return initialPage ?? blankPage;

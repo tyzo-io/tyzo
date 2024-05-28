@@ -1,15 +1,24 @@
 {
   "name": "@tyzo/astro",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "A website builder for react and astro",
   "type": "module",
   "main": "index.js",
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./admin.astro": "./admin.astro",
+    "./pages.astro": "./pages.astro"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "astro": "^4.8.0",
+    "@tyzo/core": "^0.0.1"
+  },
+  "peerDependencies": {
+    "@tyzo/core": "^0.0.1"
+  }
 }

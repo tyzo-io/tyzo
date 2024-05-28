@@ -1,0 +1,25 @@
+:global(.tyzo) .BackButton {
+  margin-right: 0.5rem;
+  height: 1rem;
+  width: 1rem;
+}
+
+:global(.tyzo) .Path {
+  margin-top: 0.5em;
+}
+
+:global(.tyzo) .Submit {
+  margin-top: 1em;
+}
+
+:global(.tyzo) .Spinner {
+  margin-right: 0.5rem;
+  height: 1rem;
+  width: 1rem;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,25 +1,31 @@
-import { cn } from "@/lib/utils";
-
 export function Stack({
   direction,
-  isContainer,
   gap,
+  justifyContent,
+  alignItems,
   children,
 }: {
+  id: string;
   direction: "horizontal" | "vertical";
   isContainer?: boolean;
   gap?: string;
+  justifyContent:
+    | "flex-start"
+    | "flex-end"
+    | "center"
+    | "space-between"
+    | "space-evenly";
+  alignItems: "flex-start" | "flex-end" | "center" | "baseline" | "stretch";
   children: React.ReactNode;
 }) {
   return (
     <div
-      className={cn(
-        "flex",
-        isContainer && "container",
-        direction === "horizontal" ? "flex-row" : "flex-col"
-      )}
       style={{
+        display: "flex",
         gap,
+        justifyContent,
+        alignItems,
+        flexDirection: direction === "horizontal" ? "row" : "column",
       }}
     >
       {children}

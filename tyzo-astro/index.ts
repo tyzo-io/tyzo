@@ -1,7 +1,8 @@
 // import path from 'node:path';
 // import { fileURLToPath } from 'node:url';
 import type { AstroConfig, AstroIntegration } from "astro";
-import type { TyzoConfig } from "./tyzo-service/config";
+import path from "path";
+// import type { TyzoConfig } from "@tyzo/core";
 // import type { EnumChangefreq, LinkItem as LinkItemBase, SitemapItemLoose } from 'sitemap';
 // import { ZodError } from 'zod';
 
@@ -22,13 +23,13 @@ const PKG_NAME = "@tyzo/astro";
 // }
 
 export interface TyzoOptions {
-  // storeUrl: string;
   spaceId?: string;
   renderTreeId?: string;
-  configPath?: string;
-  adminPath?: string;
-  pagesPath?: string;
-  componentsImport?: string;
+  serviceClientImportPath?: string;
+  adminRoute?: string;
+  pagesRoute?: string;
+  componentsImportPath?: string;
+  pageLayoutImportPath?: string;
 }
 
 const createPlugin = (options?: TyzoOptions): AstroIntegration => {
@@ -43,26 +44,34 @@ const createPlugin = (options?: TyzoOptions): AstroIntegration => {
           vite: {
             define: {
               __TYZO_CONFIG_PATH__: JSON.stringify(
-                options?.configPath ?? "./tyzo-service/serviceClient.ts"
+                options?.serviceClientImportPath ??
+                  "./tyzo-service/serviceClient.ts"
               ),
               __TYZO_SPACE_ID__: JSON.stringify(options?.spaceId),
-              __TYZO_TREE_ID__: JSON.stringify(options?.renderTreeId ?? "main"),
+              __TYZO_TREE_ID__: JSON.stringify(options?.renderTreeId ?? null),
               __TYZO_COMPONENT_IMPORT__: JSON.stringify(
-                options?.componentsImport ?? "src/components/index.tsx"
+                path.resolve(
+                  options?.componentsImportPath ?? "src/components/index.tsx"
+                )
+              ),
+              __TYZO_LAYOUT_IMPORT__: JSON.stringify(
+                options?.pageLayoutImportPath
+                  ? path.resolve(options?.pageLayoutImportPath)
+                  : null
               ),
             },
           },
         });
 
         injectRoute({
-          pattern: options?.adminPath ?? "/admin/[...path]",
+          pattern: options?.adminRoute ?? "/admin/[...path]",
           // entrypoint: "@bloksy/astro/admin.astro",
-          entrypoint: "./admin.astro",
+          entrypoint: "@tyzo/astro/admin.astro",
         });
         injectRoute({
-          pattern: options?.pagesPath ?? "/[...path]",
+          pattern: options?.pagesRoute ?? "/[...path]",
           // entrypoint: "@bloksy/astro/pages.astro",
-          entrypoint: "./pages.astro",
+          entrypoint: "@tyzo/astro/pages.astro",
         });
       },
       "astro:config:done": async ({ config: cfg }) => {

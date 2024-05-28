@@ -1,0 +1,31 @@
+:global(.tyzo) .Container {
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+}
+
+:global(.tyzo) .JustifyBetween {
+  justify-content: space-between;
+}
+
+:global(.tyzo) .JustifyEnd {
+  justify-content: flex-end;
+}
+
+:global(.tyzo) .User {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+:global(.tyzo) .AvatarContainer {
+  border-radius: 9999px;
+  padding: 0.5rem;
+}
+
+:global(.tyzo) .RoundedFull {
+  border-radius: 9999px;
+}

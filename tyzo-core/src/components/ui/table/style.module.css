@@ -1,0 +1,80 @@
+:global(.tyzo) .Table {
+  position: relative;
+  width: 100%;
+  overflow: auto;
+}
+
+:global(.tyzo) .TableInner {
+  width: 100%;
+  caption-side: bottom;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+:global(.tyzo) .TableHeader tr {
+  border-bottom-width: 1px;
+}
+
+
+:global(.tyzo) .TableBody tr:last-child {
+  border-width: 0px;
+}
+
+
+:global(.tyzo) .TableFooter {
+  border-top-width: 1px;
+  background-color: hsl(var(--muted) / 0.5);
+  font-weight: 500;
+}
+
+:global(.tyzo) .TableFooter:last-child>tr {
+  border-bottom-width: 0px;
+}
+
+
+:global(.tyzo) .TableRow {
+  border-bottom-width: 1px;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+:global(.tyzo) .TableRow:hover {
+  background-color: hsl(var(--muted) / 0.5);
+}
+
+:global(.tyzo) .TableRow[data-state=selected] {
+  background-color: hsl(var(--muted));
+}
+
+:global(.tyzo) .TableHead {
+  height: 3rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  text-align: left;
+  vertical-align: middle;
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+}
+
+:global(.tyzo) .TableHead:has([role=checkbox]) {
+  padding-right: 0px;
+}
+
+
+:global(.tyzo) .TableCell {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+:global(.tyzo) .TableCell:has([role=checkbox]) {
+  padding-right: 0px;
+}
+
+
+:global(.tyzo) .TableCaption {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: hsl(var(--muted-foreground));
+}

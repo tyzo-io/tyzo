@@ -1,7 +1,7 @@
 import type { TyzoConfig } from "./config";
 import { createClient } from "@supabase/supabase-js";
-import type { Database } from "./schema";
-import type { Data } from "@measured/puck";
+import type { Database, Json } from "./schema";
+import type { ElementContainer } from "@tyzo/page-editor";
 
 // const supabaseUrl = "http://127.0.0.1:54321";
 // const authUrl = "http://localhost:4321/login";
@@ -284,7 +284,7 @@ export const serviceClientConfig = ({ spaceId }: { spaceId: string }) => {
               treeId: page.tree_id,
               path: page.path,
               title: page.title,
-              content: (page.content ?? {}) as Data,
+              content: (page.content ?? {}) as unknown as ElementContainer,
             })) ?? [],
         };
       },
@@ -306,7 +306,7 @@ export const serviceClientConfig = ({ spaceId }: { spaceId: string }) => {
           treeId: data.tree_id,
           path: data.path,
           title: data.title,
-          content: (data.content ?? {}) as Data,
+          content: (data.content ?? {}) as unknown as ElementContainer,
         };
       },
       async add(page) {
@@ -318,7 +318,7 @@ export const serviceClientConfig = ({ spaceId }: { spaceId: string }) => {
             tree_id: page.treeId,
             path: page.path,
             title: page.title,
-            content: page.content,
+            content: page.content as unknown as Json,
           })
           .select()
           .single();
@@ -330,7 +330,7 @@ export const serviceClientConfig = ({ spaceId }: { spaceId: string }) => {
           treeId: data.tree_id,
           path: data.path,
           title: data.title,
-          content: (data.content ?? {}) as Data,
+          content: (data.content ?? {}) as unknown as ElementContainer,
         };
       },
       async update(id, page) {
@@ -339,7 +339,7 @@ export const serviceClientConfig = ({ spaceId }: { spaceId: string }) => {
           .update({
             path: page.path,
             title: page.title,
-            content: page.content,
+            content: page.content as unknown as Json,
           })
           .eq("id", id)
           .eq("space_id", spaceId);
@@ -357,11 +357,16 @@ export const serviceClientConfig = ({ spaceId }: { spaceId: string }) => {
     },
     trees: {
       name: "Tree",
-      async list() {
-        const { data } = await supabase
+      async list(options) {
+        const query = supabase
           .from("space_trees")
           .select("*")
           .eq("space_id", spaceId);
+        if (options?.filters?.alias?.equals) {
+          query.eq("alias", options.filters.alias.equals);
+        }
+        const { data } = await query;
+
         return {
           data:
             data?.map((tree) => ({

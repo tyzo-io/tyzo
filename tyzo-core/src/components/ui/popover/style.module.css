@@ -1,0 +1,66 @@
+:global(.tyzo).PopoverContent {
+  z-index: 550;
+  width: 18rem;
+  border-radius: calc(var(--radius) - 2px);
+  border-width: 1px;
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+:global(.tyzo).PopoverContent[data-state=open] {
+  animation-name: enter;
+  animation-duration: 150ms;
+  --tw-enter-opacity: initial;
+  --tw-enter-scale: initial;
+  --tw-enter-rotate: initial;
+  --tw-enter-translate-x: initial;
+  --tw-enter-translate-y: initial;
+  --tw-enter-opacity: 0;
+  --tw-enter-scale: .95;
+}
+
+:global(.tyzo).PopoverContent[data-state=closed] {
+  animation-name: exit;
+  animation-duration: 150ms;
+  --tw-exit-opacity: initial;
+  --tw-exit-scale: initial;
+  --tw-exit-rotate: initial;
+  --tw-exit-translate-x: initial;
+  --tw-exit-translate-y: initial;
+  --tw-exit-opacity: 0;
+  --tw-exit-scale: .95;
+}
+
+:global(.tyzo).PopoverContent[data-side=bottom] {
+  --tw-enter-translate-y: -0.5rem;
+}
+
+:global(.tyzo).PopoverContent[data-side=left] {
+  --tw-enter-translate-x: 0.5rem;
+}
+
+:global(.tyzo).PopoverContent[data-side=right] {
+  --tw-enter-translate-x: -0.5rem;
+}
+
+:global(.tyzo).PopoverContent[data-side=top] {
+  --tw-enter-translate-y: 0.5rem;
+}
+
+@keyframes enter {
+  from {
+    opacity: var(--tw-enter-opacity, 1);
+    transform: translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0) scale3d(var(--tw-enter-scale, 1), var(--tw-enter-scale, 1), var(--tw-enter-scale, 1)) rotate(var(--tw-enter-rotate, 0));
+  }
+}
+@keyframes exit {
+  to {
+    opacity: var(--tw-exit-opacity, 1);
+    transform: translate3d(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0), 0) scale3d(var(--tw-exit-scale, 1), var(--tw-exit-scale, 1), var(--tw-exit-scale, 1)) rotate(var(--tw-exit-rotate, 0));
+  }
+}

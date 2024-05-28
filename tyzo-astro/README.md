@@ -5,7 +5,7 @@ Add the following to your `astro.config.mjs`:
 ```ts
 import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
-import tyzo from "./astro-integration";
+import tyzo from "@tyzo/astro";
 
 // https://astro.build/config
 export default defineConfig({

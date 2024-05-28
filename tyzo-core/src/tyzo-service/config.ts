@@ -1,5 +1,5 @@
 import type { DataModel, FileStore } from "./types";
-import type { Data } from '@measured/puck'
+import type { ElementContainer } from "@tyzo/page-editor";
 
 export type Space = {
   id: string;
@@ -18,7 +18,7 @@ export type Page = {
   treeId: string;
   title: string;
   path: string;
-  content: Data;
+  content: ElementContainer;
 };
 
 export type Tree = {

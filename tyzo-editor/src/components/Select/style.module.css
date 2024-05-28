@@ -1,0 +1,248 @@
+:global(.tyzo) .SelectTrigger {
+  display: flex;
+  height: 2.5rem;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 0.25rem;
+  border-width: 1px;
+  border-color: hsl(var(--input));
+  background-color: hsl(var(--background));
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  --tw-ring-offset-color: hsl(var(--background));
+}
+
+:global(.tyzo) .SelectTrigger::placeholder {
+  color: hsl(var(--muted-foreground));
+}
+
+:global(.tyzo) .SelectTrigger:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+  --tw-ring-color: hsl(var(--ring));
+  --tw-ring-offset-width: 2px;
+}
+
+:global(.tyzo) .SelectTrigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+:global(.tyzo) .SelectTrigger>span {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+
+:global(.tyzo) .SelectTriggerIcon {
+  height: 1rem;
+  width: 1rem;
+  opacity: 0.5;
+}
+
+:global(.tyzo) .LeanSelectTrigger {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+:global(.tyzo) .SelectScrollUpButton {
+  display: flex;
+  cursor: default;
+  align-items: center;
+  justify-content: center;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+:global(.tyzo) .Icon {
+  height: 1rem;
+  width: 1rem;
+}
+
+:global(.tyzo) .SelectScrollDownButton {
+  display: flex;
+  cursor: default;
+  align-items: center;
+  justify-content: center;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+:global(.tyzo).SelectContent {
+  position: relative;
+  z-index: 501;
+  max-height: 24rem;
+  min-width: 8rem;
+  overflow: hidden;
+  border-radius: calc(var(--radius) - 2px);
+  border-width: 1px;
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+@keyframes enter {
+  from {
+    opacity: var(--tw-enter-opacity, 1);
+    transform: translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0) scale3d(var(--tw-enter-scale, 1), var(--tw-enter-scale, 1), var(--tw-enter-scale, 1)) rotate(var(--tw-enter-rotate, 0));
+  }
+}
+
+@keyframes exit {
+  to {
+    opacity: var(--tw-exit-opacity, 1);
+    transform: translate3d(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0), 0) scale3d(var(--tw-exit-scale, 1), var(--tw-exit-scale, 1), var(--tw-exit-scale, 1)) rotate(var(--tw-exit-rotate, 0));
+  }
+}
+
+:global(.tyzo).SelectContent[data-state=open] {
+  animation-name: enter;
+  animation-duration: 150ms;
+  --tw-enter-opacity: initial;
+  --tw-enter-scale: initial;
+  --tw-enter-rotate: initial;
+  --tw-enter-translate-x: initial;
+  --tw-enter-translate-y: initial;
+  --tw-enter-opacity: 0;
+  --tw-enter-scale: .95;
+}
+
+:global(.tyzo).SelectContent[data-state=closed] {
+  animation-name: exit;
+  animation-duration: 150ms;
+  --tw-exit-opacity: initial;
+  --tw-exit-scale: initial;
+  --tw-exit-rotate: initial;
+  --tw-exit-translate-x: initial;
+  --tw-exit-translate-y: initial;
+  --tw-exit-opacity: 0;
+  --tw-exit-scale: .95;
+}
+
+:global(.tyzo).SelectContent[data-side=bottom] {
+  --tw-enter-translate-y: -0.5rem;
+}
+
+:global(.tyzo).SelectContent[data-side=left] {
+  --tw-enter-translate-x: 0.5rem;
+}
+
+:global(.tyzo).SelectContent[data-side=right] {
+  --tw-enter-translate-x: -0.5rem;
+}
+
+:global(.tyzo).SelectContent[data-side=top] {
+  --tw-enter-translate-y: 0.5rem;
+}
+
+
+:global(.tyzo) .SelectContentPopover[data-side=bottom] {
+  --tw-translate-y: 0.25rem;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+:global(.tyzo) .SelectContentPopover[data-side=left] {
+  --tw-translate-x: -0.25rem;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+:global(.tyzo) .SelectContentPopover[data-side=right] {
+  --tw-translate-x: 0.25rem;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+:global(.tyzo) .SelectContentPopover[data-side=top] {
+  --tw-translate-y: -0.25rem;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+
+:global(.tyzo) .SelectContentViewport {
+  padding: 0.25rem;
+}
+
+:global(.tyzo) .SelectContentViewportPopover {
+  height: var(--radix-select-trigger-height);
+  width: 100%;
+  min-width: var(--radix-select-trigger-width);
+}
+
+:global(.tyzo) .SelectLabel {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+  padding-left: 2rem;
+  padding-right: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+}
+
+:global(.tyzo) .SelectItem {
+  position: relative;
+  display: flex;
+  width: 100%;
+  cursor: default;
+  user-select: none;
+  align-items: center;
+  border-radius: calc(var(--radius) - 4px);
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+  padding-left: 2rem;
+  padding-right: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+:global(.tyzo) .SelectItem:focus {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+:global(.tyzo) .SelectItem[data-disabled] {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+
+:global(.tyzo) .SelectItemInner {
+  position: absolute;
+  left: 0.5rem;
+  display: flex;
+  height: 0.75rem;
+  height: 0.875rem;
+  width: 0.75rem;
+  width: 0.875rem;
+  align-items: center;
+  justify-content: center;
+}
+
+:global(.tyzo) .SelectSeparator {
+  margin-left: -0.25rem;
+  margin-right: -0.25rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  height: 1px;
+  background-color: hsl(var(--muted));
+}

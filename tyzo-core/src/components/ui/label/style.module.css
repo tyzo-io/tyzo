@@ -1,0 +1,14 @@
+:global(.tyzo) .Label {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+:global(.tyzo) .Label:disabled~.peer-disabled\:cursor-not-allowed {
+  cursor: not-allowed;
+}
+
+:global(.tyzo) .Label:disabled~.peer-disabled\:opacity-70 {
+  opacity: 0.7;
+}

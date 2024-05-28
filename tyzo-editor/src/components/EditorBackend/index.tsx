@@ -28,23 +28,19 @@ const defaultBackend = (): EditorBackend => {
 };
 
 const EditorBackendContext = createContext({
-  basePath: "",
   backend: defaultBackend(),
 });
 
 export function EditorBackendProvider({
-  basePath,
   backend,
   children,
 }: {
-  basePath: string;
   backend: EditorBackend;
   children: React.ReactNode | React.JSX.Element;
 }) {
   return (
     <EditorBackendContext.Provider
       value={{
-        basePath,
         backend,
       }}
     >
@@ -54,9 +50,8 @@ export function EditorBackendProvider({
 }
 
 export function useBackend() {
-  const { basePath, backend } = useContext(EditorBackendContext);
+  const { backend } = useContext(EditorBackendContext);
   return {
-    basePath,
     backend,
   };
 }

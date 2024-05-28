@@ -1,4 +1,4 @@
-.saveInfo {
+:global(.tyzo) .saveInfo {
     opacity: 0.7;
     font-size: 0.8em;
     display: flex;
@@ -9,11 +9,11 @@
     width: 150px;
 }
 
-.saveInfo p {
+:global(.tyzo) .saveInfo p {
     font-size: 0.8em;
 }
 
-.icon {
+:global(.tyzo) .icon {
     width: 20px;
     height: 20px;
 }

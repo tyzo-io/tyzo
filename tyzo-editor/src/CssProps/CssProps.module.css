@@ -1,40 +1,40 @@
-.Icon {
+:global(.tyzo) .Icon {
   height: 16px;
   width: 16px;
   margin-right: 8px;
 }
 
-.IconNoMargin {
+:global(.tyzo) .IconNoMargin {
   height: 16px;
   width: 16px;
 }
 
-.SmallIcon {
+:global(.tyzo) .SmallIcon {
   height: 12px;
   width: 12px;
   margin-right: 8px;
 }
 
-.BigIcon {
+:global(.tyzo) .BigIcon {
   height: 20px;
   width: 20px;
   margin-right: 8px;
 }
 
-.Margin {
+:global(.tyzo) .Margin {
   margin: 4px;
 }
 
-.MarginTop {
+:global(.tyzo) .MarginTop {
   margin-top: 4px;
 }
 
-.PaddingVertical {
+:global(.tyzo) .PaddingVertical {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-.LabelRow {
+:global(.tyzo) .LabelRow {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -42,13 +42,13 @@
   margin-bottom: 4px
 }
 
-.Prop {
+:global(.tyzo) .Prop {
   border-bottom: 1px solid rgba(127, 127, 127, 0.2);
   padding: 8px;
   font-size: 0.8em;
 }
 
-.PropTitle {
+:global(.tyzo) .PropTitle {
   display: flex;
   flex-direction: row;
   align-items: center;

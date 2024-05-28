@@ -1,12 +1,11 @@
-import { Render, type Data } from "@measured/puck";
+import { Render, type ElementContainer } from "@tyzo/page-editor";
 import { editorConfig } from "../Editor/Editor";
-import "../globals.css";
 
 export function Page({
   data,
   components,
 }: {
-  data: Data;
+  data: ElementContainer;
   components: Record<string, any>;
 }) {
   return (

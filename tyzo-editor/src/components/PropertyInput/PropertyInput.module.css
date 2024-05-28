@@ -1,4 +1,4 @@
-.field {
+:global(.tyzo) .field {
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -9,18 +9,18 @@
     border-bottom: 1px solid rgba(127, 127, 127, 0.2);
 }
 
-.fieldTitle {
+:global(.tyzo) .fieldTitle {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
 }
 
-.arrayTitle {
+:global(.tyzo) .arrayTitle {
     margin-bottom: 5px;
 }
 
-.field input {
+:global(.tyzo) .field input {
     border: none;
     border: 1px solid rgba(127, 127, 127, 0.2);
     padding: 0;
@@ -29,13 +29,13 @@
     /* padding-bottom: 5px; */
 }
 
-.arrayItems {
+:global(.tyzo) .arrayItems {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.object {
+:global(.tyzo) .object {
     /* border-left: 1px solid rgba(127, 127, 127, 0.2); */
     /* padding: 10px; */
     border: 1px solid rgba(127, 127, 127, 0.2);
@@ -44,7 +44,7 @@
     background-color: white;
 }
 
-.objectHeader {
+:global(.tyzo) .objectHeader {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -52,35 +52,35 @@
     padding: 5px 10px;
 }
 
-.expandedObject.objectHeader {
+:global(.tyzo) .expandedObject.objectHeader {
     border-bottom: 1px solid rgba(127, 127, 127, 0.2);
     margin-bottom: 5px;
 }
 
-.cardHeaderTitle {
+:global(.tyzo) .cardHeaderTitle {
     flex: 1;
 }
 
-.objectBody {
+:global(.tyzo) .objectBody {
     padding: 10px;
 }
 
-.field .labels {
+:global(.tyzo) .field .labels {
     flex: 1;
 }
 
-.labels {
+:global(.tyzo) .labels {
     display: flex;
     flex-direction: column;
     /* text-align: right; */
     /* text-align: right; */
 }
 
-.field input {
+:global(.tyzo) .field input {
     flex: 5;
 }
 
-.code {
+:global(.tyzo) .code {
     font-family: monospace;
     opacity: 0.8;
     font-size: 0.8em;
@@ -88,13 +88,13 @@
     padding-left: 2px;
 }
 
-.treeDeeper {
+:global(.tyzo) .treeDeeper {
     border-left: 1px solid #bbb;
     padding-left: 10px;
     margin-left: 10px;
 }
 
-.button {
+:global(.tyzo) .button {
     /* background-color: hsl(var(--foreground)); */
     /* color: hsl(var(--background)); */
     background-color: white;
