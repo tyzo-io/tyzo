@@ -8,69 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
-import { useConfig } from "@/Editor/Context";
-import { withCss } from "@tyzo/page-editor";
-import type {
-  EditorInput,
-  PageElement,
-  ElementContainer,
-  InputMap,
-  ComponentInfo,
-  StringProperty,
-} from "@tyzo/page-editor";
-
-function Image({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  const [isUploading, setIsUploading] = useState(false);
-  const config = useConfig();
-  return (
-    <div>
-      <Tabs defaultValue="file">
-        <TabsList>
-          <TabsTrigger value="file">Upload</TabsTrigger>
-          <TabsTrigger value="url">URL</TabsTrigger>
-        </TabsList>
-        <TabsContent value="file">
-          <Input
-            className="mx-2"
-            type="file"
-            disabled={isUploading}
-            onChange={async (e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                setIsUploading(true);
-                const id = crypto.randomUUID();
-                const publicOrPrivate = "public";
-                const { url } = await config.fileStore.add(
-                  `${publicOrPrivate}/${id}/${file.name}`,
-                  file
-                );
-                onChange(url);
-                setIsUploading(false);
-              }
-            }}
-          />
-        </TabsContent>
-        <TabsContent value="url">
-          <Input
-            className="mx-2"
-            value={value}
-            type="url"
-            onChange={(e) => onChange(e.target.value)}
-          />
-        </TabsContent>
-      </Tabs>
-    </div>
-  );
-}
+import { type ComponentInfo } from "@tyzo/page-editor";
+import { withCss } from "@tyzo/page-editor/render";
 
 export const StandardComponents: {
   [x: string]: ComponentInfo;
@@ -116,43 +55,29 @@ export const StandardComponents: {
     groupName: "Layout",
     properties: {
       children: { name: "children", type: "children", defaultData: undefined },
-      direction: {
-        name: "direction",
-        type: "string",
-        defaultData: "horizontal",
-        enum: [
-          "horizontal",
-          "vertical",
-          // { value: "horizontal", label: "Horizontal" },
-          // { value: "vertical", label: "Vertical" },
-        ],
+      baseRule: {
+        name: "baseRule",
+        type: "stackBaseRule",
+        defaultData: {
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "flex-start",
+          alignItems: "flex-start",
+          gap: "flex-start",
+        },
       },
-      gap: {
-        name: "gap",
-        type: "string",
-        defaultData: "",
-      },
-      justifyContent: {
-        name: "justifyContent",
-        type: "string",
-        enum: [
-          "flex-start",
-          "flex-end",
-          "center",
-          "space-between",
-          "space-evenly",
-        ],
-        defaultData: "flex-start",
-      },
-      alignItems: {
-        name: "alignItems",
-        type: "string",
-        enum: ["flex-start", "flex-end", "center", "baseline", "stretch"],
-        defaultData: "flex-start",
+      additionalRules: {
+        name: "additionalRules",
+        type: "stackAdditionalRules",
+        defaultData: undefined,
       },
     },
     component: (props) => {
-      return <Stack {...props}>{props.children}</Stack>;
+      return (
+        <Stack {...props} id={props.tyzo.id}>
+          {props.children}
+        </Stack>
+      );
     },
   }),
   section: withCss({
@@ -232,21 +157,4 @@ export const StandardComponents: {
       return <img src={src} width={width} height={height} />;
     },
   }),
-};
-
-export const ImageProps: EditorInput<{
-  property: StringProperty;
-  element: PageElement;
-  elementContainer: ElementContainer;
-  components: ComponentInfo[];
-  inputs: InputMap;
-  value: any;
-  setValue: (value: any) => void;
-}> = function ImageProps(props) {
-  return (
-    <Image
-      value={props.value}
-      onChange={(value) => props.setValue(value as any)}
-    />
-  );
 };

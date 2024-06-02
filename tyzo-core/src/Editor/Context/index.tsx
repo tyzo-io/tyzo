@@ -2,10 +2,11 @@ import { createContext, useContext, useMemo, useState } from "react";
 import type { Tree, TyzoConfig } from "@/tyzo-service/config";
 import serviceClientConfig from "@/tyzo-service/serviceClient";
 import { useData } from "@/lib/useData";
+import { ComponentInfo } from "@tyzo/page-editor";
 
 const ConfigContext = createContext<
-  TyzoConfig & { componentsImportPath: string }
->({} as TyzoConfig & { componentsImportPath: string });
+  TyzoConfig & { components: Record<string, ComponentInfo> }
+>({} as TyzoConfig & { components: Record<string, ComponentInfo> });
 
 export function useConfig() {
   return useContext(ConfigContext);
@@ -14,11 +15,11 @@ export function useConfig() {
 export function ConfigProvider({
   spaceId,
   children,
-  componentsImportPath,
+  components,
 }: {
   spaceId: string | null | undefined;
   children: React.ReactNode;
-  componentsImportPath: string;
+  components: Record<string, ComponentInfo>;
 }) {
   const config = useMemo(() => {
     if (!spaceId) {
@@ -32,7 +33,7 @@ export function ConfigProvider({
   }
 
   return (
-    <ConfigContext.Provider value={{ ...config, componentsImportPath }}>
+    <ConfigContext.Provider value={{ ...config, components }}>
       {children}
     </ConfigContext.Provider>
   );

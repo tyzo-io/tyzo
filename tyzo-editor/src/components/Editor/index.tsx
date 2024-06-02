@@ -47,7 +47,7 @@ function Center({ page }: { page: ElementContainer }) {
         </div>
       ) : null}
       <Render
-        mode="edit"
+        // mode="edit"
         elementContainer={page}
         element={undefined}
         elements={page.children}

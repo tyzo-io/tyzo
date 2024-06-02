@@ -43,7 +43,7 @@ const DropdownMenuSubContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.SubContent
     ref={ref}
-    className={cn(s.DropdownMenuSubContent, className)}
+    className={cn("tyzo", s.DropdownMenuSubContent, className)}
     {...props}
   />
 ));

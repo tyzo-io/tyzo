@@ -1,34 +1,29 @@
+import { ComponentCssProperty, CssContainer } from "@tyzo/page-editor";
+
 export function Stack({
-  direction,
-  gap,
-  justifyContent,
-  alignItems,
+  id,
+  baseRule,
+  additionalRules,
   children,
 }: {
   id: string;
-  direction: "horizontal" | "vertical";
-  isContainer?: boolean;
-  gap?: string;
-  justifyContent:
-    | "flex-start"
-    | "flex-end"
-    | "center"
-    | "space-between"
-    | "space-evenly";
-  alignItems: "flex-start" | "flex-end" | "center" | "baseline" | "stretch";
+  baseRule: ComponentCssProperty | undefined;
+  additionalRules: ComponentCssProperty[] | undefined;
   children: React.ReactNode;
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        gap,
-        justifyContent,
-        alignItems,
-        flexDirection: direction === "horizontal" ? "row" : "column",
-      }}
+    <CssContainer
+      css={[
+        {
+          display: "flex",
+          ...baseRule,
+          id,
+        },
+        ...(additionalRules?.map((rule) => ({ ...rule, id })) ?? []),
+      ]}
+      tyzo={{ id, componentId: "stack" }}
     >
-      {children}
-    </div>
+      <div>{children}</div>
+    </CssContainer>
   );
 }

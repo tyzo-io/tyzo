@@ -19,13 +19,17 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: resolve(__dirname, "src/index.ts"),
+      entry: [
+        resolve(__dirname, "src/index.ts"),
+        resolve(__dirname, "src/render.ts"),
+      ],
       formats: ["es"],
     },
     rollupOptions: {
       external: ["react", "react/jsx-runtime"],
       input: {
         index: fileURLToPath(new URL("src/index.ts", import.meta.url)),
+        render: fileURLToPath(new URL("src/render.ts", import.meta.url)),
         serviceClient: fileURLToPath(
           new URL("src/tyzo-service/serviceClient.ts", import.meta.url)
         ),

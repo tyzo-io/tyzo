@@ -1,5 +1,5 @@
 import { DragIcon } from "../Icons/DragIcon";
-import { moveElement, removeElement } from "../../operations";
+import { duplicateElement, moveElement, removeElement } from "../../operations";
 import { useState } from "react";
 import { TrashIcon } from "../Icons/TrashIcon";
 import s from "./ElementTreeItem.module.css";
@@ -10,6 +10,8 @@ import {
 } from "../../types";
 import { useEditor } from "../Editor/EditorContext";
 import { classNames } from "../../util/classNames";
+import { Button } from "../Button";
+import { Copy } from "lucide-react";
 
 function getComponentName({
   componentId,
@@ -102,14 +104,26 @@ export function ElementTreeItem({
             componentId: element.componentId,
           })}
         </div>
-        <div
+        <Button
           className={s.trashIcon}
+          variant="ghost"
+          size="icon"
+          onClick={() => {
+            duplicateElement(elementContainer, element.id);
+          }}
+        >
+          <Copy />
+        </Button>
+        <Button
+          className={s.trashIcon}
+          variant="ghost"
+          size="icon"
           onClick={() => {
             removeElement(elementContainer, element.id);
           }}
         >
           <TrashIcon />
-        </div>
+        </Button>
         <div>
           {element.children?.length ? (
             isExpanded ? (
@@ -142,15 +156,21 @@ export function ElementTreeItem({
           ) : null}
         </div>
       </div>
-      {isExpanded &&
-        element.children?.map((childId) => (
-          <ElementTreeItem
-            key={childId}
-            elementContainer={elementContainer}
-            element={elementContainer.elements[childId]!}
-            components={components}
-          />
-        ))}
+      {isExpanded && (
+        <div style={{ marginLeft: "10px" }}>
+          {element.children?.map(
+            (childId) =>
+              elementContainer.elements[childId] && (
+                <ElementTreeItem
+                  key={childId}
+                  elementContainer={elementContainer}
+                  element={elementContainer.elements[childId]!}
+                  components={components}
+                />
+              )
+          )}
+        </div>
+      )}
       {isDragging && isDraggingOver && (
         <div className={s.dragOverIndicator}></div>
       )}

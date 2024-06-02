@@ -11,14 +11,17 @@ export function ElementTree({
   return (
     <>
       <p style={{ margin: "0.5em", fontWeight: "bold" }}>Content</p>
-      {elementsContainer.children.map((elId) => (
-        <ElementTreeItem
-          key={elId}
-          element={elementsContainer.elements[elId]!}
-          elementContainer={elementsContainer}
-          components={components}
-        ></ElementTreeItem>
-      ))}
+      {elementsContainer.children.map(
+        (elId) =>
+          elementsContainer.elements[elId] && (
+            <ElementTreeItem
+              key={elId}
+              element={elementsContainer.elements[elId]!}
+              elementContainer={elementsContainer}
+              components={components}
+            ></ElementTreeItem>
+          )
+      )}
     </>
   );
 }

@@ -1,6 +1,6 @@
-import { ElementContainer } from "../../types";
-import { Config } from "../Editor/types";
-import { Render as RenderPage } from "../EditorRender";
+import type { ElementContainer } from "../../types";
+import type { Config } from "../Editor/types";
+import { Render as RenderPage } from "./Render";
 
 export function Render({
   config,
@@ -11,10 +11,8 @@ export function Render({
 }) {
   return (
     <RenderPage
-      mode="render"
       elementContainer={data}
       elements={data.children}
-      element={undefined}
       componentsById={config.components}
     />
   );

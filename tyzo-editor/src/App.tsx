@@ -1,7 +1,7 @@
-import { CssEdit, withCss } from "./CssProps";
+import { withCss } from "./CssProps";
 import { Editor } from "./components/Editor";
 import { Config } from "./components/Editor/types";
-// import { Render } from "./components/Render";
+import { CssEdit } from "./lib";
 
 const config: Config = {
   async save(data) {

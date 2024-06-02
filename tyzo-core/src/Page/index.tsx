@@ -1,5 +1,5 @@
-import { Render, type ElementContainer } from "@tyzo/page-editor";
-import { editorConfig } from "../Editor/Editor";
+import type { ElementContainer } from "@tyzo/page-editor";
+import { Render } from "@tyzo/page-editor/render";
 
 export function Page({
   data,
@@ -11,11 +11,7 @@ export function Page({
   return (
     <Render
       config={{
-        ...editorConfig,
-        components: {
-          ...editorConfig.components,
-          ...components,
-        },
+        components,
       }}
       data={data}
     />

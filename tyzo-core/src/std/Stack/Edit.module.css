@@ -1,0 +1,34 @@
+:global(.tyzo) .Title {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+:global(.tyzo) .Container {
+  padding: 8px;
+
+  border-bottom: 1px solid rgba(127, 127, 127, .2);
+}
+
+:global(.tyzo) .Row {
+  margin-top: 10px;
+}
+
+:global(.tyzo) .AddBreakpoint {
+  width: 100%;
+}
+
+:global(.tyzo) .Breakpoint {
+  margin-bottom: 2em;
+}
+
+:global(.tyzo) .BreakpointTitle {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+:global(.tyzo) .BreakpointTitle > div {
+  flex: 1;
+}

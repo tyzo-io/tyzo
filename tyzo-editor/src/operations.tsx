@@ -93,12 +93,12 @@ export function removeElement(
     return;
   }
   const parent = el.parent
-    ? elementContainer.elements[el.parent]?.children
-    : elementContainer.children;
+    ? elementContainer.elements[el.parent]
+    : elementContainer;
   el.parent = undefined;
-  const index = parent?.findIndex((el) => el === id) ?? -1;
+  const index = parent?.children?.findIndex((el) => el === id) ?? -1;
   if (index >= 0) {
-    parent?.splice(index, 1);
+    parent?.children?.splice(index, 1);
   }
   elementContainer.elements[id] = undefined;
 }
@@ -116,4 +116,27 @@ export function moveElement(
   const dupe = JSON.parse(JSON.stringify(element));
   removeElement(elementContainer, id);
   addElement(elementContainer, dupe, parentId, afterId);
+}
+
+export function duplicateElement(
+  elementContainer: ElementContainer,
+  id: PageElementId,
+  newParent?: PageElementId
+) {
+  const element = elementContainer.elements[id];
+  if (!element) {
+    return;
+  }
+  const dupe = JSON.parse(JSON.stringify(element)) as PageElement;
+  dupe.id = randomId();
+  if (newParent) {
+    dupe.parent = newParent;
+  }
+  if (dupe.children) {
+    dupe.children = [];
+  }
+  addElement(elementContainer, dupe, dupe.parent, id);
+  for (const child of element.children ?? []) {
+    duplicateElement(elementContainer, child, dupe.id);
+  }
 }

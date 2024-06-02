@@ -14,6 +14,7 @@ import { Home } from "./Home";
 import { Team } from "./Team";
 import { SpaceSettings } from "./SpaceSettings";
 import { Profile } from "./Profile";
+import { ComponentInfo } from "@tyzo/page-editor";
 
 export function SidebarLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -32,10 +33,10 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
 
 export function Editor({
   spaceId,
-  componentsImportPath,
+  components,
 }: {
   spaceId: string | null | undefined;
-  componentsImportPath: string;
+  components: Record<string, ComponentInfo>;
 }) {
   const [router] = useState(
     createBrowserRouter(
@@ -86,7 +87,7 @@ export function Editor({
   return (
     <ConfigProvider
       spaceId={spaceId}
-      componentsImportPath={componentsImportPath}
+      components={components}
     >
       <TreeProvider>
         <RouterProvider router={router} />

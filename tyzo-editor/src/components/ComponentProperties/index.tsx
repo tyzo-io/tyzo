@@ -3,6 +3,7 @@ import { useComponent } from "../../useComponent";
 import { useEditor } from "../Editor/EditorContext";
 import { useComponents } from "../../useComponents";
 import { useInputs } from "../../useInputs";
+import s from './style.module.css'
 
 export function ComponentProperties({ id }: { id: string }) {
   const { elementContainer } = useEditor();
@@ -24,7 +25,7 @@ export function ComponentProperties({ id }: { id: string }) {
   }
 
   return (
-    <div>
+    <div className={s.Props}>
       {Object.values(properties).map((property) => (
         <PropertyInput
           key={property.name}

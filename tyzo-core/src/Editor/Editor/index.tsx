@@ -1,11 +1,11 @@
 import { Editor, CssEdit } from "@tyzo/page-editor";
 import type { Config, Page } from "@tyzo/page-editor";
-import "@tyzo/page-editor/dist/style.css";
-import { useEffect, useState } from "react";
+import "@tyzo/page-editor/style.css";
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useConfig } from "../Context";
 import { useData } from "@/lib/useData";
-import { ImageProps } from "@/std";
+import { ImageProps } from "@/std/Inputs";
 import { Button } from "@/components/ui/button";
 import { Loader2, MoveLeft } from "lucide-react";
 import {
@@ -16,6 +16,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import s from "./style.module.css";
+import { StackBreakpointsEdit, StackEdit } from "@/std/Stack/Edit";
 
 export const editorConfig: Config = {
   components: {},
@@ -38,14 +39,6 @@ export function PageEditor() {
     [id]
   );
 
-  const [components, setComponents] = useState<
-    Record<string, any> | undefined
-  >();
-  useEffect(() => {
-    import(config.componentsImportPath).then(({ default: components }) => {
-      setComponents(components);
-    });
-  }, [config.componentsImportPath]);
   const [pageDetails, setPageDetails] = useState<{
     path: string;
     title: string;
@@ -53,7 +46,7 @@ export function PageEditor() {
   const [pageDetailsIsOpen, setPageDetailsIsOpen] = useState(false);
   const [pageDetailsIsSaving, setPageDetailsIsSaving] = useState(false);
 
-  if (isLoading || !components) {
+  if (isLoading) {
     return <div>Loading</div>;
   }
   if (!data) {
@@ -75,11 +68,13 @@ export function PageEditor() {
         },
         components: {
           ...editorConfig.components,
-          ...components,
+          ...config.components,
         },
         additionalInputs: {
           css: CssEdit,
           image: ImageProps,
+          stackBaseRule: StackEdit,
+          stackAdditionalRules: StackBreakpointsEdit,
         },
         headerLeft: (
           <Button variant="link" asChild>

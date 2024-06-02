@@ -2,11 +2,17 @@
   "name": "@tyzo/page-editor",
   "version": "0.1.10",
   "type": "module",
-  "main": "dist/page-editor.js",
+  "main": "dist/lib.js",
   "types": "dist/lib.d.ts",
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": "./dist/lib.js",
+    "./render": "./dist/render.js",
+    "./editor": "./dist/editor.js",
+    "./style.css": "./dist/style.css"
+  },
   "sideEffects": [
     "**/*.css"
   ],
@@ -21,6 +27,7 @@
     "@radix-ui/react-select": "^2.0.0",
     "@syncedstore/core": "^0.6.0",
     "@syncedstore/react": "^0.6.0",
+    "class-variance-authority": "^0.7.0",
     "lucide-react": "^0.379.0",
     "nanoid": "^5.0.7",
     "panzoom": "^9.4.3",

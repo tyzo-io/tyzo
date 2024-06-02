@@ -43,7 +43,7 @@ dependencies:
     version: 2.43.1
   '@tyzo/page-editor':
     specifier: ^0.1.10
-    version: 0.1.10(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+    version: link:../tyzo-editor
   class-variance-authority:
     specifier: ^0.7.0
     version: 0.7.0
@@ -110,10 +110,10 @@ devDependencies:
     specifier: ^8.4.38
     version: 8.4.38
   react:
-    specifier: ^18.2.0
+    specifier: ^18.3.1
     version: 18.3.1
   react-dom:
-    specifier: ^18.2.0
+    specifier: ^18.3.1
     version: 18.3.1(react@18.3.1)
   tailwindcss:
     specifier: ^3.4.3
@@ -1532,19 +1532,6 @@ packages:
       '@babel/runtime': 7.24.5
     dev: false
 
-  /@reactivedata/react@0.2.2(react@18.3.1):
-    resolution: {integrity: sha512-fJ8qoHRbicQnVcnwfHa9FO73mbHFfl590xpuGM4Mo1P2ClaDATfl9oUrrySE+tbA//M9cn8De8HTwjoNqt91sw==}
-    peerDependencies:
-      react: ^16.8.0 || ^17 || ^18
-    dependencies:
-      '@reactivedata/reactive': 0.2.2
-      react: 18.3.1
-    dev: false
-
-  /@reactivedata/reactive@0.2.2:
-    resolution: {integrity: sha512-KnINM/Sng25QAv6sHkJO9q/XyslLegCF5jTsTSVu+AouY3uZDVf4Am99xNCqsfqFZFvnTBBDvCsHNdvTVGvPEA==}
-    dev: false
-
   /@remix-run/router@1.16.0:
     resolution: {integrity: sha512-Quz1KOffeEf/zwkCBM3kBtH4ZoZ+pT3xIXBG4PPW/XFtDP7EGhtTiC2+gpL9GnR7+Qdet5Oa6cYSvwKYg6kN9Q==}
     engines: {node: '>=14.0.0'}
@@ -1797,35 +1784,6 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@syncedstore/core@0.6.0(yjs@13.6.15):
-    resolution: {integrity: sha512-6TtjEoYJsceYi8u1oRecXwbbLmjHaU0S7HvVfOaEdDfphZLGm/faVuA2fpazqc28F0yIFGvYzvPEBUJn9vqRNw==}
-    peerDependencies:
-      yjs: ^13.5.13
-    dependencies:
-      '@reactivedata/reactive': 0.2.2
-      '@syncedstore/yjs-reactive-bindings': 0.6.0(yjs@13.6.15)
-      yjs: 13.6.15
-    dev: false
-
-  /@syncedstore/react@0.6.0(@syncedstore/core@0.6.0)(react@18.3.1):
-    resolution: {integrity: sha512-pc8ycnBuH2wp7Td5nGzP9Dn2mEW9Yg1qF0yGdjJ5UdgLEwfRkq+8/hdQl+alcoSribv9St/Bi5hJckX8GVsAbQ==}
-    peerDependencies:
-      '@syncedstore/core': '*'
-    dependencies:
-      '@reactivedata/react': 0.2.2(react@18.3.1)
-      '@syncedstore/core': 0.6.0(yjs@13.6.15)
-    transitivePeerDependencies:
-      - react
-    dev: false
-
-  /@syncedstore/yjs-reactive-bindings@0.6.0(yjs@13.6.15):
-    resolution: {integrity: sha512-VF78h0J4iOt79YU9d6j5E6bFKu7WXYuiI2ue9ZnA+T4SNVn8viRvg0AHm3NqHzudZZUgYT3dpnbv1/ZmU7yPZQ==}
-    peerDependencies:
-      yjs: ^13.5.13
-    dependencies:
-      yjs: 13.6.15
-    dev: false
-
   /@types/argparse@1.0.38:
     resolution: {integrity: sha512-ebDJ9b0e702Yr7pWgB0jzm+CX4Srzz8RcXtLJDJB+BSccqMa36uyH/zUsSYao5+BD1ytv3k3rPYCq4mAE1hsXA==}
     dev: true
@@ -2032,27 +1990,6 @@ packages:
       eslint-visitor-keys: 3.4.3
     dev: true
 
-  /@tyzo/page-editor@0.1.10(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-uErfX8gGMav9GhYV1/rGIcFYUb9WhZnx7hBzDJoQm7Ta74C/xChjaYj0dzSq0FqYkZZC2PmeSduvG6dEJ5xzxg==}
-    peerDependencies:
-      react: ^18.3.1
-      react-dom: ^18.3.1
-    dependencies:
-      '@radix-ui/react-dropdown-menu': 2.0.6(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-select': 2.0.0(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
-      '@syncedstore/core': 0.6.0(yjs@13.6.15)
-      '@syncedstore/react': 0.6.0(@syncedstore/core@0.6.0)(react@18.3.1)
-      lucide-react: 0.379.0(react@18.3.1)
-      nanoid: 5.0.7
-      panzoom: 9.4.3
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      yjs: 13.6.15
-    transitivePeerDependencies:
-      - '@types/react'
-      - '@types/react-dom'
-    dev: false
-
   /@ungap/structured-clone@1.2.0:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
     dev: true
@@ -2156,12 +2093,6 @@ packages:
       uri-js: 4.4.1
     dev: true
 
-  /amator@1.1.0:
-    resolution: {integrity: sha512-V5+aH8pe+Z3u/UG3L3pG3BaFQGXAyXHVQDroRwjPHdh08bcUEchAVsU1MCuJSCaU5o60wTK6KaE6te5memzgYw==}
-    dependencies:
-      bezier-easing: 2.1.0
-    dev: false
-
   /ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
     engines: {node: '>=8'}
@@ -2248,10 +2179,6 @@ packages:
   /balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
     dev: true
-
-  /bezier-easing@2.1.0:
-    resolution: {integrity: sha512-gbIqZ/eslnUFC1tjEvtz0sgx+xTK20wDnYMIA27VA04R7w6xxXQPZDbibjA9DTWZRA2CXtwHykkVzlCaAJAZig==}
-    dev: false
 
   /binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
@@ -2942,10 +2869,6 @@ packages:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
     dev: true
 
-  /isomorphic.js@0.2.5:
-    resolution: {integrity: sha512-PIeMbHqMt4DnUP3MA/Flc0HElYjMXArsw1qwJZcm9sqR8mq3l8NYizFMty0pWwE/tzIGH3EKK5+jes5mAr85yw==}
-    dev: false
-
   /jackspeak@2.3.6:
     resolution: {integrity: sha512-N3yCS/NegsOBokc8GAdM8UcmfsKiSS8cipheD/nivzr700H+nsMOxJjQnvwOcRYVuFkdH0wGUvW2WbXGmrZGbQ==}
     engines: {node: '>=14'}
@@ -3022,14 +2945,6 @@ packages:
       type-check: 0.4.0
     dev: true
 
-  /lib0@0.2.94:
-    resolution: {integrity: sha512-hZ3p54jL4Wpu7IOg26uC7dnEWiMyNlUrb9KoG7+xYs45WkQwpVvKFndVq2+pqLYKe1u8Fp3+zAfZHVvTK34PvQ==}
-    engines: {node: '>=16'}
-    hasBin: true
-    dependencies:
-      isomorphic.js: 0.2.5
-    dev: false
-
   /lilconfig@2.1.0:
     resolution: {integrity: sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ==}
     engines: {node: '>=10'}
@@ -3093,14 +3008,6 @@ packages:
 
   /lucide-react@0.378.0(react@18.3.1):
     resolution: {integrity: sha512-u6EPU8juLUk9ytRcyapkWI18epAv3RU+6+TC23ivjR0e+glWKBobFeSgRwOIJihzktILQuy6E0E80P2jVTDR5g==}
-    peerDependencies:
-      react: ^16.5.1 || ^17.0.0 || ^18.0.0
-    dependencies:
-      react: 18.3.1
-    dev: false
-
-  /lucide-react@0.379.0(react@18.3.1):
-    resolution: {integrity: sha512-KcdeVPqmhRldldAAgptb8FjIunM2x2Zy26ZBh1RsEUcdLIvsEmbcw7KpzFYUy5BbpGeWhPu9Z9J5YXfStiXwhg==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0
     dependencies:
@@ -3172,19 +3079,9 @@ packages:
     hasBin: true
     dev: true
 
-  /nanoid@5.0.7:
-    resolution: {integrity: sha512-oLxFY2gd2IqnjcYyOXD8XGCftpGtZP2AbHbOkthDkvRywH5ayNtPVy9YlOPcHckXzbLTCHpkb7FB+yuxKV13pQ==}
-    engines: {node: ^18 || >=20}
-    hasBin: true
-    dev: false
-
   /natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
     dev: true
-
-  /ngraph.events@1.2.2:
-    resolution: {integrity: sha512-JsUbEOzANskax+WSYiAPETemLWYXmixuPAlmZmhIbIj6FH/WDgEGCGnRwUQBK0GjOnVm8Ui+e5IJ+5VZ4e32eQ==}
-    dev: false
 
   /node-releases@2.0.14:
     resolution: {integrity: sha512-y10wOWt8yZpqXmOgRo77WaHEmhYQYGNA6y421PKsKYWEK8aW+cqAphborZDhqfyKrbZEN92CN1X2KbafY2s7Yw==}
@@ -3241,14 +3138,6 @@ packages:
     dependencies:
       p-limit: 3.1.0
     dev: true
-
-  /panzoom@9.4.3:
-    resolution: {integrity: sha512-xaxCpElcRbQsUtIdwlrZA90P90+BHip4Vda2BC8MEb4tkI05PmR6cKECdqUCZ85ZvBHjpI9htJrZBxV5Gp/q/w==}
-    dependencies:
-      amator: 1.1.0
-      ngraph.events: 1.2.2
-      wheel: 1.0.0
-    dev: false
 
   /parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
@@ -4019,10 +3908,6 @@ packages:
       webidl-conversions: 3.0.1
     dev: false
 
-  /wheel@1.0.0:
-    resolution: {integrity: sha512-XiCMHibOiqalCQ+BaNSwRoZ9FDTAvOsXxGHXChBugewDj7HC8VBIER71dEOiRH1fSdLbRCQzngKTSiZ06ZQzeA==}
-    dev: false
-
   /which@2.0.2:
     resolution: {integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==}
     engines: {node: '>= 8'}
@@ -4084,13 +3969,6 @@ packages:
     engines: {node: '>= 14'}
     hasBin: true
     dev: true
-
-  /yjs@13.6.15:
-    resolution: {integrity: sha512-moFv4uNYhp8BFxIk3AkpoAnnjts7gwdpiG8RtyFiKbMtxKCS0zVZ5wPaaGpwC3V2N/K8TK8MwtSI3+WO9CHWjQ==}
-    engines: {node: '>=16.0.0', npm: '>=8.0.0'}
-    dependencies:
-      lib0: 0.2.94
-    dev: false
 
   /yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
