@@ -1,6 +1,7 @@
 import { ElementTreeItem } from "./ElementTreeItem";
 import { useComponents } from "../../useComponents";
 import { ElementContainer } from "../../types";
+import { useTranslations } from "../../i18n";
 
 export function ElementTree({
   elementsContainer,
@@ -8,9 +9,12 @@ export function ElementTree({
   elementsContainer: ElementContainer;
 }) {
   const { components } = useComponents();
+  const { translations } = useTranslations();
   return (
     <>
-      <p style={{ margin: "0.5em", fontWeight: "bold" }}>Content</p>
+      <p style={{ margin: "0.5em", fontWeight: "bold" }}>
+        {translations.content}
+      </p>
       {elementsContainer.children.map(
         (elId) =>
           elementsContainer.elements[elId] && (

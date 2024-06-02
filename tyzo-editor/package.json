@@ -11,6 +11,9 @@
     ".": "./dist/lib.js",
     "./render": "./dist/render.js",
     "./editor": "./dist/editor.js",
+    "./standardComponents": "./dist/standardComponents.js",
+    "./standardInputs": "./dist/standardInputs.js",
+    "./i18n/de": "./dist/i18n/de.js",
     "./style.css": "./dist/style.css"
   },
   "sideEffects": [

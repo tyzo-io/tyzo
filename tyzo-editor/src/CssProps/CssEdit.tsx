@@ -55,6 +55,7 @@ import Label from "../components/Label";
 import s from "./CssProps.module.css";
 import { randomId } from "../util/id";
 import { Breakpoint, ComponentCssProperty } from ".";
+import { useTranslations } from "../i18n";
 
 function isDefined(value: any) {
   return value !== undefined && value !== null;
@@ -133,11 +134,12 @@ export function BreakpointSelector({
   breakpoint: Breakpoint | undefined;
   onChange: (value: Breakpoint) => void;
 }) {
+  const { translations } = useTranslations();
   return (
     <div className={s.PaddingVertical}>
       <Label className={s.LabelRow}>
         <Ruler className={s.IconNoMargin} />
-        Breakpoint
+        {translations.breakpoint}
       </Label>
       <div>
         <Select
@@ -147,15 +149,15 @@ export function BreakpointSelector({
           }}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Breakpoint" />
+            <SelectValue placeholder={translations.breakpoint} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="none">None</SelectItem>
-            <SelectItem value="sm">Small</SelectItem>
-            <SelectItem value="md">Medium</SelectItem>
-            <SelectItem value="lg">Large</SelectItem>
-            <SelectItem value="xl">Extra Large</SelectItem>
-            <SelectItem value="2xl">Extra Extra Large</SelectItem>
+            <SelectItem value="none">{translations.none}</SelectItem>
+            <SelectItem value="sm">{translations.small}</SelectItem>
+            <SelectItem value="md">{translations.medium}</SelectItem>
+            <SelectItem value="lg">{translations.large}</SelectItem>
+            <SelectItem value="xl">{translations.extraLarge}</SelectItem>
+            <SelectItem value="2xl">{translations.extraExtraLarge}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -168,18 +170,19 @@ export function CssDropdown({
 }: {
   addProp: (value: Omit<ComponentCssProperty, "id">) => void;
 }) {
+  const { translations } = useTranslations();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className={s.Margin}>
         <Plus />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>Text</DropdownMenuLabel>
+        <DropdownMenuLabel>{translations.text}</DropdownMenuLabel>
 
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             <Type className={s.Icon} />
-            <span>Font Size</span>
+            <span>{translations.fontSize}</span>
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
@@ -188,21 +191,21 @@ export function CssDropdown({
                   addProp({ fontSize: "0.8rem" });
                 }}
               >
-                <Type className={s.SmallIcon} /> Small
+                <Type className={s.SmallIcon} /> {translations.small}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => {
                   addProp({ fontSize: "1rem" });
                 }}
               >
-                <Type className={s.Icon} /> Medium
+                <Type className={s.Icon} /> {translations.medium}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => {
                   addProp({ fontSize: "2rem" });
                 }}
               >
-                <Type className={s.BigIcon} /> Large
+                <Type className={s.BigIcon} /> {translations.large}
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
@@ -211,7 +214,7 @@ export function CssDropdown({
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             <AlignLeft className={s.Icon} />
-            <span>Text Align</span>
+            <span>{translations.textAlign}</span>
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
@@ -220,7 +223,7 @@ export function CssDropdown({
                   addProp({ textAlign: "left" });
                 }}
               >
-                <AlignLeft className={s.Icon} /> Left
+                <AlignLeft className={s.Icon} /> {translations.left}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => {
@@ -228,7 +231,7 @@ export function CssDropdown({
                 }}
               >
                 <AlignCenter className={s.Icon} />
-                Center
+                {translations.center}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => {
@@ -236,7 +239,7 @@ export function CssDropdown({
                 }}
               >
                 <AlignRight className={s.Icon} />
-                Right
+                {translations.right}
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
@@ -245,7 +248,7 @@ export function CssDropdown({
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             <Bold className={s.Icon} />
-            <span>Font Weight</span>
+            <span>{translations.fontWeight}</span>
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
@@ -254,40 +257,43 @@ export function CssDropdown({
                   addProp({ fontWeight: "lighter" });
                 }}
               >
-                <Bold className={s.Icon} strokeWidth={2} /> Lighter
+                <Bold className={s.Icon} strokeWidth={2} />{" "}
+                {translations.lighter}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => {
                   addProp({ fontWeight: "normal" });
                 }}
               >
-                <Bold className={s.Icon} strokeWidth={3} /> Normal
+                <Bold className={s.Icon} strokeWidth={3} />{" "}
+                {translations.normal}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => {
                   addProp({ fontWeight: "bolder" });
                 }}
               >
-                <Bold className={s.Icon} strokeWidth={4} /> Bolder
+                <Bold className={s.Icon} strokeWidth={4} />{" "}
+                {translations.bolder}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => {
                   addProp({ fontWeight: "bold" });
                 }}
               >
-                <Bold className={s.Icon} strokeWidth={5} /> Bold
+                <Bold className={s.Icon} strokeWidth={5} /> {translations.bold}
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
 
         <DropdownMenuSeparator />
-        <DropdownMenuLabel>Layout</DropdownMenuLabel>
+        <DropdownMenuLabel>{translations.layout}</DropdownMenuLabel>
 
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             <Ruler className={s.Icon} />
-            <span>Size</span>
+            <span>{translations.size}</span>
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
@@ -296,42 +302,42 @@ export function CssDropdown({
                   addProp({ width: "1em" });
                 }}
               >
-                <MoveHorizontal className={s.Icon} /> Width
+                <MoveHorizontal className={s.Icon} /> {translations.width}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => {
                   addProp({ height: "1em" });
                 }}
               >
-                <MoveVertical className={s.Icon} /> Height
+                <MoveVertical className={s.Icon} /> {translations.height}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => {
                   addProp({ minWidth: "1em" });
                 }}
               >
-                <MoveHorizontal className={s.Icon} /> Min Width
+                <MoveHorizontal className={s.Icon} /> {translations.minWidth}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => {
                   addProp({ minHeight: "1em" });
                 }}
               >
-                <MoveVertical className={s.Icon} /> Min Height
+                <MoveVertical className={s.Icon} /> {translations.minHeight}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => {
                   addProp({ maxWidth: "1em" });
                 }}
               >
-                <MoveHorizontal className={s.Icon} /> Max Width
+                <MoveHorizontal className={s.Icon} /> {translations.maxWidth}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => {
                   addProp({ maxHeight: "1em" });
                 }}
               >
-                <MoveVertical className={s.Icon} /> Max Height
+                <MoveVertical className={s.Icon} /> {translations.maxHeight}
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
@@ -343,7 +349,7 @@ export function CssDropdown({
           }}
         >
           <ArrowRightFromLine className={s.Icon} />
-          Margin
+          {translations.margin}
         </DropdownMenuItem>
 
         <DropdownMenuItem
@@ -352,7 +358,7 @@ export function CssDropdown({
           }}
         >
           <ArrowRightToLine className={s.Icon} />
-          Padding
+          {translations.padding}
         </DropdownMenuItem>
         <DropdownMenuItem
           onSelect={() => {
@@ -360,7 +366,7 @@ export function CssDropdown({
           }}
         >
           <Square className={s.Icon} />
-          Border
+          {translations.border}
         </DropdownMenuItem>
         <DropdownMenuItem
           onSelect={() => {
@@ -368,7 +374,7 @@ export function CssDropdown({
           }}
         >
           <Squircle className={s.Icon} />
-          Roundness
+          {translations.roundness}
         </DropdownMenuItem>
         <DropdownMenuItem
           onSelect={() => {
@@ -376,18 +382,18 @@ export function CssDropdown({
           }}
         >
           <Blend className={s.Icon} />
-          Shadow
+          {translations.shadow}
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
-        <DropdownMenuLabel>Custom</DropdownMenuLabel>
+        <DropdownMenuLabel>{translations.custom}</DropdownMenuLabel>
         <DropdownMenuItem
           onSelect={() => {
             addProp({ customStyle: "" });
           }}
         >
           <Paintbrush className={s.Icon} />
-          Custom style
+          {translations.customStyle}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -403,126 +409,127 @@ export function CssRuleTitle({
   showEdit?: boolean;
   onRemove?: () => void;
 }) {
+  const { translations } = useTranslations();
   return (
     <div className={s.PropTitle}>
       {isDefined(prop.fontSize) && (
         <Label className={s.LabelRow}>
           <Type className={s.IconNoMargin} />
-          Font Size
+          {translations.fontSize}
         </Label>
       )}
       {isDefined(prop.fontWeight) && (
         <Label className={s.LabelRow}>
           <AlignLeft className={s.IconNoMargin} />
-          Font Weight
+          {translations.fontWeight}
         </Label>
       )}
       {isDefined(prop.textAlign) && (
         <Label className={s.LabelRow}>
           <AlignLeft className={s.IconNoMargin} />
-          Text Align
+          {translations.textAlign}
         </Label>
       )}
       {isDefined(prop.display) && (
         <Label className={s.LabelRow}>
           <Eye className={s.IconNoMargin} />
-          Display
+          {translations.display}
         </Label>
       )}
       {isDefined(prop.flexDirection) && (
         <Label className={s.LabelRow}>
           <Move className={s.IconNoMargin} />
-          Flex Direction
+          {translations.flexDirection}
         </Label>
       )}
       {isDefined(prop.justifyContent) && (
         <Label className={s.LabelRow}>
           <AlignVerticalJustifyCenter className={s.IconNoMargin} />
-          Justify Content
+          {translations.justifyContent}
         </Label>
       )}
       {isDefined(prop.alignItems) && (
         <Label className={s.LabelRow}>
           <AlignCenterVertical className={s.IconNoMargin} />
-          Align Items
+          {translations.alignItems}
         </Label>
       )}
       {isDefined(prop.gap) && (
         <Label className={s.LabelRow}>
           <Space className={s.IconNoMargin} />
-          Gap
+          {translations.gap}
         </Label>
       )}
       {isDefined(prop.width) && (
         <Label className={s.LabelRow}>
           <MoveHorizontal className={s.IconNoMargin} />
-          Width
+          {translations.width}
         </Label>
       )}
       {isDefined(prop.height) && (
         <Label className={s.LabelRow}>
           <MoveVertical className={s.IconNoMargin} />
-          Height
+          {translations.height}
         </Label>
       )}
       {isDefined(prop.minWidth) && (
         <Label className={s.LabelRow}>
           <MoveHorizontal className={s.IconNoMargin} />
-          Min Width
+          {translations.minWidth}
         </Label>
       )}
       {isDefined(prop.minHeight) && (
         <Label className={s.LabelRow}>
           <MoveVertical className={s.IconNoMargin} />
-          Min Height
+          {translations.minHeight}
         </Label>
       )}
       {isDefined(prop.maxWidth) && (
         <Label className={s.LabelRow}>
           <MoveHorizontal className={s.IconNoMargin} />
-          Max Width
+          {translations.maxWidth}
         </Label>
       )}
       {isDefined(prop.maxHeight) && (
         <Label className={s.LabelRow}>
           <MoveVertical className={s.IconNoMargin} />
-          Max Height
+          {translations.maxHeight}
         </Label>
       )}
       {isDefined(prop.margin) && (
         <Label className={s.LabelRow}>
           <ArrowRightFromLine className={s.IconNoMargin} />
-          Margin
+          {translations.margin}
         </Label>
       )}
       {isDefined(prop.padding) && (
         <Label className={s.LabelRow}>
           <ArrowRightToLine className={s.IconNoMargin} />
-          Padding
+          {translations.padding}
         </Label>
       )}
       {isDefined(prop.border) && (
         <Label className={s.LabelRow}>
           <Square className={s.IconNoMargin} />
-          Border
+          {translations.border}
         </Label>
       )}
       {isDefined(prop.borderRadius) && (
         <Label className={s.LabelRow}>
           <Squircle className={s.IconNoMargin} />
-          Roundness
+          {translations.roundness}
         </Label>
       )}
       {isDefined(prop.shadow) && (
         <Label className={s.LabelRow}>
           <Blend className={s.IconNoMargin} />
-          Shadow
+          {translations.shadow}
         </Label>
       )}
       {isDefined(prop.customStyle) && (
         <Label className={s.LabelRow}>
           <Paintbrush className={s.IconNoMargin} />
-          Custom style
+          {translations.customStyle}
         </Label>
       )}
 
@@ -538,7 +545,7 @@ export function CssRuleTitle({
               }}
             >
               <Trash className={s.Icon} />
-              Remove
+              {translations.remove}
             </DropdownMenuItem>
             <DropdownMenuItem
               onSelect={() => {
@@ -550,7 +557,9 @@ export function CssRuleTitle({
               }}
             >
               <CopySlash className={s.Icon} />
-              {prop.condition ? "Remove Condition" : "Add Condition"}
+              {prop.condition
+                ? translations.removeCondition
+                : translations.addCondition}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -566,6 +575,7 @@ export function CssRuleEdit({
   prop: ComponentCssProperty;
   onChange: (value: Partial<ComponentCssProperty>) => void;
 }) {
+  const { translations } = useTranslations();
   return (
     <>
       {isDefined(prop.fontSize) && (
@@ -584,13 +594,13 @@ export function CssRuleEdit({
           }
         >
           <SelectTrigger className={s.MarginTop}>
-            <SelectValue placeholder="Font Weight" />
+            <SelectValue placeholder={translations.fontWeight} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="lighter">Lighter</SelectItem>
-            <SelectItem value="normal">Normal</SelectItem>
-            <SelectItem value="bolder">Bolder</SelectItem>
-            <SelectItem value="bold">Bold</SelectItem>
+            <SelectItem value="lighter">{translations.lighter}</SelectItem>
+            <SelectItem value="normal">{translations.normal}</SelectItem>
+            <SelectItem value="bolder">{translations.bolder}</SelectItem>
+            <SelectItem value="bold">{translations.bold}</SelectItem>
           </SelectContent>
         </Select>
       )}
@@ -604,12 +614,12 @@ export function CssRuleEdit({
           }
         >
           <SelectTrigger className={s.MarginTop}>
-            <SelectValue placeholder="Text Align" />
+            <SelectValue placeholder={translations.textAlign} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="left">Left</SelectItem>
-            <SelectItem value="center">Center</SelectItem>
-            <SelectItem value="right">Right</SelectItem>
+            <SelectItem value="left">{translations.left}</SelectItem>
+            <SelectItem value="center">{translations.center}</SelectItem>
+            <SelectItem value="right">{translations.right}</SelectItem>
           </SelectContent>
         </Select>
       )}
@@ -629,14 +639,14 @@ export function CssRuleEdit({
           }
         >
           <SelectTrigger className={s.MarginTop}>
-            <SelectValue placeholder="Display" />
+            <SelectValue placeholder={translations.display} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="none">None</SelectItem>
-            <SelectItem value="block">Block</SelectItem>
-            <SelectItem value="flex">Flex</SelectItem>
-            <SelectItem value="inline">Inline</SelectItem>
-            <SelectItem value="inline-block">Inline Block</SelectItem>
+            <SelectItem value="none">{translations.none}</SelectItem>
+            <SelectItem value="block">{translations.block}</SelectItem>
+            <SelectItem value="flex">{translations.flex}</SelectItem>
+            <SelectItem value="inline">{translations.inline}</SelectItem>
+            <SelectItem value="inline-block">{translations.inlineBlock}</SelectItem>
           </SelectContent>
         </Select>
       )}
@@ -655,13 +665,13 @@ export function CssRuleEdit({
           }
         >
           <SelectTrigger className={s.MarginTop}>
-            <SelectValue placeholder="Flex Direction" />
+            <SelectValue placeholder={translations.flexDirection} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="row">Row</SelectItem>
-            <SelectItem value="column">Column</SelectItem>
-            <SelectItem value="row-reverse">Row Reverse</SelectItem>
-            <SelectItem value="column-reverse">Column Reverse</SelectItem>
+            <SelectItem value="row">{translations.row}</SelectItem>
+            <SelectItem value="column">{translations.column}</SelectItem>
+            <SelectItem value="row-reverse">{translations.rowReverse}</SelectItem>
+            <SelectItem value="column-reverse">{translations.columnReverse}</SelectItem>
           </SelectContent>
         </Select>
       )}
@@ -681,14 +691,14 @@ export function CssRuleEdit({
           }
         >
           <SelectTrigger className={s.MarginTop}>
-            <SelectValue placeholder="Justify Content" />
+            <SelectValue placeholder={translations.justifyContent} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="flex-start">Flex Start</SelectItem>
-            <SelectItem value="flex-end">Flex End</SelectItem>
-            <SelectItem value="center">Center</SelectItem>
-            <SelectItem value="space-between">Space Between</SelectItem>
-            <SelectItem value="space-evenly">Space Evenly</SelectItem>
+            <SelectItem value="flex-start">{translations.flexStart}</SelectItem>
+            <SelectItem value="flex-end">{translations.flexEnd}</SelectItem>
+            <SelectItem value="center">{translations.center}</SelectItem>
+            <SelectItem value="space-between">{translations.spaceBetween}</SelectItem>
+            <SelectItem value="space-evenly">{translations.spaceEvenly}</SelectItem>
           </SelectContent>
         </Select>
       )}
@@ -708,14 +718,14 @@ export function CssRuleEdit({
           }
         >
           <SelectTrigger className={s.MarginTop}>
-            <SelectValue placeholder="Align Items" />
+            <SelectValue placeholder={translations.alignItems} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="flex-start">Flex Start</SelectItem>
-            <SelectItem value="flex-end">Flex End</SelectItem>
-            <SelectItem value="center">Center</SelectItem>
-            <SelectItem value="baseline">Baseline</SelectItem>
-            <SelectItem value="stretch">Stretch</SelectItem>
+            <SelectItem value="flex-start">{translations.flexStart}</SelectItem>
+            <SelectItem value="flex-end">{translations.flexEnd}</SelectItem>
+            <SelectItem value="center">{translations.center}</SelectItem>
+            <SelectItem value="baseline">{translations.baseline}</SelectItem>
+            <SelectItem value="stretch">{translations.stretch}</SelectItem>
           </SelectContent>
         </Select>
       )}

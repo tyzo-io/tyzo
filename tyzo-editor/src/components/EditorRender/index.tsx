@@ -10,6 +10,7 @@ import type {
 import { Fragment } from "react/jsx-runtime";
 import { useState } from "react";
 import { Render as PageRender } from "../Render/Render";
+import { useTranslations } from "../../i18n";
 
 // function getComponent(
 //   componentId: string,
@@ -219,6 +220,7 @@ export function Render({
   // mode: "edit" | "render";
   isDragging?: boolean;
 }) {
+  const { translations } = useTranslations();
   return (
     <PageRender
       elementContainer={elementContainer}
@@ -228,8 +230,10 @@ export function Render({
       preChildElement={(el) =>
         (el.children?.length ?? 0) === 0 && (
           <div className={s.emptyContainer}>
-            This {componentsById[el.componentId]?.name ?? el.componentId} is
-            empty
+            {translations.containerEmpty.replace(
+              "{{}}",
+              componentsById[el.componentId]?.name ?? el.componentId
+            )}
           </div>
         )
       }

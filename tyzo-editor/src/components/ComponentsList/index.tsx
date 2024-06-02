@@ -5,6 +5,7 @@ import { useComponents } from "../../useComponents";
 import { addNewElement } from "../../operations";
 import { useEditor } from "../Editor/EditorContext";
 import { ComponentGroup, ElementContainer } from "../../types";
+import { useTranslations } from "../../i18n";
 // import * as HoverCard from '@radix-ui/react-hover-card';
 
 // class ErrorBoundary extends React.Component<{ fallback: React.ReactNode, children: React.ReactNode }, { hasError: boolean }> {
@@ -141,6 +142,7 @@ export function ComponentsList({
   availableComponentIds?: string[];
 }) {
   const { backend } = useBackend();
+  const { translations} = useTranslations()
 
   const [componentGroups, setGroups] = useState<ComponentGroup[]>([]);
   const { componentsById } = useComponents();
@@ -169,7 +171,9 @@ export function ComponentsList({
 
   return (
     <>
-      <p style={{ margin: "0.5em", fontWeight: "bold" }}>Components</p>
+      <p style={{ margin: "0.5em", fontWeight: "bold" }}>
+        {translations.components}
+      </p>
       <ul className={s.addElementGroup}>
         {availableGroups.map((group) => (
           <li key={group.name}>

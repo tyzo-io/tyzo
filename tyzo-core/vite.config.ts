@@ -26,7 +26,7 @@ export default defineConfig({
       formats: ["es"],
     },
     rollupOptions: {
-      external: ["react", "react/jsx-runtime"],
+      external: ["react", "react/jsx-runtime", "react-dom"],
       input: {
         index: fileURLToPath(new URL("src/index.ts", import.meta.url)),
         render: fileURLToPath(new URL("src/render.ts", import.meta.url)),

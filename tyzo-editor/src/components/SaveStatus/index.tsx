@@ -1,5 +1,6 @@
 import { AlertCircle, Check, Loader } from "lucide-react";
 import s from "./SaveStatus.module.css";
+import { useTranslations } from "../../i18n";
 
 export function SaveStatus({
   hasChanges,
@@ -12,11 +13,11 @@ export function SaveStatus({
   // saveErrors: Error[] | undefined;
   showInfoWhenSaved?: boolean;
 }) {
-  // const { t } = useTranslation("wizely");
+  const { translations } = useTranslations();
   if (!hasChanges && showInfoWhenSaved) {
     return (
       <div className={s.saveInfo}>
-        <Check /> Saved
+        <Check /> {translations.saved}
       </div>
     );
   }
@@ -33,7 +34,7 @@ export function SaveStatus({
       )}
       <p>
         {/* {isSaving && (saveErrors?.length ?? 0) === 0 */}
-        {isSaving ? "Saving" : "Unsaved Changes"}
+        {isSaving ? translations.saving : translations.unsavedChanges}
       </p>
       {/* <p>
         {!isSaving && (saveErrors?.length ?? 0) > 0 ? "Error Saving" : null}

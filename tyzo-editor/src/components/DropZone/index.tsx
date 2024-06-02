@@ -5,6 +5,7 @@ import { classNames } from "../../util/classNames";
 import { ComponentId, ElementContainer, PageElementId } from "../../types";
 import { useComponents } from "../../useComponents";
 import { addNewElement, moveElement } from "../../operations";
+import { useTranslations } from "../../i18n";
 
 export function DropZone({
   label,
@@ -18,6 +19,7 @@ export function DropZone({
   const { isDragging, setIsDragging } = useEditor();
   const { componentsById } = useComponents();
   const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const { translations} = useTranslations()
   return (
     <div
       className={classNames(
@@ -59,7 +61,7 @@ export function DropZone({
         }
       }}
     >
-      Drop {label ? label + " " : ""}elements here
+      {translations.dropHere.replace("{{}}", label ? label + " " : "")}
     </div>
   );
 }

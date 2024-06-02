@@ -11,7 +11,7 @@ import {
   StringProperty,
 } from "@tyzo/page-editor";
 import s from "./Edit.module.css";
-import { Button } from "@/components/ui/button";
+import { Button } from "../../components/Button";
 import { Trash } from "lucide-react";
 
 function StackCssEdit({

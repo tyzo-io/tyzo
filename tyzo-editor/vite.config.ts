@@ -23,6 +23,13 @@ export default defineConfig({
         lib: fileURLToPath(new URL("src/lib.ts", import.meta.url)),
         render: fileURLToPath(new URL("src/render.ts", import.meta.url)),
         editor: fileURLToPath(new URL("src/editor.ts", import.meta.url)),
+        standardComponents: fileURLToPath(
+          new URL("src/standardComponents.ts", import.meta.url)
+        ),
+        standardInputs: fileURLToPath(
+          new URL("src/standardInputs.ts", import.meta.url)
+        ),
+        "i18n/de": fileURLToPath(new URL("src/i18n/de.ts", import.meta.url)),
       },
     },
   },

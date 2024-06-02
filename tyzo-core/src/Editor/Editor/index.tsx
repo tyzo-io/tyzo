@@ -16,7 +16,11 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import s from "./style.module.css";
-import { StackBreakpointsEdit, StackEdit } from "@/std/Stack/Edit";
+import {
+  StackBreakpointsEdit,
+  StackEdit,
+} from "@tyzo/page-editor/standardInputs";
+// import { de } from "@tyzo/page-editor/i18n/de";
 
 export const editorConfig: Config = {
   components: {},
@@ -56,6 +60,7 @@ export function PageEditor() {
   const editorData = (data.content as Page) ?? initialData;
   return (
     <Editor
+      // translations={de}
       config={{
         ...editorConfig,
         async save(data) {

@@ -29,11 +29,13 @@ import { classNames } from "../../util/classNames";
 import { UndoControls } from "../UndoControls";
 import { useComponents } from "../../useComponents";
 import { SaveStatus } from "../SaveStatus";
+import { I18nProvider, Translations, useTranslations } from "../../i18n";
 
 function Center({ page }: { page: ElementContainer }) {
   const hoverState = useEditor();
   const overHandler = usePreviewElementOverHandler(page);
   const { componentsById } = useComponents();
+  const { translations} = useTranslations()
 
   return (
     <div
@@ -42,9 +44,7 @@ function Center({ page }: { page: ElementContainer }) {
     >
       <ElementHoverStyle />
       {Object.keys(page.elements).length === 0 && !hoverState.isDragging ? (
-        <div className={s.emptyPage}>
-          Drag and drop elements from the left side here.
-        </div>
+        <div className={s.emptyPage}>{translations.emptyPageInfo}</div>
       ) : null}
       <Render
         // mode="edit"
@@ -80,6 +80,7 @@ export function EditorContent({
   const [maxWidth, setMaxWidth] = useState<string>();
   const { page, undoManager, isSaving, hasChanges } = usePage({ id });
   const [didInitPanzoom, setDidInitPanzoom] = useState(false);
+  const { translations } = useTranslations();
   if (!page) {
     return null;
   }
@@ -92,19 +93,19 @@ export function EditorContent({
             <div className={s.maxWidthSelector}>
               <button
                 onClick={() => setMaxWidth("360px")}
-                aria-label="Mobile screen size"
+                aria-label={translations.mobileScreenSize}
               >
                 <Smartphone className={s.smallIcon} />
               </button>
               <button
                 onClick={() => setMaxWidth("768px")}
-                aria-label="Tablet screen size"
+                aria-label={translations.tabletScreenSize}
               >
                 <Tablet className={s.icon} />
               </button>
               <button
                 onClick={() => setMaxWidth(undefined)}
-                aria-label="Desktop screen size"
+                aria-label={translations.desktopScreenSize}
               >
                 <Monitor className={s.icon} />
               </button>
@@ -161,53 +162,57 @@ const blankPage: Page = {
 export function Editor({
   config,
   initialPage,
+  translations,
 }: {
   config: Config;
   initialPage?: Page;
+  translations?: Translations;
 }) {
   return (
-    <EditorBackendProvider
-      backend={{
-        async loadPage() {
-          return initialPage ?? blankPage;
-        },
-        async loadPages() {
-          return [];
-        },
-        async loadComponents() {
-          return Object.values(config.components);
-        },
-        async savePage(page) {
-          await config.save?.(JSON.parse(JSON.stringify(page)));
-        },
+    <I18nProvider translations={translations}>
+      <EditorBackendProvider
+        backend={{
+          async loadPage() {
+            return initialPage ?? blankPage;
+          },
+          async loadPages() {
+            return [];
+          },
+          async loadComponents() {
+            return Object.values(config.components);
+          },
+          async savePage(page) {
+            await config.save?.(JSON.parse(JSON.stringify(page)));
+          },
 
-        async loadComponentGroups() {
-          const groups = Object.values(config.components).reduce(
-            (all, comp) => Object.assign(all, { [comp.groupName]: true }),
-            {} as Record<string, boolean>
-          );
-          return Object.keys(groups).map((id) => ({ id, name: id }));
-        },
-        async saveComponentInfo() {
-          return;
-        },
-        supportsUpdatingComponents: false,
-        inputs: {
-          number: DefaultNumberInput,
-          string: DefaultStringInput,
-          boolean: DefaultBooleanInput,
-          children: DefaultChildrenInput,
-          object: DefaultObjectInput,
-          array: DefaultArrayInput,
-          ...config.additionalInputs,
-        },
-      }}
-    >
-      <EditorContent
-        id="root"
-        headerLeft={config.headerLeft}
-        headerRight={config.headerRight}
-      />
-    </EditorBackendProvider>
+          async loadComponentGroups() {
+            const groups = Object.values(config.components).reduce(
+              (all, comp) => Object.assign(all, { [comp.groupName]: true }),
+              {} as Record<string, boolean>
+            );
+            return Object.keys(groups).map((id) => ({ id, name: id }));
+          },
+          async saveComponentInfo() {
+            return;
+          },
+          supportsUpdatingComponents: false,
+          inputs: {
+            number: DefaultNumberInput,
+            string: DefaultStringInput,
+            boolean: DefaultBooleanInput,
+            children: DefaultChildrenInput,
+            object: DefaultObjectInput,
+            array: DefaultArrayInput,
+            ...config.additionalInputs,
+          },
+        }}
+      >
+        <EditorContent
+          id="root"
+          headerLeft={config.headerLeft}
+          headerRight={config.headerRight}
+        />
+      </EditorBackendProvider>
+    </I18nProvider>
   );
 }
