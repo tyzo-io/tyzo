@@ -73,6 +73,7 @@ export function Render({
   elementContainer,
   elements,
   componentsById,
+  isEditMode,
   preElement,
   preChildElement,
   afterChildElement,
@@ -81,6 +82,7 @@ export function Render({
   elements: PageElementId[];
   componentsById: Record<string, ComponentInfo | undefined>;
   isDragging?: boolean;
+  isEditMode: boolean;
   preElement?: (element: PageElement) => React.ReactNode;
   preChildElement?: (element: PageElement) => React.ReactNode;
   afterChildElement?: (element: PageElement) => React.ReactNode;
@@ -100,23 +102,83 @@ export function Render({
           return null;
         }
         const textData: Record<string, string> = {};
-        const childrenData: Record<string, React.JSX.Element> = {};
+        const childrenData: Record<
+          string,
+          React.JSX.Element | React.JSX.Element[]
+        > = {};
         const overriddenData = el.data
           ? JSON.parse(JSON.stringify(el.data)) // This is a proxy object since we're usig yjs, structuredClone doesn't work :(
           : {};
         for (const key of Object.keys(properties)) {
           if (properties[key].type === "children") {
-            childrenData[key] = (
-              <>
-                {preChildElement?.(el) ?? null}
-                <Render
-                  elementContainer={elementContainer}
-                  elements={el.children ?? []}
-                  componentsById={componentsById}
-                />
-                {afterChildElement?.(el) ?? null}
-              </>
-            );
+            // We want to interfere as little as possible with the DOM when rendering children
+            // That's why we are doing it like this, so we get one element per child, which at least makes stuff like `children.map` work
+            if (!el.children || el.children.length === 0) {
+              childrenData[key] = (
+                <>
+                  {preChildElement?.(el) ?? null}
+                  <Render
+                    elementContainer={elementContainer}
+                    elements={el.children ?? []}
+                    componentsById={componentsById}
+                    isEditMode={isEditMode}
+                  />
+                  {afterChildElement?.(el) ?? null}
+                </>
+              );
+            } else {
+              childrenData[key] = el.children.map((child, i) => {
+                if (i === 0 && i === el.children!.length - 1) {
+                  return (
+                    <Fragment key={child}>
+                      {preChildElement?.(el) ?? null}
+                      <Render
+                        elementContainer={elementContainer}
+                        elements={[child]}
+                        componentsById={componentsById}
+                        isEditMode={isEditMode}
+                      />
+                      {afterChildElement?.(el) ?? null}
+                    </Fragment>
+                  );
+                }
+                if (i === 0) {
+                  return (
+                    <Fragment key={child}>
+                      {preChildElement?.(el) ?? null}
+                      <Render
+                        elementContainer={elementContainer}
+                        elements={[child]}
+                        componentsById={componentsById}
+                        isEditMode={isEditMode}
+                      />
+                    </Fragment>
+                  );
+                }
+                if (i === el.children!.length - 1) {
+                  return (
+                    <Fragment key={child}>
+                      <Render
+                        elementContainer={elementContainer}
+                        elements={[child]}
+                        componentsById={componentsById}
+                        isEditMode={isEditMode}
+                      />
+                      {afterChildElement?.(el) ?? null}
+                    </Fragment>
+                  );
+                }
+                return (
+                  <Render
+                    key={child}
+                    elementContainer={elementContainer}
+                    elements={[child]}
+                    componentsById={componentsById}
+                    isEditMode={isEditMode}
+                  />
+                );
+              });
+            }
           }
           visitPropertyDeep(
             properties[key],
@@ -154,7 +216,10 @@ export function Render({
               {...overriddenData}
               {...textData}
               {...childrenData}
-              tyzo={el}
+              tyzo={{
+                ...el,
+                isEditMode,
+              }}
             />
           </Fragment>
         );

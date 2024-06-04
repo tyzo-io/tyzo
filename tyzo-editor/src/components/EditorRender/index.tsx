@@ -226,6 +226,7 @@ export function Render({
       elementContainer={elementContainer}
       elements={elements}
       componentsById={componentsById}
+      isEditMode={true}
       preElement={(el) => <HackTyzoIdAttribute id={el.id} />}
       preChildElement={(el) =>
         (el.children?.length ?? 0) === 0 && (

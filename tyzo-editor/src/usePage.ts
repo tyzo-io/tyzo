@@ -40,6 +40,10 @@ export function usePage({ id }: { id: string }) {
     const page = await backend.loadPage(id);
     state.pageContainer.page = page ?? undefined;
 
+    if (backend.shouldAutoSave === false) {
+      return;
+    }
+
     async function save() {
       if (state.pageContainer.page) {
         setIsSaving(true);
@@ -48,7 +52,6 @@ export function usePage({ id }: { id: string }) {
         setHasChanges(false);
       }
     }
-
     const triggerSave = debounce(save, 3000);
 
     const doc = getYjsDoc(store);

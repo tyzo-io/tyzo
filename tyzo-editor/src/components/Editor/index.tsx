@@ -195,6 +195,7 @@ export function Editor({
           async saveComponentInfo() {
             return;
           },
+          shouldAutoSave: config.shouldAutoSave,
           supportsUpdatingComponents: false,
           inputs: {
             number: DefaultNumberInput,

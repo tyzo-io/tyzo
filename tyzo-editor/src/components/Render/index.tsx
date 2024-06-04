@@ -14,6 +14,7 @@ export function Render({
       elementContainer={data}
       elements={data.children}
       componentsById={config.components}
+      isEditMode={false}
     />
   );
 }

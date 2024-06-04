@@ -131,6 +131,7 @@ export type EditorBackend = {
   loadPage(id: string): Promise<Page | null>;
   savePage(page: Page, componentInfos: ComponentInfo[]): Promise<void>;
 
+  shouldAutoSave?: boolean;
   inputs: InputMap;
   supportsUpdatingComponents: boolean;
 };

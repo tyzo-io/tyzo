@@ -1,6 +1,6 @@
 {
   "name": "@tyzo/page-editor",
-  "version": "0.1.10",
+  "version": "0.1.12",
   "type": "module",
   "main": "dist/lib.js",
   "types": "dist/lib.d.ts",
