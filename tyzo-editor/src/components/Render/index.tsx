@@ -15,6 +15,8 @@ export function Render({
       elements={data.children}
       componentsById={config.components}
       isEditMode={false}
+      props={{}}
+      tepmlateFunction={config.tepmlateFunction}
     />
   );
 }

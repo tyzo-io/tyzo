@@ -40,7 +40,7 @@ export function usePage({ id }: { id: string }) {
     const page = await backend.loadPage(id);
     state.pageContainer.page = page ?? undefined;
 
-    if (backend.shouldAutoSave === false) {
+    if (backend.shouldAutoSave === false && !backend.onChange) {
       return;
     }
 
@@ -66,8 +66,13 @@ export function usePage({ id }: { id: string }) {
       if (!hasRealChanges) {
         return;
       }
-      setHasChanges(true);
-      triggerSave();
+      if (backend.onChange) {
+        backend.onChange(JSON.parse(JSON.stringify(state.pageContainer.page!)));
+      }
+      if (backend.shouldAutoSave !== false) {
+        setHasChanges(true);
+        triggerSave();
+      }
     };
     if (observerRef.current) {
       doc.getMap("pageContainer").unobserveDeep(observerRef.current);

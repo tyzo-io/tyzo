@@ -3,9 +3,9 @@ import { Translations } from "../i18n";
 export const de: Translations = {
   components: "Komponenten",
   content: "Inhalt",
-  containerEmpty: "Dieser {{}} ist leer",
+  containerEmpty: "{{}} ist leer",
   emptyPageInfo: "Ziehe Komponenten von der linken Seite hierher.",
-  dropHere: "Platizere {{}}Elemente hiere",
+  dropHere: "Platziere {{}}Elemente hier",
 
   saved: "Gespeichert",
   saving: "Speichert...",
@@ -73,4 +73,6 @@ export const de: Translations = {
   mobileScreenSize: "Mobile Bildschimgröße",
   tabletScreenSize: "Tablet Bildschimgröße",
   desktopScreenSize: "Desktop Bildschimgröße",
+
+  editTemplate: "Vorlage bearbeiten",
 };

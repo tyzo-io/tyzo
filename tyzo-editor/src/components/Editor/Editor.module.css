@@ -1,3 +1,18 @@
+/* :global(.tyzo) {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --radius: 0.5rem;
+} */
+
 :global(.tyzo)  .backHeader {
     display: flex;
     flex-direction: row;
@@ -35,17 +50,6 @@
 :global(.tyzo) .tree {
     /* padding: 10px; */
     margin-bottom: 20px;
-}
-
-:global(.tyzo) .emptyPage {
-    padding: 2em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    opacity: 0.7;
-    pointer-events: none;
-    user-select: none;
 }
 
 :global(.tyzo) .componentControls h3 {
@@ -142,8 +146,4 @@
 :global(.tyzo) .rightSide button {
     border: none;
     background-color: white;
-}
-
-:global(.tyzo) .pageContainer {
-    position: relative;
 }

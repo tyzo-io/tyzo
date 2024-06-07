@@ -7,6 +7,7 @@ import type {
   PageElementId,
   StringProperty,
 } from "../../types";
+import { randomId } from "../../util/id";
 
 function getComponent(
   componentId: string,
@@ -77,15 +78,20 @@ export function Render({
   preElement,
   preChildElement,
   afterChildElement,
+  tepmlateFunction,
+  props,
 }: {
   elementContainer: ElementContainer;
   elements: PageElementId[];
   componentsById: Record<string, ComponentInfo | undefined>;
-  isDragging?: boolean;
   isEditMode: boolean;
   preElement?: (element: PageElement) => React.ReactNode;
   preChildElement?: (element: PageElement) => React.ReactNode;
   afterChildElement?: (element: PageElement) => React.ReactNode;
+  tepmlateFunction:
+    | ((templateString: string, props: Record<string, any>) => string)
+    | undefined;
+  props: Record<string, any>;
 }) {
   return (
     <>
@@ -122,6 +128,11 @@ export function Render({
                     elements={el.children ?? []}
                     componentsById={componentsById}
                     isEditMode={isEditMode}
+                    preElement={preElement}
+                    preChildElement={preChildElement}
+                    afterChildElement={afterChildElement}
+                    props={props}
+                    tepmlateFunction={tepmlateFunction}
                   />
                   {afterChildElement?.(el) ?? null}
                 </>
@@ -137,6 +148,11 @@ export function Render({
                         elements={[child]}
                         componentsById={componentsById}
                         isEditMode={isEditMode}
+                        preElement={preElement}
+                        preChildElement={preChildElement}
+                        afterChildElement={afterChildElement}
+                        props={props}
+                        tepmlateFunction={tepmlateFunction}
                       />
                       {afterChildElement?.(el) ?? null}
                     </Fragment>
@@ -151,6 +167,11 @@ export function Render({
                         elements={[child]}
                         componentsById={componentsById}
                         isEditMode={isEditMode}
+                        preElement={preElement}
+                        preChildElement={preChildElement}
+                        afterChildElement={afterChildElement}
+                        props={props}
+                        tepmlateFunction={tepmlateFunction}
                       />
                     </Fragment>
                   );
@@ -163,6 +184,11 @@ export function Render({
                         elements={[child]}
                         componentsById={componentsById}
                         isEditMode={isEditMode}
+                        preElement={preElement}
+                        preChildElement={preChildElement}
+                        afterChildElement={afterChildElement}
+                        props={props}
+                        tepmlateFunction={tepmlateFunction}
                       />
                       {afterChildElement?.(el) ?? null}
                     </Fragment>
@@ -175,6 +201,11 @@ export function Render({
                     elements={[child]}
                     componentsById={componentsById}
                     isEditMode={isEditMode}
+                    preElement={preElement}
+                    preChildElement={preChildElement}
+                    afterChildElement={afterChildElement}
+                    props={props}
+                    tepmlateFunction={tepmlateFunction}
                   />
                 );
               });
@@ -203,11 +234,31 @@ export function Render({
             overriddenData,
             key
           );
-          // if (component.properties?.[key].type === "string") {
-          //   // do interpolation with `data`
-          //   const template = el.data[key] ?? "";
-          //   textData[key] = templateString(template, data);
-          // }
+          if (tepmlateFunction && properties?.[key].type === "string") {
+            const template = el.data[key] ?? "";
+            textData[key] = tepmlateFunction(template, props);
+            // textData[key] = templateString(template, props);
+          }
+          if (properties?.[key].type === "template") {
+            const elementContainer = (el.data[key] as
+              | ElementContainer
+              | undefined) ?? {
+              id: randomId(),
+              children: [],
+              elements: {},
+            };
+            const Comp = (props: any) => (
+              <Render
+                elementContainer={elementContainer}
+                elements={elementContainer.children}
+                componentsById={componentsById}
+                isEditMode={false}
+                props={props}
+                tepmlateFunction={tepmlateFunction}
+              />
+            );
+            overriddenData[key] = Comp;
+          }
         }
         return (
           <Fragment key={el.id}>

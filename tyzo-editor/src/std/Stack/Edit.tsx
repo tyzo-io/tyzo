@@ -1,18 +1,15 @@
 import {
-  BreakpointSelector,
-  ComponentCssProperty,
   ComponentInfo,
-  CssRuleEdit,
-  CssRuleTitle,
   EditorInput,
   ElementContainer,
   InputMap,
   PageElement,
   StringProperty,
-} from "@tyzo/page-editor";
+} from "../../types";
 import s from "./Edit.module.css";
 import { Button } from "../../components/Button";
 import { Trash } from "lucide-react";
+import { BreakpointSelector, ComponentCssProperty, CssRuleEdit, CssRuleTitle } from "../../lib";
 
 function StackCssEdit({
   id,
@@ -164,7 +161,7 @@ export const StackBreakpointsEdit: EditorInput<{
             flexDirection: "row",
             justifyContent: "flex-start",
             alignItems: "flex-start",
-            gap: "flex-start",
+            gap: "",
           };
 
           if (props.value) {

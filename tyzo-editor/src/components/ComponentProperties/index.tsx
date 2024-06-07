@@ -26,6 +26,7 @@ export function ComponentProperties({ id }: { id: string }) {
 
   return (
     <div className={s.Props}>
+      <h3 className={s.Title}>{component?.name}</h3>
       {Object.values(properties).map((property) => (
         <PropertyInput
           key={property.name}

@@ -72,6 +72,7 @@ export type Translations = {
   mobileScreenSize: string;
   tabletScreenSize: string;
   desktopScreenSize: string;
+  editTemplate: string;
 };
 
 export const en: Translations = {
@@ -147,6 +148,7 @@ export const en: Translations = {
   mobileScreenSize: "Mobile screen size",
   tabletScreenSize: "Tablet screen size",
   desktopScreenSize: "Desktop screen size",
+  editTemplate: "Edit Template",
 };
 
 const I18nContext = createContext({

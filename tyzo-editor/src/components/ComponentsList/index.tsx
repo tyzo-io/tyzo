@@ -66,7 +66,7 @@ function LibraryComponentGroup({
       ),
     [availableComponentIds, components, group]
   );
-  const { setIsDragging } = useEditor();
+  const { setIsDragging, setFocusedItem } = useEditor();
   return (
     <ul className={s.itemContainer}>
       {groupComponents.map((comp) => (
@@ -74,7 +74,8 @@ function LibraryComponentGroup({
           key={comp.id}
           draggable
           onClick={() => {
-            addNewElement(elementContainer, comp);
+            const el = addNewElement(elementContainer, comp);
+            setFocusedItem({ id: el.id, isFromTree: true });
           }}
           onDragStart={(e) => {
             setIsDragging(true);

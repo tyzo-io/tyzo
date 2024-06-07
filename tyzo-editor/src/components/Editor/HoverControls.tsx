@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { ElementContainer } from "../../types";
-import { useEditor } from "./EditorContext";
+import { Rect, useEditor } from "./EditorContext";
 import { getFocusedFrame } from "./getFocusedFrame";
 
 // function getNextContainerElement(page: Page, id: string) {
@@ -14,23 +14,17 @@ import { getFocusedFrame } from "./getFocusedFrame";
 //   return null;
 // }
 
-export function HoverControls(
-//   props: {
+export function HoverControls({
+  hoverFrame,
+  focusedItem,
+}: {
+  hoverFrame: Rect | null;
+  focusedItem: { id: string; isFromTree: boolean } | null;
+}) //   props: {
 //   elementsContainer: ElementContainer;
 //   // standalone?: boolean;
 // }
-) {
-  const {
-    // elementsContainer,
-    hoverFrame,
-    focusedItem,
-    // addElementFrame,
-    // setAddElementFrame,
-    // editElementFrame,
-    // setEditElementFrame,
-    // standalone,
-  } = useEditor();
-
+{
   // const focusedElement = focusedItem?.id
   //   ? elementsContainer.elements?.[focusedItem?.id]
   //   : null;
@@ -74,8 +68,8 @@ export function HoverControls(
                 //   });
                 // }}
               > */}
-                {/* MoreIcon */}
-                {/* <Icon name="more" size="small" /> */}
+              {/* MoreIcon */}
+              {/* <Icon name="more" size="small" /> */}
               {/* </div> */}
               {/* FocusedElementLabel */}
               {/* {focusedElement && focusedElement.type
@@ -303,11 +297,15 @@ export function usePreviewElementOverHandler(
         }
         // state.setExpandedElementsFromOver(selectedIds);
         if (selectedIds.length > 0) {
+          const newId = selectedIds[0];
+          if (newId === state.focusedItem?.id) {
+            return;
+          }
           state.setFocusedItem({ id: selectedIds[0], isFromTree: false });
           const frame = selectedElement && getFocusedFrame(selectedElement);
           state.setHoverFrame(frame ?? null);
-        // } else {
-        //   state.setFocusedItem(null);
+          // } else {
+          //   state.setFocusedItem(null);
         }
       }
     },

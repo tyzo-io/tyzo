@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { withCss } from "./CssProps";
 import { Editor } from "./components/Editor";
 import { Config } from "./components/Editor/types";
@@ -90,6 +91,44 @@ const config: Config = {
         return <pre>{JSON.stringify(props, null, 2)}</pre>;
       },
     },
+    TestTemplate: {
+      id: "TestTemplate",
+      name: "Template",
+      groupName: "Test",
+
+      properties: {
+        template: {
+          name: "template",
+          type: "template",
+          defaultData: undefined,
+          exampleTemplateData: {
+            title: "Text Title",
+            createdAt: new Date("2024-06-01T15:23:12"),
+          },
+        },
+      },
+      component: ({
+        template,
+      }: {
+        template?: (props: { title: string; createdAt: Date }) => ReactNode;
+      }) => {
+        const Comp = template ?? "div";
+        return (
+          <div>
+            Container
+            <Comp title="Test Title 1" createdAt={new Date()}>
+              Content1
+            </Comp>
+            <Comp title="Test Title 2" createdAt={new Date()}>
+              Content2
+            </Comp>
+            <Comp title="Test Title 3" createdAt={new Date()}>
+              Content3
+            </Comp>
+          </div>
+        );
+      },
+    },
     Container: withCss({
       id: "Container",
       name: "Container",
@@ -117,25 +156,35 @@ const config: Config = {
       }) => <div style={{ margin }}>{children}</div>,
     }),
   },
+  tepmlateFunction: templateString,
 };
 
 function App() {
   return <Editor config={config} />;
-  // return (
-  //   <Render
-  //     config={config}
-  //     data={{
-  //       children: ["1"],
-  //       elements: {
-  //         "1": {
-  //           id: "1",
-  //           componentId: "HeadingBlock",
-  //           data: { children: "Hello!" },
-  //         },
-  //       },
-  //     }}
-  //   />
-  // );
 }
 
 export default App;
+
+
+// This is an unsafe template function using eval and therefore should not be used
+
+function templateString(str: string, props: any) {
+  void props;
+  return str.replace(/\{([^}]+)\}/g, function (_m, n) {
+    try {
+      // return eval?.(`"use strict"; ${n}`);
+      return eval(`"use strict"; ${n}`);
+    } catch {
+      return n;
+    }
+  //   const p = n.split("|")[0].split(".");
+  //   let o = data;
+  //   for (let i = 0; i < p.length; i++) {
+  //     const x = o[p[i]];
+  //     o = typeof x === "function" ? (x as () => string)() : o[p[i]];
+  //     if (typeof o === "undefined" || o === null)
+  //       return n.indexOf("|") !== -1 ? n.split("|")[1] : m;
+  //   }
+  //   return o;
+  });
+}

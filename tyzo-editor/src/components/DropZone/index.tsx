@@ -1,5 +1,4 @@
 import { useState } from "react";
-import s from "./DropZone.module.css";
 import { useEditor } from "../Editor/EditorContext";
 import { classNames } from "../../util/classNames";
 import { ComponentId, ElementContainer, PageElementId } from "../../types";
@@ -16,16 +15,16 @@ export function DropZone({
   elementContainer: ElementContainer;
   parentId: PageElementId | undefined;
 }) {
-  const { isDragging, setIsDragging } = useEditor();
+  const { isDragging, setIsDragging, setFocusedItem } = useEditor();
   const { componentsById } = useComponents();
   const [isDraggingOver, setIsDraggingOver] = useState(false);
-  const { translations} = useTranslations()
+  const { translations } = useTranslations();
   return (
     <div
       className={classNames(
-        s.dropZone,
-        isDragging && s.isDragging,
-        isDraggingOver && s.hover
+        "tyzoDropZone",
+        isDragging && "tyzoIsDragging",
+        isDraggingOver && "tyzoHover"
       )}
       onDragOver={(e) => {
         e.preventDefault();
@@ -48,7 +47,8 @@ export function DropZone({
           | undefined;
         const Comp = componentId && componentsById[componentId];
         if (Comp) {
-          addNewElement(elementContainer, Comp, parentId);
+          const el = addNewElement(elementContainer, Comp, parentId);
+          setFocusedItem({ id: el.id, isFromTree: false });
           return;
         }
 
@@ -63,5 +63,33 @@ export function DropZone({
     >
       {translations.dropHere.replace("{{}}", label ? label + " " : "")}
     </div>
+  );
+}
+
+export function DropZoneStyle() {
+  return (
+    <style
+      dangerouslySetInnerHTML={{
+        __html: `.tyzoDropZone {
+    text-align: center;
+    margin: 1em;
+    padding: 1em;
+    border-radius: 10px;
+    border: 3px dashed var(--bg-color-elevated);
+    display: none;
+}
+
+.tyzoDropZone.tyzoIsDragging {
+    display: block;
+    --theme-secondary: #3a64d8;
+    border: 1px dashed var(--theme-secondary);
+}
+
+.tyzoHover {
+    --theme-surface-1: #3a64d831;
+    background-color: var(--theme-surface-1);
+}`,
+      }}
+    ></style>
   );
 }

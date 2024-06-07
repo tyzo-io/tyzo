@@ -1,3 +1,8 @@
-.Props input {
+:global(.tyzo) .Props input {
   width: 100%;
+}
+
+:global(.tyzo) .Title {
+  margin-left: 10px;
+  margin-right: 10px;
 }

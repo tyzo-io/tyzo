@@ -17,19 +17,15 @@ export type ArrayProperty = {
   defaultData: NonNullable<unknown>[];
 };
 
-export type FunctionProperty = {
-  name: string;
-  type: "function";
-};
+// export type FunctionProperty = {
+//   name: string;
+//   type: "function";
+// };
 
 export type StringProperty = {
   name: string;
   type: "string";
-  defaultData: {
-    html: string;
-    engine: "lexical.dev";
-    blocks: any;
-  };
+  defaultData: string | undefined;
   enum?: string[];
   editor?: "richText";
 };
@@ -52,13 +48,21 @@ export type PlainProperty = {
   defaultData: any;
 };
 
+export type TemplateProperty = {
+  name: string;
+  type: "template";
+  defaultData: any;
+  exampleTemplateData?: Record<string, any>;
+};
+
 export type ComponentProperty =
   | PlainProperty
   | RichTextProperty
   | StringProperty
   | ArrayProperty
   | ObjectProperty
-  | FunctionProperty;
+  | TemplateProperty;
+  // | FunctionProperty
 
 export type StoredComponentInfo = {
   id: ComponentId;
@@ -96,6 +100,7 @@ export interface PageElement {
 }
 
 export interface ElementContainer {
+  id: PageId;
   elements: Record<string, PageElement | undefined>;
   children: PageElementId[];
 }
@@ -103,7 +108,6 @@ export interface ElementContainer {
 export type PageId = Branded<string, "PageId">;
 
 export interface Page extends ElementContainer {
-  id: PageId;
   name: string;
   path: string;
   title: string;
@@ -130,6 +134,7 @@ export type EditorBackend = {
   loadPages(): Promise<Page[]>;
   loadPage(id: string): Promise<Page | null>;
   savePage(page: Page, componentInfos: ComponentInfo[]): Promise<void>;
+  onChange?(page: Page): void;
 
   shouldAutoSave?: boolean;
   inputs: InputMap;

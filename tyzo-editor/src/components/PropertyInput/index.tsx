@@ -6,8 +6,13 @@ import {
   ElementContainer,
   InputMap,
   PageElement,
+  TemplateProperty,
 } from "../../types";
 import { useState } from "react";
+import { Button } from "../Button";
+import { randomId } from "../../util/id";
+import { useEditor } from "../Editor/EditorContext";
+import { useTranslations } from "../../i18n";
 
 function PropertyTile({ property }: { property: ComponentProperty }) {
   return (
@@ -609,3 +614,64 @@ export function ComponentProperties({
 //     </div>
 //   );
 // }
+
+export function DefaultTemplateInput({
+  element,
+  value,
+  setValue,
+  property,
+  cardHeader,
+}: {
+  element: PageElement;
+  value: ElementContainer;
+  setValue: (value: ElementContainer) => void;
+  property: TemplateProperty;
+  cardHeader?: {
+    title: string;
+    buttons?: React.ReactNode;
+  };
+}) {
+  const { translations } = useTranslations();
+  const { setEditTemplate } = useEditor();
+  // const [shouldEdit, setShouldEdit] = useState(false)
+  // useEffect(() => {
+  //   if (shouldEdit && elementContainer.id !== value?.id && value) {
+  //     setElementContainer(value);
+  //   }
+  // }, [shouldEdit, value, value?.id, elementContainer.id, setElementContainer]);
+  return (
+    <div className={s.field}>
+      <div className={s.fieldTitle}>
+        <PropertyTile property={property} />
+        {cardHeader?.buttons}
+      </div>
+      <Button
+        variant="outline"
+        onClick={() => {
+          // setShouldEdit(true);
+          if (!value) {
+            const container = {
+              id: randomId(),
+              children: [],
+              elements: {},
+            };
+            setValue(container);
+          }
+
+          setEditTemplate({
+            element,
+            property: property,
+          });
+
+          // Why not just set the container here?
+          // setElementContainer(container);
+          // Because we're using yjs and relying on proxy objects. We need to use the proxy object in setElementContainer.
+          // But when we create the new container, it's not a proxy object yet, it's a plain object
+          // So we do the workaround with `useEffect` to make sure we actually use the proxy object
+        }}
+      >
+        {translations.editTemplate}
+      </Button>
+    </div>
+  );
+}

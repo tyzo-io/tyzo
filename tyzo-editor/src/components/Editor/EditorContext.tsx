@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import { ElementContainer } from "../../types";
+import { PageElement, ElementContainer, TemplateProperty } from "../../types";
 import { getFocusedFrame } from "./getFocusedFrame";
 
 export type Rect = {
@@ -11,6 +11,21 @@ export type Rect = {
 
 const EditorContext = createContext({
   elementContainer: {} as ElementContainer,
+
+  editTemplate: undefined as
+    | {
+        element: PageElement;
+        property: TemplateProperty;
+      }
+    | undefined,
+  setEditTemplate: (() => {}) as (
+    template:
+      | {
+          element: PageElement;
+          property: TemplateProperty;
+        }
+      | undefined
+  ) => void,
   isDragging: false,
   setIsDragging: (() => {}) as (value: boolean) => void,
 
@@ -42,6 +57,10 @@ export function EditorProvider({
     width: number;
     height: number;
   } | null>(null);
+  const [templateToEdit, setTemplateToEdit] = useState<{
+    element: PageElement;
+    property: TemplateProperty;
+  }>();
   // const [addElementFrame, setAddElementFrame] = useState<{
   //   top: number;
   //   bottom: number;
@@ -66,11 +85,14 @@ export function EditorProvider({
     isFromTree: boolean;
   } | null>(null);
 
-
   return (
     <EditorContext.Provider
       value={{
-        elementContainer,
+        elementContainer:
+          templateToEdit?.element.data?.[templateToEdit.property.name] ??
+          elementContainer,
+        editTemplate: templateToEdit,
+        setEditTemplate: setTemplateToEdit,
         isDragging,
         setIsDragging,
         hoverFrame,
@@ -102,6 +124,8 @@ export function EditorProvider({
 export function useEditor() {
   const {
     elementContainer,
+    setEditTemplate,
+    editTemplate,
     isDragging,
     setIsDragging,
     hoverFrame,
@@ -111,6 +135,8 @@ export function useEditor() {
   } = useContext(EditorContext);
   return {
     elementContainer,
+    setEditTemplate,
+    editTemplate,
     isDragging,
     setIsDragging,
     hoverFrame,

@@ -1,4 +1,4 @@
-import { ComponentCssProperty, CssContainer } from "@tyzo/page-editor";
+import { ComponentCssProperty, CssContainer } from "../../CssProps";
 
 export function Stack({
   id,
@@ -23,7 +23,7 @@ export function Stack({
       ]}
       tyzo={{ id, componentId: "stack" }}
     >
-      <div>{children}</div>
+      {children}
     </CssContainer>
   );
 }

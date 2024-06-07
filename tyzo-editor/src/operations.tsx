@@ -39,6 +39,8 @@ export function addNewElement(
   // }
 
   addElement(elementContainer, data, parentId, afterId);
+
+  return data;
 }
 
 export function addElement(

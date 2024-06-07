@@ -1,8 +1,8 @@
 import { Stack } from "./Stack";
 import { Heading } from "./Heading";
 import { Paragraph } from "./Paragraph";
-import { type ComponentInfo } from "@tyzo/page-editor";
-import { withCss } from "@tyzo/page-editor/render";
+import { withCss } from "../CssProps";
+import { ComponentInfo } from "../types";
 
 export const StandardComponents: {
   [x: string]: ComponentInfo;

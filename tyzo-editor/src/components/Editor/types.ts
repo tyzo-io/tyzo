@@ -17,6 +17,21 @@ export type Config = {
   headerRight?: React.ReactNode;
 
   /**
+   * A component that wraps the contents. Must render `children`
+   */
+  contentWrapper?: (props: { children: React.ReactNode }) => JSX.Element;
+
+  /**
+   * Head element that will be added to the head
+   */
+  head?: React.ReactNode | undefined;
+
+  /**
+   * This is called any time the data changes
+   */
+  onChange?: (data: Page) => void;
+
+  /**
    * Whether to automatically save the page after changes. Defaults to true.
    */
   shouldAutoSave?: boolean;
@@ -30,4 +45,9 @@ export type Config = {
    * Additional inputs that can be used in the component properties
    */
   additionalInputs?: InputMap;
+
+  /**
+   * A function used for string interpolation
+   */
+  tepmlateFunction?: (template: string, props: Record<string, any>) => string;
 };
