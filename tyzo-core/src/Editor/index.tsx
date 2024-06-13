@@ -7,14 +7,15 @@ import {
 } from "@/components/ui/resizable";
 import { ConfigProvider, TreeProvider } from "./Context";
 import { CheckSession } from "./CheckSession";
-import { createBrowserRouter,  RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { PageEditor } from "./Editor";
 import { SideBar } from "./SideBar";
 import { Home } from "./Home";
 import { Team } from "./Team";
 import { SpaceSettings } from "./SpaceSettings";
 import { Profile } from "./Profile";
-import { ComponentInfo } from "@tyzo/page-editor";
+import { ComponentInfo, Config } from "@tyzo/page-editor";
+import { Branches } from "./Branches";
 
 export function SidebarLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -34,9 +35,11 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
 export function Editor({
   spaceId,
   components,
+  config,
 }: {
   spaceId: string | null | undefined;
   components: Record<string, ComponentInfo>;
+  config?: Partial<Config>;
 }) {
   const [router] = useState(
     createBrowserRouter(
@@ -58,6 +61,10 @@ export function Editor({
             {
               path: "/",
               element: <Home />,
+            },
+            {
+              path: "/branches",
+              element: <Branches />,
             },
             {
               path: "/team",
@@ -85,10 +92,7 @@ export function Editor({
   );
 
   return (
-    <ConfigProvider
-      spaceId={spaceId}
-      components={components}
-    >
+    <ConfigProvider spaceId={spaceId} components={components} config={config}>
       <TreeProvider>
         <RouterProvider router={router} />
       </TreeProvider>

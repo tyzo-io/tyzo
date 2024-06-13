@@ -9,7 +9,7 @@ More documentation and a live demo is coming soon.
 ### Install the package
 
 ```
-npm i @measured/puck --save
+npm i @tyzo/page-editor --save
 ```
 
 ### Render the editor

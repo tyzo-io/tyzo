@@ -1,6 +1,9 @@
 {
   "name": "@tyzo/page-editor",
-  "version": "0.2.1",
+  "version": "0.2.2",
+  "repository": {
+    "url": "https://github.com/tyzo-io/tyzo"
+  },
   "type": "module",
   "main": "dist/lib.js",
   "types": "dist/lib.d.ts",
@@ -27,6 +30,7 @@
   },
   "dependencies": {
     "@radix-ui/react-dropdown-menu": "^2.0.6",
+    "@radix-ui/react-hover-card": "^1.0.7",
     "@radix-ui/react-select": "^2.0.0",
     "@syncedstore/core": "^0.6.0",
     "@syncedstore/react": "^0.6.0",

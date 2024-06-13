@@ -1,6 +1,8 @@
 # Tyzo Astro integration
 
-Add the following to your `astro.config.mjs`:
+This is actually not quite working as intended.
+
+<!-- Add the following to your `astro.config.mjs`:
 
 ```ts
 import { defineConfig } from "astro/config";
@@ -18,4 +20,4 @@ export default defineConfig({
     }),
   ],
 });
-```
+``` -->

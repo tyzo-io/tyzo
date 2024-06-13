@@ -56,7 +56,7 @@ export const StandardComponents: {
           flexDirection: "row",
           justifyContent: "flex-start",
           alignItems: "flex-start",
-          gap: "flex-start",
+          gap: "",
         },
       },
       additionalRules: {
@@ -95,6 +95,75 @@ export const StandardComponents: {
     },
     component: (props) => {
       return <a href={props.href}>{props.children}</a>;
+    },
+  }),
+  ul: withCss({
+    id: "ul",
+    name: "Unordered List",
+    groupName: "Typography",
+    properties: {
+      items: {
+        name: "items",
+        type: "array",
+        items: {
+          name: "item",
+          type: "string",
+          defaultData: "",
+        },
+        defaultItem: "",
+        defaultData: [],
+      },
+    },
+    component: (props: { items: string[] }) => {
+      return (
+        <ul>
+          {props.items.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      );
+    },
+  }),
+  ol: withCss({
+    id: "ol",
+    name: "Ordered List",
+    groupName: "Typography",
+    properties: {
+      items: {
+        name: "items",
+        type: "array",
+        items: {
+          name: "item",
+          type: "string",
+          defaultData: "",
+        },
+        defaultItem: "",
+        defaultData: [],
+      },
+    },
+    component: (props: { items: string[] }) => {
+      return (
+        <ol>
+          {props.items.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ol>
+      );
+    },
+  }),
+  html: withCss({
+    id: "html",
+    name: "HTML",
+    groupName: "Layout",
+    properties: {
+      content: {
+        name: "content",
+        type: "string",
+        defaultData: "",
+      },
+    },
+    component: (props: { content: string }) => {
+      return <div dangerouslySetInnerHTML={{ __html: props.content }}></div>;
     },
   }),
 };

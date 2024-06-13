@@ -216,11 +216,11 @@ export function Render({
             overriddenData?.[key],
             (property, parentData, key) => {
               if (
-                property.type === "richText" ||
-                (property.type === "string" &&
-                  "editor" in property &&
-                  (property as StringProperty).editor === "richText" &&
-                  parentData?.[key])
+                property.type === "richText"
+                // || (property.type === "string" &&
+                // "editor" in property &&
+                // (property as StringProperty).editor === "richText" &&
+                // parentData?.[key])
               ) {
                 parentData[key] = (
                   <div
@@ -234,10 +234,13 @@ export function Render({
             overriddenData,
             key
           );
-          if (tepmlateFunction && properties?.[key].type === "string") {
+          if (
+            tepmlateFunction &&
+            properties?.[key].type === "string" &&
+            !(properties?.[key] as StringProperty).dontInterpolate
+          ) {
             const template = el.data[key] ?? "";
             textData[key] = tepmlateFunction(template, props);
-            // textData[key] = templateString(template, props);
           }
           if (properties?.[key].type === "template") {
             const elementContainer = (el.data[key] as

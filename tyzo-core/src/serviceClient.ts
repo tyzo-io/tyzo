@@ -1,7 +1,9 @@
-import type { TyzoConfig } from "./config";
+import type { TyzoConfig } from "./tyzo-service/config";
 import { createClient } from "@supabase/supabase-js";
-import type { Database, Json } from "./schema";
+import type { Database, Json } from "./tyzo-service/schema";
 import type { ElementContainer } from "@tyzo/page-editor";
+
+export * from "./tyzo-service/config";
 
 // const supabaseUrl = "http://127.0.0.1:54321";
 // const authUrl = "http://localhost:4321/login";

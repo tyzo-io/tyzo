@@ -28,6 +28,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import s from "./style.module.css";
+import { useNavigate } from "react-router-dom";
 
 export function BranchSelector() {
   const [open, setOpen] = useState(false);
@@ -38,6 +39,7 @@ export function BranchSelector() {
     refetchTrees,
   } = useTree();
   const config = useConfig();
+  const navigate = useNavigate()
 
   return (
     <div className={s.Container}>
@@ -83,20 +85,27 @@ export function BranchSelector() {
                 ))}
               </CommandGroup>
               <CommandGroup>
-                <div className={s.AddBranch}>
-                  <Button
-                    onClick={async () => {
-                      await config.trees.add({
-                        id: crypto.randomUUID(),
-                        alias: "New branch",
-                      });
-                      await refetchTrees();
-                    }}
-                  >
-                    <Plus className={s.PlusIcon} />
-                    Add a branch
-                  </Button>
-                </div>
+                <CommandItem
+                  value={"~manage"}
+                  onSelect={() => {
+                    navigate("/branches");
+                  }}
+                >
+                  Manage branches
+                </CommandItem>
+                <CommandItem
+                  value={"~new"}
+                  onSelect={async () => {
+                    await config.trees.add({
+                      id: crypto.randomUUID(),
+                      alias: "New branch",
+                    });
+                    await refetchTrees();
+                  }}
+                >
+                  <Plus className={s.PlusIcon} />
+                  Add branch
+                </CommandItem>
               </CommandGroup>
             </CommandList>
           </Command>

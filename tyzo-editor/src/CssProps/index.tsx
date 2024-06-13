@@ -11,7 +11,7 @@ export type ComponentCssProperty = {
   padding?: string;
   border?: string;
   borderRadius?: string;
-  display?: "none" | "block" | "inline" | "inline-block" | "flex";
+  display?: "none" | "block" | "inline" | "inline-block" | "flex" | "grid";
   flexDirection?: "row" | "column" | "row-reverse" | "column-reverse";
   gap?: string;
   justifyContent?:

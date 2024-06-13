@@ -13,11 +13,27 @@ import { Button } from "../Button";
 import { randomId } from "../../util/id";
 import { useEditor } from "../Editor/EditorContext";
 import { useTranslations } from "../../i18n";
+import { Info } from "lucide-react";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "../HoverCard";
 
 function PropertyTile({ property }: { property: ComponentProperty }) {
   return (
     <div className={s.labels}>
-      <label className={s.code}>{property.name}</label>
+      {property.label ? (
+        <label>{property.label}</label>
+      ) : (
+        <label className={s.code}>{property.name}</label>
+      )}
+      {property.description && (
+        <HoverCard>
+          <HoverCardTrigger>
+            <Info className={s.descriptionIcon} />
+          </HoverCardTrigger>
+          <HoverCardContent>
+            {property.description}
+          </HoverCardContent>
+        </HoverCard>
+      )}
     </div>
   );
 }
@@ -410,11 +426,12 @@ export function DefaultArrayInput({
                 cardHeader={{
                   title: `Item ${i + 1}`,
                   buttons: (
-                    <button
+                    <Button
                       onClick={() => {
                         value?.splice(i, 1);
                       }}
-                      className={s.button}
+                      variant="ghost"
+                      size="icon"
                     >
                       <svg
                         width="16"
@@ -428,14 +445,14 @@ export function DefaultArrayInput({
                           fill="currentColor"
                         />
                       </svg>
-                    </button>
+                    </Button>
                   ),
                 }}
               />
             </div>
           ))}
-        <button
-          className={s.button}
+        <Button
+          variant="outline"
           onClick={() => {
             let copy = property.defaultItem;
             if (Array.isArray(property.defaultItem)) {
@@ -463,7 +480,7 @@ export function DefaultArrayInput({
               fill="currentColor"
             />
           </svg>
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -633,12 +650,6 @@ export function DefaultTemplateInput({
 }) {
   const { translations } = useTranslations();
   const { setEditTemplate } = useEditor();
-  // const [shouldEdit, setShouldEdit] = useState(false)
-  // useEffect(() => {
-  //   if (shouldEdit && elementContainer.id !== value?.id && value) {
-  //     setElementContainer(value);
-  //   }
-  // }, [shouldEdit, value, value?.id, elementContainer.id, setElementContainer]);
   return (
     <div className={s.field}>
       <div className={s.fieldTitle}>
@@ -648,7 +659,6 @@ export function DefaultTemplateInput({
       <Button
         variant="outline"
         onClick={() => {
-          // setShouldEdit(true);
           if (!value) {
             const container = {
               id: randomId(),
@@ -660,14 +670,8 @@ export function DefaultTemplateInput({
 
           setEditTemplate({
             element,
-            property: property,
+            property,
           });
-
-          // Why not just set the container here?
-          // setElementContainer(container);
-          // Because we're using yjs and relying on proxy objects. We need to use the proxy object in setElementContainer.
-          // But when we create the new container, it's not a proxy object yet, it's a plain object
-          // So we do the workaround with `useEffect` to make sure we actually use the proxy object
         }}
       >
         {translations.editTemplate}

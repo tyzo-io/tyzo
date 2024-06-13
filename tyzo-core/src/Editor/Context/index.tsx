@@ -1,8 +1,8 @@
 import { createContext, useContext, useMemo, useState } from "react";
 import type { Tree, TyzoConfig } from "@/tyzo-service/config";
-import serviceClientConfig from "@/tyzo-service/serviceClient";
+import serviceClientConfig from "@/serviceClient";
 import { useData } from "@/lib/useData";
-import { ComponentInfo } from "@tyzo/page-editor";
+import { ComponentInfo, Config } from "@tyzo/page-editor";
 
 const ConfigContext = createContext<
   TyzoConfig & { components: Record<string, ComponentInfo> }
@@ -16,17 +16,20 @@ export function ConfigProvider({
   spaceId,
   children,
   components,
+  config: configFromProps,
 }: {
   spaceId: string | null | undefined;
   children: React.ReactNode;
   components: Record<string, ComponentInfo>;
+  config?: Partial<Config>;
 }) {
   const config = useMemo(() => {
     if (!spaceId) {
       return null;
     }
-    return serviceClientConfig({ spaceId });
-  }, [spaceId]);
+    const config = serviceClientConfig({ spaceId });
+    return { ...config, ...configFromProps };
+  }, [spaceId, configFromProps]);
 
   if (!config) {
     return <div>No space id passed in your config</div>;

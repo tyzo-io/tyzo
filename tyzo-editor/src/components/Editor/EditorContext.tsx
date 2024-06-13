@@ -104,7 +104,12 @@ export function EditorProvider({
         focusedItem,
         setFocusedItem: (value: { id: string; isFromTree: boolean } | null) => {
           if (value) {
-            const el = document.querySelector(`[data-tyzo-id="${value.id}"]`);
+            const iframe = document.querySelector(".tyzo-preview-iframe") as
+              | HTMLIFrameElement
+              | undefined;
+            const el = iframe?.contentDocument?.querySelector(
+              `[data-tyzo-id="${value.id}"]`
+            );
             if (el) {
               const frame = getFocusedFrame(el as HTMLElement);
               setHoverFrame(frame ?? null);

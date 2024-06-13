@@ -51,11 +51,15 @@ const config: Config = {
       properties: {
         checked: {
           name: "checked",
+          description: "This is a test description",
           type: "boolean",
           defaultData: undefined,
         },
         num: {
           name: "num",
+          label: "Some Enum",
+          description:
+            "This is a test description that is very very long. I mean very long. Very very long. So long that it has to be split up into multiple lines. Have you seen something so long yet?",
           type: "number",
           defaultData: undefined,
         },
@@ -100,6 +104,7 @@ const config: Config = {
         template: {
           name: "template",
           type: "template",
+          label: "Test Template",
           defaultData: undefined,
           exampleTemplateData: {
             title: "Text Title",

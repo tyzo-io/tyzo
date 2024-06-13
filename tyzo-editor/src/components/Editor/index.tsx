@@ -10,7 +10,7 @@ import { DropZone, DropZoneStyle } from "../DropZone";
 import s from "./Editor.module.css";
 import { usePage } from "../../usePage";
 import { ComponentProperties } from "../ComponentProperties";
-import panzoom from "panzoom";
+import panzoom, { PanZoom } from "panzoom";
 import {
   DefaultArrayInput,
   DefaultBooleanInput,
@@ -41,6 +41,7 @@ function Center({
   contentWrapper,
   head,
   templateFunction,
+  getScale
 }: {
   page: ElementContainer;
   contentWrapper:
@@ -50,6 +51,7 @@ function Center({
   templateFunction:
     | ((template: string, props: Record<string, any>) => string)
     | undefined;
+  getScale: () => number;
 }) {
   const { elementContainer, editTemplate, ...hoverState } = useEditor();
   const overHandler = usePreviewElementOverHandler(page);
@@ -68,6 +70,7 @@ function Center({
           {head}
         </>
       }
+      getScale={getScale}
     >
       <div
         onMouseOver={(e) => overHandler(e.target)}
@@ -138,7 +141,8 @@ export function EditorContentInner({
   const { undoManager, isSaving, hasChanges } = usePage({ id });
   const [didInitPanzoom, setDidInitPanzoom] = useState(false);
   const { translations } = useTranslations();
-  const { elementContainer, setEditTemplate } = useEditor();
+  const { elementContainer, setEditTemplate, editTemplate } = useEditor();
+  const [panzoomInstance, setPanzoomInstance] = useState<PanZoom>();
 
   return (
     <div className={s.editor}>
@@ -177,15 +181,19 @@ export function EditorContentInner({
           <ElementTree elementsContainer={elementContainer} />
         </div>
         <div className={s.center}>
-          {elementContainer.id !== id && (
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setEditTemplate(undefined);
-              }}
-            >
-              <X />
-            </Button>
+          {editTemplate && (
+            <div className={s.templateEditorControls}>
+              {translations.editing}{" "}
+              {editTemplate.property.templateTitle ?? translations.template}
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setEditTemplate(undefined);
+                }}
+              >
+                <X />
+              </Button>
+            </div>
           )}
           <div
             style={{
@@ -199,7 +207,8 @@ export function EditorContentInner({
               if (el) {
                 if (!didInitPanzoom) {
                   setDidInitPanzoom(true);
-                  panzoom(el);
+                  const instance = panzoom(el);
+                  setPanzoomInstance(instance);
                 }
               }
             }}
@@ -209,6 +218,7 @@ export function EditorContentInner({
               contentWrapper={contentWrapper}
               head={head}
               templateFunction={templateFunction}
+              getScale={() => panzoomInstance?.getTransform().scale ?? 1}
             />
           </div>
         </div>

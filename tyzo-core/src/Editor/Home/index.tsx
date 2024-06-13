@@ -103,7 +103,11 @@ export function Home() {
               treeId: tree!.id,
               title: "New Page",
               path: `/new-page-${id.split("-")[0]}`,
-              content: { children: [], elements: {} },
+              content: {
+                id: crypto.randomUUID(),
+                children: [],
+                elements: {},
+              },
             });
             await refetch();
           }}

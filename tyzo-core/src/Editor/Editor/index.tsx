@@ -63,6 +63,7 @@ export function PageEditor() {
       // translations={de}
       config={{
         ...editorConfig,
+        ...config,
         async save(data) {
           if (!id) {
             return;

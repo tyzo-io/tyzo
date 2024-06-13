@@ -26,7 +26,6 @@ function StackCssEdit({
   const gap = value?.gap ?? "";
   return (
     <>
-      <div className={s.title}>Stack</div>
       <div className={s.Row}>
         <CssRuleTitle prop={{ id, flexDirection }} />
         <CssRuleEdit

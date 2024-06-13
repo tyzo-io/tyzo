@@ -51,19 +51,26 @@ export const StandardComponents: {
         type: "image",
         defaultData: undefined,
       },
+      alt: {
+        name: "alt",
+        type: "string",
+        defaultData: undefined,
+      },
       width: { name: "width", type: "number", defaultData: undefined },
       height: { name: "height", type: "number", defaultData: undefined },
     },
     component: ({
       src,
+      alt,
       width,
       height,
     }: {
       src: string;
+      alt: string;
       width: number;
       height: number;
     }) => {
-      return <img src={src} width={width} height={height} />;
+      return <img src={src} width={width} height={height} alt={alt} />;
     },
   }),
 };

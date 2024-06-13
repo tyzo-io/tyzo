@@ -4,6 +4,8 @@ export type ComponentId = Branded<string, "ComponentId">;
 
 export type ObjectProperty = {
   name: string;
+  label?: string;
+  description?: string;
   type: "object";
   fields: Record<string, ComponentProperty>;
   defaultData?: NonNullable<unknown>;
@@ -11,6 +13,8 @@ export type ObjectProperty = {
 
 export type ArrayProperty = {
   name: string;
+  label?: string;
+  description?: string;
   type: "array";
   items: ComponentProperty;
   defaultItem: NonNullable<unknown>;
@@ -24,14 +28,19 @@ export type ArrayProperty = {
 
 export type StringProperty = {
   name: string;
+  label?: string;
+  description?: string;
   type: "string";
   defaultData: string | undefined;
   enum?: string[];
-  editor?: "richText";
+  dontInterpolate?: boolean;
+  // editor?: "richText";
 };
 
 export type RichTextProperty = {
   name: string;
+  label?: string;
+  description?: string;
   type: "richText";
   defaultData: {
     html: string;
@@ -44,12 +53,17 @@ export type RichTextProperty = {
 
 export type PlainProperty = {
   name: string;
+  label?: string;
+  description?: string;
   type: string;
   defaultData: any;
 };
 
 export type TemplateProperty = {
   name: string;
+  label?: string;
+  description?: string;
+  templateTitle?: string;
   type: "template";
   defaultData: any;
   exampleTemplateData?: Record<string, any>;

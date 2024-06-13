@@ -360,6 +360,10 @@ export function CssDropdown({
           <ArrowRightToLine className={s.Icon} />
           {translations.padding}
         </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel>{translations.style}</DropdownMenuLabel>
+
         <DropdownMenuItem
           onSelect={() => {
             addProp({ border: "1px solid black" });
@@ -385,8 +389,6 @@ export function CssDropdown({
           {translations.shadow}
         </DropdownMenuItem>
 
-        <DropdownMenuSeparator />
-        <DropdownMenuLabel>{translations.custom}</DropdownMenuLabel>
         <DropdownMenuItem
           onSelect={() => {
             addProp({ customStyle: "" });

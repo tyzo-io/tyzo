@@ -42,7 +42,7 @@ dependencies:
     specifier: ^2.43.1
     version: 2.43.1
   '@tyzo/page-editor':
-    specifier: ^0.1.10
+    specifier: ^0.1.12
     version: link:../tyzo-editor
   class-variance-authority:
     specifier: ^0.7.0

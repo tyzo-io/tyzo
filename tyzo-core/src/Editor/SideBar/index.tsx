@@ -46,7 +46,11 @@ export function SideBar() {
             treeId: tree!.id,
             title: "New Page",
             path: "/new-page",
-            content: { children: [], elements: {} },
+            content: {
+              id: crypto.randomUUID(),
+              children: [],
+              elements: {},
+            },
           });
           await refetch();
         }}

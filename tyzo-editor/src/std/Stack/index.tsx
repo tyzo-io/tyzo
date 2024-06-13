@@ -11,19 +11,22 @@ export function Stack({
   additionalRules: ComponentCssProperty[] | undefined;
   children: React.ReactNode;
 }) {
+  const stackId = `${id}-stack`;
   return (
     <CssContainer
       css={[
         {
-          display: "flex",
           ...baseRule,
-          id,
+          id: stackId,
         },
-        ...(additionalRules?.map((rule) => ({ ...rule, id })) ?? []),
+        ...(additionalRules?.map((rule) => ({
+          ...rule,
+          id: stackId,
+        })) ?? []),
       ]}
-      tyzo={{ id, componentId: "stack" }}
+      tyzo={{ id: stackId, componentId: "stack" }}
     >
-      {children}
+      <div>{children}</div>
     </CssContainer>
   );
 }

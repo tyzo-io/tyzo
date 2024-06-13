@@ -75,4 +75,7 @@ export const de: Translations = {
   desktopScreenSize: "Desktop Bildschimgröße",
 
   editTemplate: "Vorlage bearbeiten",
+  editing: "Bearbeite",
+  template: "Vorlage",
+  style: "Style",
 };

@@ -71,7 +71,9 @@
 
 :global(.tyzo) .labels {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
     /* text-align: right; */
     /* text-align: right; */
 }
@@ -94,17 +96,8 @@
     margin-left: 10px;
 }
 
-:global(.tyzo) .button {
-    /* background-color: hsl(var(--foreground)); */
-    /* color: hsl(var(--background)); */
-    background-color: white;
-    border-radius: 5px;
-    padding: 5px 1em;
-    border: 1px solid hsl(var(--foreground));
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    cursor: pointer;
+:global(.tyzo) .descriptionIcon {
+    height: 1em;
+    width: 1em;
+    opacity: 0.5;
 }

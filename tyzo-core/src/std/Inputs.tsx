@@ -23,13 +23,13 @@ function Image({
   return (
     <div>
       <Tabs defaultValue="file">
-        <TabsList>
+        <TabsList style={{ marginLeft: "0.5em", marginRight: "0.5em" }}>
           <TabsTrigger value="file">Upload</TabsTrigger>
           <TabsTrigger value="url">URL</TabsTrigger>
         </TabsList>
         <TabsContent value="file">
           <Input
-            className="mx-2"
+            style={{ marginLeft: "0.5em", marginRight: "0.5em" }}
             type="file"
             disabled={isUploading}
             onChange={async (e) => {
@@ -50,7 +50,7 @@ function Image({
         </TabsContent>
         <TabsContent value="url">
           <Input
-            className="mx-2"
+            style={{ marginLeft: "0.5em", marginRight: "0.5em" }}
             value={value}
             type="url"
             onChange={(e) => onChange(e.target.value)}

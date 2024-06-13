@@ -31,7 +31,7 @@ export default defineConfig({
         index: fileURLToPath(new URL("src/index.ts", import.meta.url)),
         render: fileURLToPath(new URL("src/render.ts", import.meta.url)),
         serviceClient: fileURLToPath(
-          new URL("src/tyzo-service/serviceClient.ts", import.meta.url)
+          new URL("src/serviceClient.ts", import.meta.url)
         ),
         Page: fileURLToPath(new URL("src/Page/index.tsx", import.meta.url)),
         Editor: fileURLToPath(new URL("src/Editor/index.tsx", import.meta.url)),

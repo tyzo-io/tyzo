@@ -108,7 +108,8 @@ export function ElementTreeItem({
           className={s.trashIcon}
           variant="ghost"
           size="icon"
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             duplicateElement(elementContainer, element.id);
           }}
         >
@@ -118,7 +119,8 @@ export function ElementTreeItem({
           className={s.trashIcon}
           variant="ghost"
           size="icon"
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             removeElement(elementContainer, element.id);
           }}
         >
