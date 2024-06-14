@@ -5,9 +5,11 @@ import { Render as RenderPage } from "./Render";
 export function Render({
   config,
   data,
+  contextData,
 }: {
   config: Config;
   data: ElementContainer;
+  contextData?: Record<string, any>;
 }) {
   return (
     <RenderPage
@@ -15,7 +17,7 @@ export function Render({
       elements={data.children}
       componentsById={config.components}
       isEditMode={false}
-      props={{}}
+      props={contextData ?? {}}
       tepmlateFunction={config.tepmlateFunction}
     />
   );

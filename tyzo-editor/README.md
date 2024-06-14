@@ -4,7 +4,7 @@ Tyzo page editor is an open source visual editor for react. You can use it to bu
 
 More documentation and a live demo is coming soon.
 
-[Documnetation](https://www.tyzo.io/docs/editor/)
+[Documentation](https://www.tyzo.io/docs/editor/)
 [Live Demo](https://www.tyzo.io/docs/editor/example/)
 
 ## Getting Started

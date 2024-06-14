@@ -41,7 +41,8 @@ function Center({
   contentWrapper,
   head,
   templateFunction,
-  getScale
+  getScale,
+  contextData
 }: {
   page: ElementContainer;
   contentWrapper:
@@ -52,6 +53,7 @@ function Center({
     | ((template: string, props: Record<string, any>) => string)
     | undefined;
   getScale: () => number;
+  contextData?: Record<string, any>;
 }) {
   const { elementContainer, editTemplate, ...hoverState } = useEditor();
   const overHandler = usePreviewElementOverHandler(page);
@@ -100,7 +102,11 @@ function Center({
             componentsById={componentsById}
             isDragging={hoverState.isDragging}
             templateFunction={templateFunction}
-            props={editTemplate?.property.exampleTemplateData ?? {}}
+            props={
+              (editTemplate
+                ? editTemplate?.property.exampleTemplateData
+                : contextData) ?? {}
+            }
           />
           <DropZone elementContainer={elementContainer} parentId={undefined} />
           <HoverControls hoverFrame={hoverFrame} focusedItem={focusedItem} />
@@ -125,6 +131,7 @@ export function EditorContentInner({
   contentWrapper,
   head,
   templateFunction,
+  contextData,
 }: {
   id: string;
   headerLeft: React.ReactNode | undefined;
@@ -136,6 +143,7 @@ export function EditorContentInner({
   templateFunction:
     | ((template: string, props: Record<string, any>) => string)
     | undefined;
+  contextData?: Record<string, any>;
 }) {
   const [maxWidth, setMaxWidth] = useState<string>();
   const { undoManager, isSaving, hasChanges } = usePage({ id });
@@ -219,6 +227,7 @@ export function EditorContentInner({
               head={head}
               templateFunction={templateFunction}
               getScale={() => panzoomInstance?.getTransform().scale ?? 1}
+              contextData={contextData}
             />
           </div>
         </div>
@@ -237,6 +246,7 @@ export function EditorContent({
   contentWrapper,
   head,
   templateFunction,
+  contextData,
 }: {
   id: string;
   headerLeft: React.ReactNode | undefined;
@@ -248,6 +258,7 @@ export function EditorContent({
   templateFunction:
     | ((template: string, props: Record<string, any>) => string)
     | undefined;
+  contextData?: Record<string, any>;
 }) {
   const { page } = usePage({ id });
 
@@ -263,6 +274,7 @@ export function EditorContent({
         contentWrapper={contentWrapper}
         head={head}
         templateFunction={templateFunction}
+        contextData={contextData}
       />
     </EditorProvider>
   );
@@ -280,10 +292,12 @@ const blankPage: Page = {
 export function Editor({
   config,
   initialPage,
+  contextData,
   translations,
 }: {
   config: Config;
   initialPage?: Page;
+  contextData?: Record<string, any>;
   translations?: Translations;
 }) {
   return (
@@ -338,6 +352,7 @@ export function Editor({
           contentWrapper={config.contentWrapper}
           head={config.head}
           templateFunction={config.tepmlateFunction}
+          contextData={contextData}
         />
       </EditorBackendProvider>
     </I18nProvider>
