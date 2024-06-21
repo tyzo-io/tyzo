@@ -190,11 +190,11 @@ export const EditorPreview = forwardRef<HTMLIFrameElement, EditorPreviewProps>(
         // const height = (rect?.height ?? 0) + (rect?.top ?? 0);
         // // liveRef.height = `${height}px`;
 
-        // // let height = 0;
+        let height = 0;
         // let height2 = 0;
         // let i =0
-        // for (const child of liveRef.contentWindow.document.body.children) {
-        //   // height += child.scrollHeight;
+        for (const child of liveRef.contentWindow.document.body.children) {
+          height += child.scrollHeight;
         //   const rect = child.getBoundingClientRect()
         //   height2 += rect.height;
         //   console.log(child, rect)
@@ -203,10 +203,10 @@ export const EditorPreview = forwardRef<HTMLIFrameElement, EditorPreviewProps>(
         //   }
         //   i++
 
-        // }
+        }
         // const finalHeight = height > height2 ? height : height2;
 
-        const height = liveRef.contentWindow?.document.body.scrollHeight;
+        // const height = liveRef.contentWindow?.document.body.scrollHeight;
         // const offset = rect?.top ?? 0;
         // console.log(rect, height2)
 

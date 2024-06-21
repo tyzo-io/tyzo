@@ -5,18 +5,13 @@ import { getFocusedFrame } from "./getFocusedFrame";
 import {
   ChevronDown,
   ChevronUp,
-  ClipboardCopy,
-  ClipboardPaste,
   Copy,
-  Scissors,
   Trash,
 } from "lucide-react";
 import {
-  copyElementToClipboard,
   duplicateElement,
   moveElementDown,
   moveElementUp,
-  pasteElementFromClipboard,
   removeElement,
 } from "../../operations";
 

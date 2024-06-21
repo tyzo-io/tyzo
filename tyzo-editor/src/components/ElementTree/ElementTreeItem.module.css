@@ -77,5 +77,8 @@
 }
 
 :global(.tyzo) .focused {
+    --element-select-border-color: rgba(50, 150, 255, 0.6);
+    --element-select-bg-color: rgba(50, 150, 255, 0.2);
+    --element-select-border: 1px solid var(--element-select-border-color);
     border: var(--element-select-border);
 }
