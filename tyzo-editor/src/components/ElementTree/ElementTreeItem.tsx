@@ -56,8 +56,14 @@ export function ElementTreeItem({
         if (focusedItem?.id === element.id) {
           setFocusedItem(null);
         } else {
-          setFocusedItem({ id: element.id, isFromTree: true });
+          setFocusedItem({ id: element.id, isFromTree: true, isClick: true });
         }
+      }}
+      onMouseEnter={() => {
+        if (focusedItem?.isClick) {
+          return;
+        }
+        setFocusedItem({ id: element.id, isFromTree: true, isClick: false });
       }}
       onDragOver={(e) => {
         setIsDraggingOver(true);

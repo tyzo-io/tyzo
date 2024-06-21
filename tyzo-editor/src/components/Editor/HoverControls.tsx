@@ -2,6 +2,23 @@ import { useCallback } from "react";
 import { ElementContainer } from "../../types";
 import { Rect, useEditor } from "./EditorContext";
 import { getFocusedFrame } from "./getFocusedFrame";
+import {
+  ChevronDown,
+  ChevronUp,
+  ClipboardCopy,
+  ClipboardPaste,
+  Copy,
+  Scissors,
+  Trash,
+} from "lucide-react";
+import {
+  copyElementToClipboard,
+  duplicateElement,
+  moveElementDown,
+  moveElementUp,
+  pasteElementFromClipboard,
+  removeElement,
+} from "../../operations";
 
 // function getNextContainerElement(page: Page, id: string) {
 //   let el: PageElement | null | undefined = page.elements?.[id];
@@ -17,14 +34,20 @@ import { getFocusedFrame } from "./getFocusedFrame";
 export function HoverControls({
   hoverFrame,
   focusedItem,
+  setFocusedItem,
+  elementContainer,
 }: {
   hoverFrame: Rect | null;
-  focusedItem: { id: string; isFromTree: boolean } | null;
-}) //   props: {
-//   elementsContainer: ElementContainer;
-//   // standalone?: boolean;
-// }
-{
+  focusedItem: { id: string; isFromTree: boolean; isClick: boolean } | null;
+  setFocusedItem: (
+    item: { id: string; isFromTree: boolean; isClick: boolean } | null
+  ) => void;
+  elementContainer: ElementContainer;
+}) {
+  //   props: {
+  //   elementsContainer: ElementContainer;
+  //   // standalone?: boolean;
+  // }
   // const focusedElement = focusedItem?.id
   //   ? elementsContainer.elements?.[focusedItem?.id]
   //   : null;
@@ -46,12 +69,98 @@ export function HoverControls({
           <>
             <div
               className={[
-                "tyzo-element-hover-controls",
+                "tyzo-element-hover-controls floating",
                 // standalone ? null : "floating",
               ]
                 .filter(Boolean)
                 .join(" ")}
             >
+              <button
+                onClick={() => {
+                  if (focusedItem) {
+                    moveElementUp(elementContainer, focusedItem.id);
+                    setTimeout(() => {
+                      setFocusedItem(focusedItem);
+                    }, 60);
+                  }
+                }}
+              >
+                <ChevronUp style={{ height: "20px", width: "20px" }} />
+              </button>
+              <button
+                onClick={() => {
+                  if (focusedItem) {
+                    moveElementDown(elementContainer, focusedItem.id);
+                    setTimeout(() => {
+                      setFocusedItem(focusedItem);
+                    }, 60);
+                  }
+                }}
+              >
+                <ChevronDown style={{ height: "20px", width: "20px" }} />
+              </button>
+              <button
+                onClick={() => {
+                  if (focusedItem) {
+                    const dupe = duplicateElement(
+                      elementContainer,
+                      focusedItem.id
+                    );
+                    setTimeout(() => {
+                      dupe &&
+                        setFocusedItem({
+                          id: dupe?.id,
+                          isClick: false,
+                          isFromTree: false,
+                        });
+                    }, 60);
+                  }
+                }}
+              >
+                <Copy
+                  style={{ height: "16px", width: "16px", padding: "2px" }}
+                />
+              </button>
+              {/* <button>
+                <ClipboardCopy
+                  style={{ height: "16px", width: "16px", padding: "2px" }}
+                  onClick={() => {
+                    if (focusedItem) {
+                      copyElementToClipboard(elementContainer, focusedItem.id);
+                    }
+                  }}
+                />
+              </button>
+              <button>
+                <ClipboardPaste
+                  style={{ height: "16px", width: "16px", padding: "2px" }}
+                  onClick={() => {
+                    if (focusedItem) {
+                      pasteElementFromClipboard(
+                        elementContainer,
+                        focusedItem.id
+                      );
+                    }
+                  }}
+                />
+              </button> */}
+              {/* <button>
+                <Scissors
+                  style={{ height: "16px", width: "16px", padding: "2px" }}
+                />
+              </button> */}
+              <button
+                onClick={() => {
+                  if (focusedItem) {
+                    removeElement(elementContainer, focusedItem.id);
+                    setFocusedItem(null);
+                  }
+                }}
+              >
+                <Trash
+                  style={{ height: "16px", width: "16px", padding: "2px" }}
+                />
+              </button>
               {/* <AddElementInlineButton {...props} /> */}
               {/* <div
                 // onClick={(e) => {
@@ -355,17 +464,18 @@ export function ElementHoverStyle() {
           display: flex;
           flex-direction: row;
           align-items: center;
-          gap: 10px;
-          padding: 5px;
-          justify-content: center;
+          gap: 2px;
+          justify-content: flex-end;
+          padding-right: 5px;
+          padding-left: 5px;
         }
 
         .tyzo-element-hover-controls.floating {
           position: absolute;
           top: -36px;
           left: -1px;
-          /* right: -1px; */
-          min-width: 99%;
+          height: 36px;
+          right: -1px;
           border-top-left-radius: 5px;
           border-top-right-radius: 5px;
           background-color: black;
@@ -373,12 +483,14 @@ export function ElementHoverStyle() {
         }
 
         .tyzo-element-hover-controls > * {
-          padding: 5px;
           border-radius: 5px;
           cursor: pointer;
+          border: none;
+          background-color: transparent;
+          color: white;
         }
 
-        .tyzo-element-hover-controls > *:hover,
+        .tyzo-element-hover-controls > button:hover,
         .tyzo-element-hover-controls > div:hover {
           background-color: rgba(255, 255, 255, 0.2);
         }

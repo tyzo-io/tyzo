@@ -116,7 +116,12 @@ function Center({
               elementContainer={elementContainer}
               parentId={undefined}
             />
-            <HoverControls hoverFrame={hoverFrame} focusedItem={focusedItem} />
+            <HoverControls
+              elementContainer={elementContainer}
+              hoverFrame={hoverFrame}
+              focusedItem={focusedItem}
+              setFocusedItem={hoverState.setFocusedItem}
+            />
           </TemplateWrapper>
         </Wrapper>
       </div>

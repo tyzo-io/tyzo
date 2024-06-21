@@ -120,6 +120,46 @@ export function moveElement(
   addElement(elementContainer, dupe, parentId, afterId);
 }
 
+export function moveElementInParentBy(
+  elementContainer: ElementContainer,
+  id: PageElementId,
+  by: number
+) {
+  const element = elementContainer.elements[id];
+  if (!element) {
+    return null;
+  }
+  const parent = element.parent
+    ? elementContainer.elements[element.parent]
+    : elementContainer;
+  if (parent) {
+    const index = parent?.children?.indexOf(element.id);
+    if (
+      typeof index === "number" &&
+      index >= 0 &&
+      index + by < (parent?.children?.length ?? 0) &&
+      index + by >= 0
+    ) {
+      parent!.children!.splice(index, 1);
+      parent!.children!.splice(index + by, 0, element.id);
+    }
+  }
+}
+
+export function moveElementDown(
+  elementContainer: ElementContainer,
+  id: PageElementId
+) {
+  moveElementInParentBy(elementContainer, id, 1);
+}
+
+export function moveElementUp(
+  elementContainer: ElementContainer,
+  id: PageElementId
+) {
+  moveElementInParentBy(elementContainer, id, -1);
+}
+
 export function duplicateElement(
   elementContainer: ElementContainer,
   id: PageElementId,
@@ -141,4 +181,45 @@ export function duplicateElement(
   for (const child of element.children ?? []) {
     duplicateElement(elementContainer, child, dupe.id);
   }
+  return dupe;
 }
+
+// export function copyElementToClipboard(
+//   elementContainer: ElementContainer,
+//   id: PageElementId,
+// ) {
+//   const element = elementContainer.elements[id];
+//   if (!element) {
+//     return;
+//   }
+
+//   localStorage.setItem('tyzo:clipboard', dupe)
+// }
+
+// export async function pasteElementFromClipboard(
+//   elementContainer: ElementContainer,
+//   newParent: PageElementId
+// ) {
+//   const id = localStorage.getItem('tyzo:clipboard')
+//   if (!id) {
+//     return
+//   }
+
+//   const element = elementContainer.elements[id];
+//   if (!element) {
+//     return;
+//   }
+//   const dupe = JSON.parse(JSON.stringify(element)) as PageElement;
+//   dupe.id = randomId();
+//   if (newParent) {
+//     dupe.parent = newParent;
+//   }
+//   if (dupe.children) {
+//     dupe.children = [];
+//   }
+//   addElement(elementContainer, dupe, dupe.parent, id);
+//   for (const child of element.children ?? []) {
+//     duplicateElement(elementContainer, child, dupe.id);
+//   }
+//   return dupe;
+// }
