@@ -64,6 +64,7 @@ export type TemplateProperty = {
   label?: string;
   description?: string;
   templateTitle?: string;
+  templateEditContainer: (props: { children: React.ReactNode }) => JSX.Element;
   type: "template";
   defaultData: any;
   exampleTemplateData?: Record<string, any>;

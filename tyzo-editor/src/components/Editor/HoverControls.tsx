@@ -259,7 +259,19 @@ export function usePreviewElementOverHandler(
   const state = useEditor();
 
   return useCallback(
-    (target: EventTarget | null) => {
+    (event: React.MouseEvent, opts: { isClick: boolean }) => {
+      if (event.ctrlKey) {
+        return;
+      }
+      if (!opts.isClick && state.focusedItem?.isClick) {
+        return;
+      }
+      if (opts.isClick && state.focusedItem?.isClick) {
+        state.setFocusedItem(null);
+        state.setHoverFrame(null);
+        return;
+      }
+      const target = event.target;
       if (target === null) {
         state.setFocusedItem(null);
         state.setHoverFrame(null);
@@ -298,10 +310,17 @@ export function usePreviewElementOverHandler(
         // state.setExpandedElementsFromOver(selectedIds);
         if (selectedIds.length > 0) {
           const newId = selectedIds[0];
-          if (newId === state.focusedItem?.id) {
+          if (
+            newId === state.focusedItem?.id &&
+            opts.isClick === state.focusedItem.isClick
+          ) {
             return;
           }
-          state.setFocusedItem({ id: selectedIds[0], isFromTree: false });
+          state.setFocusedItem({
+            id: selectedIds[0],
+            isFromTree: false,
+            isClick: opts.isClick,
+          });
           const frame = selectedElement && getFocusedFrame(selectedElement);
           state.setHoverFrame(frame ?? null);
           // } else {

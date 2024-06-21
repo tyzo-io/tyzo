@@ -62,6 +62,8 @@ function Center({
   const { hoverFrame, focusedItem } = useEditor();
 
   const Wrapper = contentWrapper ?? Fragment;
+  const TemplateWrapper =
+    editTemplate?.property.templateEditContainer ?? Fragment;
 
   return (
     <EditorPreview
@@ -75,41 +77,47 @@ function Center({
       getScale={getScale}
     >
       <div
-        onMouseOver={(e) => overHandler(e.target)}
+        onMouseOver={(e) => overHandler(e, { isClick: false })}
+        onClick={(e) => overHandler(e, { isClick: true })}
         className="tyzo-page-container"
       >
         <Wrapper>
-          {Object.keys(elementContainer.elements).length === 0 &&
-          !hoverState.isDragging ? (
-            <div
-              style={{
-                padding: "2em",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                textAlign: "center",
-                opacity: 0.7,
-                pointerEvents: "none",
-                userSelect: "none",
-              }}
-            >
-              {translations.emptyPageInfo}
-            </div>
-          ) : null}
-          <Render
-            elementContainer={elementContainer}
-            elements={elementContainer.children}
-            componentsById={componentsById}
-            isDragging={hoverState.isDragging}
-            templateFunction={templateFunction}
-            props={
-              (editTemplate
-                ? editTemplate?.property.exampleTemplateData
-                : contextData) ?? {}
-            }
-          />
-          <DropZone elementContainer={elementContainer} parentId={undefined} />
-          <HoverControls hoverFrame={hoverFrame} focusedItem={focusedItem} />
+          <TemplateWrapper>
+            {Object.keys(elementContainer.elements).length === 0 &&
+            !hoverState.isDragging ? (
+              <div
+                style={{
+                  padding: "2em",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textAlign: "center",
+                  opacity: 0.7,
+                  pointerEvents: "none",
+                  userSelect: "none",
+                }}
+              >
+                {translations.emptyPageInfo}
+              </div>
+            ) : null}
+            <Render
+              elementContainer={elementContainer}
+              elements={elementContainer.children}
+              componentsById={componentsById}
+              isDragging={hoverState.isDragging}
+              templateFunction={templateFunction}
+              props={
+                (editTemplate
+                  ? editTemplate?.property.exampleTemplateData
+                  : contextData) ?? {}
+              }
+            />
+            <DropZone
+              elementContainer={elementContainer}
+              parentId={undefined}
+            />
+            <HoverControls hoverFrame={hoverFrame} focusedItem={focusedItem} />
+          </TemplateWrapper>
         </Wrapper>
       </div>
     </EditorPreview>

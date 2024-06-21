@@ -37,9 +37,13 @@ const EditorContext = createContext({
   // editElementFrame: null as Rect | null,
   // setEditElementFrame: (() => {}) as (value: Rect | null) => void,
 
-  focusedItem: null as { id: string; isFromTree: boolean } | null,
+  focusedItem: null as {
+    id: string;
+    isFromTree: boolean;
+    isClick: boolean;
+  } | null,
   setFocusedItem: (() => {}) as (
-    value: { id: string; isFromTree: boolean } | null
+    value: { id: string; isFromTree: boolean; isClick: boolean } | null
   ) => void,
 });
 
@@ -83,6 +87,7 @@ export function EditorProvider({
   const [focusedItem, setFocusedItem] = useState<{
     id: string;
     isFromTree: boolean;
+    isClick: boolean;
   } | null>(null);
 
   return (
@@ -102,7 +107,9 @@ export function EditorProvider({
         // editElementFrame,
         // setEditElementFrame,
         focusedItem,
-        setFocusedItem: (value: { id: string; isFromTree: boolean } | null) => {
+        setFocusedItem: (
+          value: { id: string; isFromTree: boolean; isClick: boolean } | null
+        ) => {
           if (value) {
             const iframe = document.querySelector(".tyzo-preview-iframe") as
               | HTMLIFrameElement
