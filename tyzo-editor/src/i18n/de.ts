@@ -69,6 +69,8 @@ export const de: Translations = {
   addCondition: "Kondition hinzufügen",
   removeCondition: "Kondition entfernen",
   breakpoint: "Breakpoint",
+  breakpoints: "Breakpoints",
+  addBreakpoint: "Breakpoint Hinzufügen",
 
   mobileScreenSize: "Mobile Bildschimgröße",
   tabletScreenSize: "Tablet Bildschimgröße",

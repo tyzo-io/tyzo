@@ -75,7 +75,7 @@ function LibraryComponentGroup({
           draggable
           onClick={() => {
             const el = addNewElement(elementContainer, comp);
-            setFocusedItem({ id: el.id, isFromTree: true });
+            setFocusedItem({ id: el.id, isFromTree: true, isClick: false });
           }}
           onDragStart={(e) => {
             setIsDragging(true);

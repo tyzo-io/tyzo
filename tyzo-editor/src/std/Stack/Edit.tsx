@@ -10,6 +10,7 @@ import s from "./Edit.module.css";
 import { Button } from "../../components/Button";
 import { Trash } from "lucide-react";
 import { BreakpointSelector, ComponentCssProperty, CssRuleEdit, CssRuleTitle } from "../../lib";
+import { useTranslations } from "../../i18n";
 
 function StackCssEdit({
   id,
@@ -108,9 +109,10 @@ export const StackBreakpointsEdit: EditorInput<{
   value: ComponentCssProperty[];
   setValue: (value: ComponentCssProperty[]) => void;
 }> = function StackEdit(props) {
+  const { translations } = useTranslations();
   return (
     <div className={s.Container}>
-      <div className={s.title}>Breakpoints</div>
+      <div className={s.title}>{translations.breakpoints}</div>
 
       {props.value?.map((breakpoint, i) => (
         <div key={i} className={s.Breakpoint}>
@@ -170,7 +172,7 @@ export const StackBreakpointsEdit: EditorInput<{
           }
         }}
       >
-        Add Breakpoint
+        {translations.addBreakpoint}
       </Button>
     </div>
   );

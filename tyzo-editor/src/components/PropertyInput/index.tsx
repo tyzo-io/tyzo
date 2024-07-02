@@ -13,7 +13,7 @@ import { Button } from "../Button";
 import { randomId } from "../../util/id";
 import { useEditor } from "../Editor/EditorContext";
 import { useTranslations } from "../../i18n";
-import { Info } from "lucide-react";
+import { Info, X } from "lucide-react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../HoverCard";
 
 function PropertyTile({ property }: { property: ComponentProperty }) {
@@ -29,9 +29,7 @@ function PropertyTile({ property }: { property: ComponentProperty }) {
           <HoverCardTrigger>
             <Info className={s.descriptionIcon} />
           </HoverCardTrigger>
-          <HoverCardContent>
-            {property.description}
-          </HoverCardContent>
+          <HoverCardContent>{property.description}</HoverCardContent>
         </HoverCard>
       )}
     </div>
@@ -197,13 +195,18 @@ export function DefaultStringInput({
         <PropertyTile property={property} />
         {cardHeader?.buttons}
       </div>
-      <Input
-        type="string"
-        value={safeValue}
-        onChange={(e) => {
-          setValue(e.target.value);
-        }}
-      />
+      <div className={s.fieldInput}>
+        <Input
+          type="string"
+          value={safeValue}
+          onChange={(e) => {
+            setValue(e.target.value);
+          }}
+        />
+        <button aria-label="Clear" onClick={() => setValue(undefined)}>
+          <X style={{ width: 16, height: 16 }} />
+        </button>
+      </div>
     </div>
   );
 }
@@ -247,7 +250,7 @@ export function DefaultNumberInput({
   cardHeader,
 }: {
   value: number;
-  setValue: (value: number) => void;
+  setValue: (value: number | undefined) => void;
   property: ComponentProperty;
   cardHeader?: {
     title: string;
@@ -260,16 +263,21 @@ export function DefaultNumberInput({
         <PropertyTile property={property} />
         {cardHeader?.buttons}
       </div>
-      <Input
-        type="number"
-        value={value}
-        onChange={(e) => {
-          const newValue = Number(e.target.value);
-          if (!isNaN(newValue)) {
-            setValue(newValue);
-          }
-        }}
-      />
+      <div className={s.fieldInput}>
+        <Input
+          type="number"
+          value={value}
+          onChange={(e) => {
+            const newValue = Number(e.target.value);
+            if (!isNaN(newValue)) {
+              setValue(newValue);
+            }
+          }}
+        />
+        <button aria-label="Clear" onClick={() => setValue(undefined)}>
+          <X style={{ width: 16, height: 16 }} />
+        </button>
+      </div>
     </div>
   );
 }

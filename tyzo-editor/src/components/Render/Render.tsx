@@ -8,6 +8,7 @@ import type {
   StringProperty,
 } from "../../types";
 import { randomId } from "../../util/id";
+import { RenderProps } from "./types";
 
 function getComponent(
   componentId: string,
@@ -70,9 +71,9 @@ function visitPropertyDeep(
   }
 }
 
-export function Render({
+export function RenderElement({
   elementContainer,
-  elements,
+  elementId,
   componentsById,
   isEditMode,
   preElement,
@@ -82,7 +83,7 @@ export function Render({
   props,
 }: {
   elementContainer: ElementContainer;
-  elements: PageElementId[];
+  elementId: PageElementId;
   componentsById: Record<string, ComponentInfo | undefined>;
   isEditMode: boolean;
   preElement?: (element: PageElement) => React.ReactNode;
@@ -93,191 +94,211 @@ export function Render({
     | undefined;
   props: Record<string, any>;
 }) {
+  const el = elementContainer.elements[elementId];
+  if (!el) {
+    return null;
+  }
+  const { Comp, properties } = getComponent(el.componentId, componentsById);
+  if (!Comp) {
+    return null;
+  }
+  const textData: Record<string, string> = {};
+  const childrenData: Record<string, React.JSX.Element | React.JSX.Element[]> =
+    {};
+  const overriddenData = el.data
+    ? JSON.parse(JSON.stringify(el.data)) // This is a proxy object since we're usig yjs, structuredClone doesn't work :(
+    : {};
+  for (const key of Object.keys(properties)) {
+    if (properties[key].type === "children") {
+      // We want to interfere as little as possible with the DOM when rendering children
+      // That's why we are doing it like this, so we get one element per child, which at least makes stuff like `children.map` work
+      if (!el.children || el.children.length === 0) {
+        childrenData[key] = (
+          <>
+            {preChildElement?.(el) ?? null}
+            <Render
+              elementContainer={elementContainer}
+              elements={el.children ?? []}
+              componentsById={componentsById}
+              isEditMode={isEditMode}
+              preElement={preElement}
+              preChildElement={preChildElement}
+              afterChildElement={afterChildElement}
+              props={props}
+              tepmlateFunction={tepmlateFunction}
+            />
+            {afterChildElement?.(el) ?? null}
+          </>
+        );
+      } else {
+        childrenData[key] = el.children.map((child, i) => {
+          if (i === 0 && i === el.children!.length - 1) {
+            return (
+              <Fragment key={child}>
+                {preChildElement?.(el) ?? null}
+                <Render
+                  elementContainer={elementContainer}
+                  elements={[child]}
+                  componentsById={componentsById}
+                  isEditMode={isEditMode}
+                  preElement={preElement}
+                  preChildElement={preChildElement}
+                  afterChildElement={afterChildElement}
+                  props={props}
+                  tepmlateFunction={tepmlateFunction}
+                />
+                {afterChildElement?.(el) ?? null}
+              </Fragment>
+            );
+          }
+          if (i === 0) {
+            return (
+              <Fragment key={child}>
+                {preChildElement?.(el) ?? null}
+                <Render
+                  elementContainer={elementContainer}
+                  elements={[child]}
+                  componentsById={componentsById}
+                  isEditMode={isEditMode}
+                  preElement={preElement}
+                  preChildElement={preChildElement}
+                  afterChildElement={afterChildElement}
+                  props={props}
+                  tepmlateFunction={tepmlateFunction}
+                />
+              </Fragment>
+            );
+          }
+          if (i === el.children!.length - 1) {
+            return (
+              <Fragment key={child}>
+                <Render
+                  elementContainer={elementContainer}
+                  elements={[child]}
+                  componentsById={componentsById}
+                  isEditMode={isEditMode}
+                  preElement={preElement}
+                  preChildElement={preChildElement}
+                  afterChildElement={afterChildElement}
+                  props={props}
+                  tepmlateFunction={tepmlateFunction}
+                />
+                {afterChildElement?.(el) ?? null}
+              </Fragment>
+            );
+          }
+          return (
+            <Render
+              key={child}
+              elementContainer={elementContainer}
+              elements={[child]}
+              componentsById={componentsById}
+              isEditMode={isEditMode}
+              preElement={preElement}
+              preChildElement={preChildElement}
+              afterChildElement={afterChildElement}
+              props={props}
+              tepmlateFunction={tepmlateFunction}
+            />
+          );
+        });
+      }
+    }
+    visitPropertyDeep(
+      properties[key],
+      overriddenData?.[key],
+      (property, parentData, key) => {
+        if (
+          property.type === "richText"
+          // || (property.type === "string" &&
+          // "editor" in property &&
+          // (property as StringProperty).editor === "richText" &&
+          // parentData?.[key])
+        ) {
+          parentData[key] = (
+            <div
+              dangerouslySetInnerHTML={{
+                __html: parentData?.[key].html ?? "",
+              }}
+            ></div>
+          );
+        }
+      },
+      overriddenData,
+      key
+    );
+    if (
+      tepmlateFunction &&
+      properties?.[key].type === "string" &&
+      !(properties?.[key] as StringProperty).dontInterpolate
+    ) {
+      const template = el.data[key] ?? "";
+      textData[key] = tepmlateFunction(template, props);
+    }
+    if (properties?.[key].type === "template") {
+      const elementContainer = (el.data[key] as
+        | ElementContainer
+        | undefined) ?? {
+        id: randomId(),
+        children: [],
+        elements: {},
+      };
+
+      const templateData = {
+        elementContainer: elementContainer,
+        elements: elementContainer.children,
+        componentsById: componentsById,
+        isEditMode: false,
+        props: props,
+        tepmlateFunction: tepmlateFunction,
+      };
+      overriddenData[key] = templateData;
+    }
+  }
+
+  return (
+    <Fragment key={el.id}>
+      {preElement?.(el) ?? null}
+      <Comp
+        {...overriddenData}
+        {...textData}
+        {...childrenData}
+        tyzo={{
+          ...el,
+          isEditMode,
+        }}
+      />
+    </Fragment>
+  );
+}
+
+export function Render({
+  elementContainer,
+  elements,
+  componentsById,
+  isEditMode,
+  preElement,
+  preChildElement,
+  afterChildElement,
+  tepmlateFunction,
+  props,
+}: RenderProps) {
   return (
     <>
-      {elements.map((elId) => {
-        const el = elementContainer.elements[elId];
-        if (!el) {
-          return null;
-        }
-        const { Comp, properties } = getComponent(
-          el.componentId,
-          componentsById
-        );
-        if (!Comp) {
-          return null;
-        }
-        const textData: Record<string, string> = {};
-        const childrenData: Record<
-          string,
-          React.JSX.Element | React.JSX.Element[]
-        > = {};
-        const overriddenData = el.data
-          ? JSON.parse(JSON.stringify(el.data)) // This is a proxy object since we're usig yjs, structuredClone doesn't work :(
-          : {};
-        for (const key of Object.keys(properties)) {
-          if (properties[key].type === "children") {
-            // We want to interfere as little as possible with the DOM when rendering children
-            // That's why we are doing it like this, so we get one element per child, which at least makes stuff like `children.map` work
-            if (!el.children || el.children.length === 0) {
-              childrenData[key] = (
-                <>
-                  {preChildElement?.(el) ?? null}
-                  <Render
-                    elementContainer={elementContainer}
-                    elements={el.children ?? []}
-                    componentsById={componentsById}
-                    isEditMode={isEditMode}
-                    preElement={preElement}
-                    preChildElement={preChildElement}
-                    afterChildElement={afterChildElement}
-                    props={props}
-                    tepmlateFunction={tepmlateFunction}
-                  />
-                  {afterChildElement?.(el) ?? null}
-                </>
-              );
-            } else {
-              childrenData[key] = el.children.map((child, i) => {
-                if (i === 0 && i === el.children!.length - 1) {
-                  return (
-                    <Fragment key={child}>
-                      {preChildElement?.(el) ?? null}
-                      <Render
-                        elementContainer={elementContainer}
-                        elements={[child]}
-                        componentsById={componentsById}
-                        isEditMode={isEditMode}
-                        preElement={preElement}
-                        preChildElement={preChildElement}
-                        afterChildElement={afterChildElement}
-                        props={props}
-                        tepmlateFunction={tepmlateFunction}
-                      />
-                      {afterChildElement?.(el) ?? null}
-                    </Fragment>
-                  );
-                }
-                if (i === 0) {
-                  return (
-                    <Fragment key={child}>
-                      {preChildElement?.(el) ?? null}
-                      <Render
-                        elementContainer={elementContainer}
-                        elements={[child]}
-                        componentsById={componentsById}
-                        isEditMode={isEditMode}
-                        preElement={preElement}
-                        preChildElement={preChildElement}
-                        afterChildElement={afterChildElement}
-                        props={props}
-                        tepmlateFunction={tepmlateFunction}
-                      />
-                    </Fragment>
-                  );
-                }
-                if (i === el.children!.length - 1) {
-                  return (
-                    <Fragment key={child}>
-                      <Render
-                        elementContainer={elementContainer}
-                        elements={[child]}
-                        componentsById={componentsById}
-                        isEditMode={isEditMode}
-                        preElement={preElement}
-                        preChildElement={preChildElement}
-                        afterChildElement={afterChildElement}
-                        props={props}
-                        tepmlateFunction={tepmlateFunction}
-                      />
-                      {afterChildElement?.(el) ?? null}
-                    </Fragment>
-                  );
-                }
-                return (
-                  <Render
-                    key={child}
-                    elementContainer={elementContainer}
-                    elements={[child]}
-                    componentsById={componentsById}
-                    isEditMode={isEditMode}
-                    preElement={preElement}
-                    preChildElement={preChildElement}
-                    afterChildElement={afterChildElement}
-                    props={props}
-                    tepmlateFunction={tepmlateFunction}
-                  />
-                );
-              });
-            }
-          }
-          visitPropertyDeep(
-            properties[key],
-            overriddenData?.[key],
-            (property, parentData, key) => {
-              if (
-                property.type === "richText"
-                // || (property.type === "string" &&
-                // "editor" in property &&
-                // (property as StringProperty).editor === "richText" &&
-                // parentData?.[key])
-              ) {
-                parentData[key] = (
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: parentData?.[key].html ?? "",
-                    }}
-                  ></div>
-                );
-              }
-            },
-            overriddenData,
-            key
-          );
-          if (
-            tepmlateFunction &&
-            properties?.[key].type === "string" &&
-            !(properties?.[key] as StringProperty).dontInterpolate
-          ) {
-            const template = el.data[key] ?? "";
-            textData[key] = tepmlateFunction(template, props);
-          }
-          if (properties?.[key].type === "template") {
-            const elementContainer = (el.data[key] as
-              | ElementContainer
-              | undefined) ?? {
-              id: randomId(),
-              children: [],
-              elements: {},
-            };
-            const Comp = (props: any) => (
-              <Render
-                elementContainer={elementContainer}
-                elements={elementContainer.children}
-                componentsById={componentsById}
-                isEditMode={false}
-                props={props}
-                tepmlateFunction={tepmlateFunction}
-              />
-            );
-            overriddenData[key] = Comp;
-          }
-        }
-        return (
-          <Fragment key={el.id}>
-            {preElement?.(el) ?? null}
-            <Comp
-              {...overriddenData}
-              {...textData}
-              {...childrenData}
-              tyzo={{
-                ...el,
-                isEditMode,
-              }}
-            />
-          </Fragment>
-        );
-      })}
+      {elements.map((elId) => (
+        <RenderElement
+          key={elId}
+          elementContainer={elementContainer}
+          elementId={elId}
+          componentsById={componentsById}
+          isEditMode={isEditMode}
+          preElement={preElement}
+          preChildElement={preChildElement}
+          afterChildElement={afterChildElement}
+          tepmlateFunction={tepmlateFunction}
+          props={props}
+        />
+      ))}
     </>
   );
 }

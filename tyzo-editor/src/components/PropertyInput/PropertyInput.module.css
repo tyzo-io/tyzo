@@ -101,3 +101,27 @@
     width: 1em;
     opacity: 0.5;
 }
+
+:global(.tyzo) .fieldInput {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+:global(.tyzo) .fieldInput input {
+    flex: 1;
+}
+
+:global(.tyzo) .fieldInput button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    padding-right: 0;
+    margin-left: 4px;
+    color: #666;
+}
+
+:global(.tyzo) .fieldInput button:hover {
+    color: black;
+}

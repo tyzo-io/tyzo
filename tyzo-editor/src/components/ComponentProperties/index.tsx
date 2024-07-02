@@ -35,10 +35,7 @@ export function ComponentProperties({ id }: { id: string }) {
           components={components}
           inputs={inputs}
           property={property}
-          value={
-            element.data?.[property.name] ??
-            ("defaultData" in property ? property.defaultData : undefined)
-          }
+          value={element.data?.[property.name]}
           setValue={(value) => {
             if (!element.data) {
               element.data = {};

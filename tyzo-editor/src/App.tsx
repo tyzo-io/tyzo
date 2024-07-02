@@ -1,8 +1,9 @@
-import { ReactNode } from "react";
 import { withCss } from "./CssProps";
 import { Editor } from "./components/Editor";
 import { Config } from "./components/Editor/types";
 import { CssEdit } from "./lib";
+import { RenderTemplate } from "./components/Render/RenderTemplate";
+import { RenderProps } from "./components/Render/types";
 
 const config: Config = {
   async save(data) {
@@ -107,29 +108,40 @@ const config: Config = {
           label: "Test Template",
           defaultData: undefined,
           exampleTemplateData: {
-            title: "Text Title",
+            title: "Test Title",
             createdAt: new Date("2024-06-01T15:23:12"),
           },
         },
       },
-      component: ({
-        template,
-      }: {
-        template?: (props: { title: string; createdAt: Date }) => ReactNode;
-      }) => {
-        const Comp = template ?? "div";
+      component: ({ template }: { template: RenderProps | undefined }) => {
         return (
           <div>
             Container
-            <Comp title="Test Title 1" createdAt={new Date()}>
-              Content1
-            </Comp>
-            <Comp title="Test Title 2" createdAt={new Date()}>
-              Content2
-            </Comp>
-            <Comp title="Test Title 3" createdAt={new Date()}>
-              Content3
-            </Comp>
+            <RenderTemplate
+              template={template}
+              props={{
+                title: "Test Title 1",
+                createdAt: new Date(),
+                children: "Content1",
+              }}
+            />
+            <RenderTemplate
+              template={template}
+              props={{
+                title: "Test Title 2",
+                createdAt: new Date(),
+                children: "Content2",
+              }}
+            />
+            <RenderTemplate
+              {...template}
+              template={template}
+              props={{
+                title: "Test Title 3",
+                createdAt: new Date(),
+                children: "Content3",
+              }}
+            />
           </div>
         );
       },

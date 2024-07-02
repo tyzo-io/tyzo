@@ -48,7 +48,7 @@ export function DropZone({
         const Comp = componentId && componentsById[componentId];
         if (Comp) {
           const el = addNewElement(elementContainer, Comp, parentId);
-          setFocusedItem({ id: el.id, isFromTree: false });
+          setFocusedItem({ id: el.id, isFromTree: false, isClick: false });
           return;
         }
 

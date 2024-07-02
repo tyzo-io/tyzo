@@ -44,30 +44,32 @@ export type Translations = {
   bolder: string;
   margin: string;
   padding: string;
-  display: string
-  flexStart: string
-  flexEnd: string
-  baseline: string
-  stretch: string
-  block: string
-  flex: string
-  inline: string
-  inlineBlock: string
-  flexDirection: string
-  row: string
-  column: string
-  rowReverse: string
-  columnReverse: string
-  spaceBetween: string
-  spaceEvenly: string
-  justifyContent: string
-  alignItems: string
-  gap: string
+  display: string;
+  flexStart: string;
+  flexEnd: string;
+  baseline: string;
+  stretch: string;
+  block: string;
+  flex: string;
+  inline: string;
+  inlineBlock: string;
+  flexDirection: string;
+  row: string;
+  column: string;
+  rowReverse: string;
+  columnReverse: string;
+  spaceBetween: string;
+  spaceEvenly: string;
+  justifyContent: string;
+  alignItems: string;
+  gap: string;
 
   remove: string;
   removeCondition: string;
   addCondition: string;
   breakpoint: string;
+  breakpoints: string;
+  addBreakpoint: string;
 
   mobileScreenSize: string;
   tabletScreenSize: string;
@@ -147,6 +149,8 @@ export const en: Translations = {
   addCondition: "Add Condition",
   removeCondition: "Remove Condition",
   breakpoint: "Breakpoint",
+  breakpoints: "Breakpoints",
+  addBreakpoint: "Add Breakpoint",
 
   mobileScreenSize: "Mobile screen size",
   tabletScreenSize: "Tablet screen size",
