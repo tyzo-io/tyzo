@@ -14,9 +14,20 @@ const authUrl = "https://www.tyzo.io/login";
 const anonKey =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1Zmhjampxd2lwbHJiYnhlbG9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTA2ODE1NzYsImV4cCI6MjAyNjI1NzU3Nn0.7n2rh94fVpFeTKjRUsHG3X0E_8baIJTuxWO7m4RjNao";
 
-const supabase = createClient<Database>(supabaseUrl, anonKey);
+export const serviceClientConfig = ({
+  spaceId,
+  backendUrl,
+  anonKey: anonKeyFromProps,
+}: {
+  spaceId: string;
+  backendUrl?: string;
+  anonKey?: string;
+}) => {
+  const supabase = createClient<Database>(
+    backendUrl ?? supabaseUrl,
+    anonKeyFromProps ?? anonKey
+  );
 
-export const serviceClientConfig = ({ spaceId }: { spaceId: string }) => {
   const config: TyzoConfig = {
     spaceId,
     spaces: {

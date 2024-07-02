@@ -17,19 +17,24 @@ export function ConfigProvider({
   children,
   components,
   config: configFromProps,
+  serviceConfig,
 }: {
   spaceId: string | null | undefined;
   children: React.ReactNode;
   components: Record<string, ComponentInfo>;
   config?: Partial<Config>;
+  serviceConfig?: {
+    backendUrl?: string;
+    anonKey?: string;
+  };
 }) {
   const config = useMemo(() => {
     if (!spaceId) {
       return null;
     }
-    const config = serviceClientConfig({ spaceId });
+    const config = serviceClientConfig({ ...serviceConfig, spaceId });
     return { ...config, ...configFromProps };
-  }, [spaceId, configFromProps]);
+  }, [spaceId, configFromProps, serviceConfig]);
 
   if (!config) {
     return <div>No space id passed in your config</div>;
@@ -57,12 +62,25 @@ export function useTree() {
   return useContext(TreeContext);
 }
 
-export function TreeProvider({ children }: { children: React.ReactNode }) {
+export function TreeProvider({
+  children,
+  treeId,
+}: {
+  children: React.ReactNode;
+  treeId?: string;
+}) {
   const config = useConfig();
   const [selectedTree, setSelectedTree] = useState<Tree | null>(null);
 
   const { data, refetch } = useData(async () => {
     const trees = await config.trees.list();
+    if (treeId) {
+      const tree = trees.data.find((tree) => tree.id === treeId);
+      if (tree) {
+        setSelectedTree(tree);
+        return trees;
+      }
+    }
     const savedTreeId = localStorage.getItem("tyzo-tree-id");
     if (savedTreeId) {
       const tree = trees.data.find((tree) => tree.id === savedTreeId);

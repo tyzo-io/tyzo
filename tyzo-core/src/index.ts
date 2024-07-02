@@ -5,3 +5,5 @@ export { Editor } from "./Editor";
 export { StandardComponents } from "./std";
 export { withCss } from "@tyzo/page-editor";
 export { serviceClientConfig };
+export * from "./std/Inputs";
+export * from "./std/index";

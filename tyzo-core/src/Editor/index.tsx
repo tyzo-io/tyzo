@@ -17,6 +17,10 @@ import { Profile } from "./Profile";
 import { ComponentInfo, Config } from "@tyzo/page-editor";
 import { Branches } from "./Branches";
 
+export * from "../std/Inputs";
+export * from "../std/index";
+export * from "./Context";
+
 export function SidebarLayout({ children }: { children: React.ReactNode }) {
   return (
     <ResizablePanelGroup direction="horizontal" className="h-full">
@@ -36,10 +40,17 @@ export function Editor({
   spaceId,
   components,
   config,
+  basename,
+  serviceConfig,
 }: {
   spaceId: string | null | undefined;
   components: Record<string, ComponentInfo>;
   config?: Partial<Config>;
+  basename?: string;
+  serviceConfig?: {
+    backendUrl?: string;
+    anonKey?: string;
+  };
 }) {
   const [router] = useState(
     createBrowserRouter(
@@ -86,13 +97,18 @@ export function Editor({
         },
       ],
       {
-        basename: "/admin",
+        basename: basename ?? "/admin",
       }
     )
   );
 
   return (
-    <ConfigProvider spaceId={spaceId} components={components} config={config}>
+    <ConfigProvider
+      spaceId={spaceId}
+      components={components}
+      config={config}
+      serviceConfig={serviceConfig}
+    >
       <TreeProvider>
         <RouterProvider router={router} />
       </TreeProvider>
