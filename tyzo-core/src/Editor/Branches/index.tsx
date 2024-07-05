@@ -1,5 +1,4 @@
 import { useData } from "@/lib/useData";
-import { NavBar } from "../NavBar";
 import { useConfig } from "../Context";
 import {
   Dialog,
@@ -34,7 +33,6 @@ import {
 } from "../../components/ui/table";
 import { Edit, Trash } from "lucide-react";
 import s from "./style.module.css";
-import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   alias: z.string(),
@@ -53,16 +51,7 @@ export function Branches() {
   );
 
   return (
-    <div className={cn("tyzo", s.Container)}>
-      <NavBar
-        breadCrumbs={[
-          {
-            link: "/",
-            label: "Home",
-          },
-          { link: "/branches", label: "Branches" },
-        ]}
-      />
+    <div>
       <h1 className={s.Title}>Branches</h1>
       <Table>
         <TableHeader>
@@ -193,21 +182,24 @@ function EditBranchForm({
     },
   });
 
-  const handleSave = useCallback(async (values: z.infer<typeof formSchema>) => {
-    setIsLoading(true);
-    if (id) {
-      await config.trees.update(id, {
-        alias: values.alias,
-      });
-    } else {
-      await config.trees.add({
-        id: crypto.randomUUID(),
-        alias: values.alias,
-      });
-    }
-    setIsLoading(false);
-    onUpdate();
-  }, []);
+  const handleSave = useCallback(
+    async (values: z.infer<typeof formSchema>) => {
+      setIsLoading(true);
+      if (id) {
+        await config.trees.update(id, {
+          alias: values.alias,
+        });
+      } else {
+        await config.trees.add({
+          id: crypto.randomUUID(),
+          alias: values.alias,
+        });
+      }
+      setIsLoading(false);
+      onUpdate();
+    },
+    [id, onUpdate, config.trees]
+  );
 
   return (
     <Form {...form}>

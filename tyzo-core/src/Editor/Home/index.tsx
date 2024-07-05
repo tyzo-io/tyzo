@@ -21,8 +21,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { NavBar } from "../NavBar";
-import { cn } from "@/lib/utils";
 import s from "./style.module.css";
 
 export function Home() {
@@ -37,8 +35,7 @@ export function Home() {
   );
 
   return (
-    <div className={cn("tyzo", s.Container)}>
-      <NavBar withBranchSelector />
+    <div>
       {/* <p className="text-muted-foreground text-sm font-bold">Connections</p> */}
       <p className={s.Title}>Pages</p>
       <div className={s.grid}>

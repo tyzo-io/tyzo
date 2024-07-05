@@ -1,8 +1,3 @@
-:global(.tyzo).Container {
-  padding: 1rem;
-  margin: 1em auto;
-}
-
 :global(.tyzo) .Title {
   margin-bottom: 0.5rem;
   font-size: 0.875rem;

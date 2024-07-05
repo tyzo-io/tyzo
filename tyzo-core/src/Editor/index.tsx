@@ -16,10 +16,27 @@ import { SpaceSettings } from "./SpaceSettings";
 import { Profile } from "./Profile";
 import { ComponentInfo, Config } from "@tyzo/page-editor";
 import { Branches } from "./Branches";
+import { NavBar } from "./NavBar";
+import { cn } from "@/lib/utils";
+import s from "./style.module.css";
 
 export * from "../std/Inputs";
 export * from "../std/index";
 export * from "./Context";
+
+export { CheckSession } from "./CheckSession";
+export { Branches } from "./Branches";
+export { PageEditor } from "./Editor";
+export { Home } from "./Home";
+export { Profile } from "./Profile";
+export { SpaceSettings } from "./SpaceSettings";
+export { Team } from "./Team";
+export {
+  Link,
+  createBrowserRouter,
+  RouterProvider,
+  useNavigate,
+} from "react-router-dom";
 
 export function SidebarLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -71,23 +88,80 @@ export function Editor({
           children: [
             {
               path: "/",
-              element: <Home />,
+              element: (
+                <div className={cn("tyzo", s.Container)}>
+                  <NavBar withBranchSelector />
+                  <Home />
+                </div>
+              ),
             },
             {
               path: "/branches",
-              element: <Branches />,
+              element: (
+                <div className={cn("tyzo", s.Container)}>
+                  <NavBar
+                    breadCrumbs={[
+                      {
+                        link: "/",
+                        label: "Home",
+                      },
+                      { link: "/branches", label: "Branches" },
+                    ]}
+                  />
+                  <Branches />
+                </div>
+              ),
             },
             {
               path: "/team",
-              element: <Team />,
+              element: (
+                <div className={cn("tyzo", s.Container)}>
+                  <NavBar
+                    breadCrumbs={[
+                      {
+                        link: "/",
+                        label: "Home",
+                      },
+                      { link: "/team", label: "Team" },
+                    ]}
+                  />
+                  <Team />
+                </div>
+              ),
             },
             {
               path: "/settings",
-              element: <SpaceSettings />,
+              element: (
+                <div className={cn("tyzo", s.Container)}>
+                  <NavBar
+                    breadCrumbs={[
+                      {
+                        link: "/",
+                        label: "Home",
+                      },
+                      { link: "/settings", label: "Settings" },
+                    ]}
+                  />
+                  <SpaceSettings />
+                </div>
+              ),
             },
             {
               path: "/profile",
-              element: <Profile />,
+              element: (
+                <div className={cn("tyzo", s.Container)}>
+                  <NavBar
+                    breadCrumbs={[
+                      {
+                        link: "/",
+                        label: "Home",
+                      },
+                      { link: "/profile", label: "Profile" },
+                    ]}
+                  />
+                  <Profile />
+                </div>
+              ),
             },
             {
               path: "/pages/:id",

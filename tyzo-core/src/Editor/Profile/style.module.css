@@ -29,12 +29,6 @@
   opacity: 0.7;
 } */
 
-
-:global(.tyzo).Container {
-  padding: 1rem;
-  margin: 1em auto;
-}
-
 :global(.tyzo) .Title {
   font-size: 1.875rem;
   line-height: 2.25rem;

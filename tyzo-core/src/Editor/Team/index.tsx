@@ -1,5 +1,4 @@
 import { useData } from "@/lib/useData";
-import { NavBar } from "../NavBar";
 import { useConfig } from "../Context";
 import {
   Dialog,
@@ -41,7 +40,6 @@ import {
 import { Edit, Plus, X } from "lucide-react";
 import type { Permission } from "@/tyzo-service/config";
 import s from "./style.module.css";
-import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -56,16 +54,7 @@ export function Team() {
   const userToEdit = data?.data.find((user) => user.user.id === userIdToEdit);
 
   return (
-    <div className={cn("tyzo", s.Container)}>
-      <NavBar
-        breadCrumbs={[
-          {
-            link: "/",
-            label: "Home",
-          },
-          { link: "/team", label: "Team" },
-        ]}
-      />
+    <div>
       <h1 className={s.Title}>Team</h1>
       <Table>
         <TableHeader>
@@ -215,12 +204,15 @@ function AddUserForm({ onUpdate }: { onUpdate: () => void }) {
     },
   });
 
-  const handleSave = useCallback(async (values: z.infer<typeof formSchema>) => {
-    setIsLoading(true);
-    await config.users.add(values.email, values.permission, values.scope);
-    setIsLoading(false);
-    onUpdate();
-  }, []);
+  const handleSave = useCallback(
+    async (values: z.infer<typeof formSchema>) => {
+      setIsLoading(true);
+      await config.users.add(values.email, values.permission, values.scope);
+      setIsLoading(false);
+      onUpdate();
+    },
+    [onUpdate, config.users]
+  );
 
   return (
     <Form {...form}>

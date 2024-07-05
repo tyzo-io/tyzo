@@ -1,5 +1,3 @@
-import { NavBar } from "../NavBar";
-
 import { useCallback, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -19,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import type { User } from "@/tyzo-service/config";
 import { Label } from "@radix-ui/react-label";
 import s from "./style.module.css";
-import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   name: z.string(),
@@ -81,16 +78,7 @@ export function Profile() {
   }
 
   return (
-    <div className={cn("tyzo", s.Container)}>
-      <NavBar
-        breadCrumbs={[
-          {
-            link: "/",
-            label: "Home",
-          },
-          { link: "/profile", label: "Profile" },
-        ]}
-      />
+    <div>
       <h1 className={s.Title}>Profile</h1>
       <ProfileForm user={user?.user} />
     </div>
