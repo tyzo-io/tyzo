@@ -1,4 +1,4 @@
-:global(.tyzo) .DropdownMenuSubTrigger {
+.DropdownMenuSubTrigger {
   display: flex;
   cursor: default;
   user-select: none;
@@ -16,26 +16,26 @@
   outline-offset: 2px;
 }
 
-:global(.tyzo) .DropdownMenuSubTrigger:focus {
+.DropdownMenuSubTrigger:focus {
   background-color: hsl(var(--accent));
 }
 
-:global(.tyzo) .DropdownMenuSubTrigger[data-state=open] {
+.DropdownMenuSubTrigger[data-state=open] {
   background-color: hsl(var(--accent));
 }
 
 
-:global(.tyzo) .Inset {
+.Inset {
   padding-left: 2rem;
 }
 
-:global(.tyzo) .Chevron {
+.Chevron {
   margin-left: auto;
   height: 1rem;
   width: 1rem;
 }
 
-:global(.tyzo).DropdownMenuSubContent {
+.DropdownMenuSubContent {
   z-index: 502;
   min-width: 8rem;
   overflow: hidden;
@@ -63,7 +63,7 @@
   }
 }
 
-:global(.tyzo).DropdownMenuSubContent[data-state=open] {
+.DropdownMenuSubContent[data-state=open] {
   animation-name: enter;
   animation-duration: 150ms;
   --tw-enter-opacity: initial;
@@ -75,7 +75,7 @@
   --tw-enter-scale: .95;
 }
 
-:global(.tyzo).DropdownMenuSubContent[data-state=closed] {
+.DropdownMenuSubContent[data-state=closed] {
   animation-name: exit;
   animation-duration: 150ms;
   --tw-exit-opacity: initial;
@@ -87,23 +87,23 @@
   --tw-exit-scale: .95;
 }
 
-:global(.tyzo).DropdownMenuSubContent[data-side=bottom] {
+.DropdownMenuSubContent[data-side=bottom] {
   --tw-enter-translate-y: -0.5rem;
 }
 
-:global(.tyzo).DropdownMenuSubContent[data-side=left] {
+.DropdownMenuSubContent[data-side=left] {
   --tw-enter-translate-x: 0.5rem;
 }
 
-:global(.tyzo).DropdownMenuSubContent[data-side=right] {
+.DropdownMenuSubContent[data-side=right] {
   --tw-enter-translate-x: -0.5rem;
 }
 
-:global(.tyzo).DropdownMenuSubContent[data-side=top] {
+.DropdownMenuSubContent[data-side=top] {
   --tw-enter-translate-y: 0.5rem;
 }
 
-:global(.tyzo).DropdownMenuContent {
+.DropdownMenuContent {
   z-index: 501;
   min-width: 8rem;
   overflow: hidden;
@@ -117,7 +117,7 @@
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
-:global(.tyzo).DropdownMenuContent[data-state=open] {
+.DropdownMenuContent[data-state=open] {
   animation-name: enter;
   animation-duration: 150ms;
   --tw-enter-opacity: initial;
@@ -129,7 +129,7 @@
   --tw-enter-scale: .95;
 }
 
-:global(.tyzo).DropdownMenuContent[data-state=closed] {
+.DropdownMenuContent[data-state=closed] {
   animation-name: exit;
   animation-duration: 150ms;
   --tw-exit-opacity: initial;
@@ -141,24 +141,24 @@
   --tw-exit-scale: .95;
 }
 
-:global(.tyzo).DropdownMenuContent[data-side=bottom] {
+.DropdownMenuContent[data-side=bottom] {
   --tw-enter-translate-y: -0.5rem;
 }
 
-:global(.tyzo).DropdownMenuContent[data-side=left] {
+.DropdownMenuContent[data-side=left] {
   --tw-enter-translate-x: 0.5rem;
 }
 
-:global(.tyzo).DropdownMenuContent[data-side=right] {
+.DropdownMenuContent[data-side=right] {
   --tw-enter-translate-x: -0.5rem;
 }
 
-:global(.tyzo).DropdownMenuContent[data-side=top] {
+.DropdownMenuContent[data-side=top] {
   --tw-enter-translate-y: 0.5rem;
 }
 
 
-:global(.tyzo) .DropdownMenuItem {
+.DropdownMenuItem {
   position: relative;
   display: flex;
   cursor: default;
@@ -180,18 +180,18 @@
   transition-duration: 150ms;
 }
 
-:global(.tyzo) .DropdownMenuItem:focus {
+.DropdownMenuItem:focus {
   background-color: hsl(var(--accent));
   color: hsl(var(--accent-foreground));
 }
 
-:global(.tyzo) .DropdownMenuItem[data-disabled] {
+.DropdownMenuItem[data-disabled] {
   pointer-events: none;
   opacity: 0.5;
 }
 
 
-:global(.tyzo) .DropdownMenuCheckboxItem {
+.DropdownMenuCheckboxItem {
   position: relative;
   display: flex;
   cursor: default;
@@ -213,18 +213,18 @@
   transition-duration: 150ms;
 }
 
-:global(.tyzo) .DropdownMenuCheckboxItem:focus {
+.DropdownMenuCheckboxItem:focus {
   background-color: hsl(var(--accent));
   color: hsl(var(--accent-foreground));
 }
 
-:global(.tyzo) .DropdownMenuCheckboxItem[data-disabled] {
+.DropdownMenuCheckboxItem[data-disabled] {
   pointer-events: none;
   opacity: 0.5;
 }
 
 
-:global(.tyzo) .DropdownMenuCheckboxItemInner {
+.DropdownMenuCheckboxItemInner {
   position: absolute;
   left: 0.5rem;
   display: flex;
@@ -236,12 +236,12 @@
   justify-content: center;
 }
 
-:global(.tyzo) .Icon {
+.Icon {
   height: 1rem;
   width: 1rem;
 }
 
-:global(.tyzo) .DropdownMenuRadioItem {
+.DropdownMenuRadioItem {
   position: relative;
   display: flex;
   cursor: default;
@@ -263,18 +263,18 @@
   transition-duration: 150ms;
 }
 
-:global(.tyzo) .DropdownMenuRadioItem:focus {
+.DropdownMenuRadioItem:focus {
   background-color: hsl(var(--accent));
   color: hsl(var(--accent-foreground));
 }
 
-:global(.tyzo) .DropdownMenuRadioItem[data-disabled] {
+.DropdownMenuRadioItem[data-disabled] {
   pointer-events: none;
   opacity: 0.5;
 }
 
 
-:global(.tyzo) .DropdownMenuRadioItemInner {
+.DropdownMenuRadioItemInner {
   position: absolute;
   left: 0.5rem;
   display: flex;
@@ -286,13 +286,13 @@
   justify-content: center;
 }
 
-:global(.tyzo) .Radio {
+.Radio {
   height: 0.5rem;
   width: 0.5rem;
   fill: currentColor;
 }
 
-:global(.tyzo) .DropdownMenuLabel {
+.DropdownMenuLabel {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
   padding-top: 0.25rem;
@@ -304,7 +304,7 @@
   font-weight: 600;
 }
 
-:global(.tyzo) .DropdownMenuSeparator {
+.DropdownMenuSeparator {
   margin-left: -0.25rem;
   margin-right: -0.25rem;
   margin-top: 0.25rem;
@@ -313,10 +313,43 @@
   background-color: hsl(var(--muted));
 }
 
-:global(.tyzo) .DropdownMenuShortcut {
+.DropdownMenuShortcut {
   margin-left: auto;
   font-size: 0.75rem;
   line-height: 1rem;
   letter-spacing: 0.1em;
   opacity: 0.6;
+}
+
+.DropdownMenuContent, .DropdownMenuSubContent {
+  --background: 0, 0%, 100%, 1;
+  --foreground: 222.2 84% 4.9%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 222.2 84% 4.9%;
+
+  --radius: 0.5rem;
+  border: 1px solid hsl(var(--border));
 }

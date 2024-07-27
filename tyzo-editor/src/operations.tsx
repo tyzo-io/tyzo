@@ -9,7 +9,7 @@ import { randomId } from "./util/id";
 export function addNewElement(
   elementContainer: ElementContainer,
   Component: ComponentInfo,
-  parentId?: PageElementId,
+  parent?: { id: PageElementId; propertyName: string },
   afterId?: PageElementId
 ) {
   const data: PageElement = {
@@ -38,7 +38,7 @@ export function addNewElement(
   //   }
   // }
 
-  addElement(elementContainer, data, parentId, afterId);
+  addElement(elementContainer, data, parent, afterId);
 
   return data;
 }
@@ -46,28 +46,38 @@ export function addNewElement(
 export function addElement(
   elementContainer: ElementContainer,
   element: PageElement,
-  parentId?: PageElementId,
+  parent?: { id: PageElementId; propertyName: string },
   afterId?: PageElementId
 ) {
   elementContainer.elements[element.id] = element;
 
-  if (parentId) {
-    const parent = elementContainer.elements[parentId];
-    if (!parent) {
+  if (parent) {
+    const parentElement = elementContainer.elements[parent.id];
+    if (!parentElement) {
       return;
     }
-    if (!parent.children) {
-      parent.children = [];
+    if (!parentElement.childrenByProperty) {
+      parentElement.childrenByProperty = {};
+    }
+    if (!parentElement.childrenByProperty[parent.propertyName]) {
+      parentElement.childrenByProperty[parent.propertyName] = [];
     }
     if (afterId) {
-      const index = parent.children?.findIndex((el) => el === afterId) ?? -1;
+      const index =
+        parentElement.childrenByProperty[parent.propertyName]?.findIndex(
+          (el) => el === afterId
+        ) ?? -1;
       if (index >= 0) {
-        parent.children?.splice(index + 1, 0, element.id);
+        parentElement.childrenByProperty[parent.propertyName]?.splice(
+          index + 1,
+          0,
+          element.id
+        );
       } else {
-        parent.children?.push(element.id);
+        parentElement.childrenByProperty[parent.propertyName]?.push(element.id);
       }
     } else {
-      parent.children?.push(element.id);
+      parentElement.childrenByProperty[parent.propertyName]?.push(element.id);
     }
   } else {
     if (afterId) {
@@ -81,7 +91,7 @@ export function addElement(
       elementContainer.children.push(element.id);
     }
   }
-  elementContainer.elements[element.id]!.parent = parentId;
+  elementContainer.elements[element.id]!.parent = parent;
 }
 
 export function removeElement(
@@ -94,13 +104,15 @@ export function removeElement(
   if (!el) {
     return;
   }
-  const parent = el.parent
-    ? elementContainer.elements[el.parent]
-    : elementContainer;
+  const parentChildren = el.parent
+    ? elementContainer.elements[el.parent.id]?.childrenByProperty?.[
+        el.parent.propertyName
+      ]
+    : elementContainer.children;
+  const index = parentChildren?.findIndex((el) => el === id) ?? -1;
   el.parent = undefined;
-  const index = parent?.children?.findIndex((el) => el === id) ?? -1;
   if (index >= 0) {
-    parent?.children?.splice(index, 1);
+    parentChildren?.splice(index, 1);
   }
   elementContainer.elements[id] = undefined;
 }
@@ -108,7 +120,7 @@ export function removeElement(
 export function moveElement(
   elementContainer: ElementContainer,
   id: PageElementId,
-  parentId?: PageElementId,
+  parent?: { id: PageElementId; propertyName: string },
   afterId?: PageElementId
 ) {
   const element = elementContainer.elements[id];
@@ -116,8 +128,9 @@ export function moveElement(
     return null;
   }
   const dupe = JSON.parse(JSON.stringify(element));
+  const dupeParent = parent ? JSON.parse(JSON.stringify(parent)) : undefined;
   removeElement(elementContainer, id);
-  addElement(elementContainer, dupe, parentId, afterId);
+  addElement(elementContainer, dupe, dupeParent, afterId);
 }
 
 export function moveElementInParentBy(
@@ -129,19 +142,21 @@ export function moveElementInParentBy(
   if (!element) {
     return null;
   }
-  const parent = element.parent
-    ? elementContainer.elements[element.parent]
-    : elementContainer;
+  const parentChildren = element.parent
+    ? elementContainer.elements[element.parent.id]?.childrenByProperty?.[
+        element.parent.propertyName
+      ]
+    : elementContainer.children;
   if (parent) {
-    const index = parent?.children?.indexOf(element.id);
+    const index = parentChildren?.indexOf(element.id);
     if (
       typeof index === "number" &&
       index >= 0 &&
-      index + by < (parent?.children?.length ?? 0) &&
+      index + by < (parentChildren?.length ?? 0) &&
       index + by >= 0
     ) {
-      parent!.children!.splice(index, 1);
-      parent!.children!.splice(index + by, 0, element.id);
+      parentChildren!.splice(index, 1);
+      parentChildren!.splice(index + by, 0, element.id);
     }
   }
 }
@@ -163,7 +178,7 @@ export function moveElementUp(
 export function duplicateElement(
   elementContainer: ElementContainer,
   id: PageElementId,
-  newParent?: PageElementId
+  newParent?: { id: PageElementId; propertyName: string }
 ) {
   const element = elementContainer.elements[id];
   if (!element) {
@@ -174,12 +189,17 @@ export function duplicateElement(
   if (newParent) {
     dupe.parent = newParent;
   }
-  if (dupe.children) {
-    dupe.children = [];
+  if (dupe.childrenByProperty) {
+    dupe.childrenByProperty = {};
   }
   addElement(elementContainer, dupe, dupe.parent, id);
-  for (const child of element.children ?? []) {
-    duplicateElement(elementContainer, child, dupe.id);
+  for (const childPropName of Object.keys(element.childrenByProperty ?? {})) {
+    for (const child of element.childrenByProperty?.[childPropName] ?? []) {
+      duplicateElement(elementContainer, child, {
+        id: dupe.id,
+        propertyName: childPropName,
+      });
+    }
   }
   return dupe;
 }

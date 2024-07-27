@@ -1,4 +1,4 @@
-:global(.tyzo) .hoverCard {
+.hoverCard {
   z-index: 505;
   width: 16rem;
   border-radius: 0.375rem;

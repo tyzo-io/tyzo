@@ -1,4 +1,4 @@
-:global(.tyzo) .Input {
+.Input {
 
     --color-blanc: #e1e1e1;
     --color-athens: #f7f9fc;
@@ -28,18 +28,18 @@
     /* width: 100%; */
 }
 
-:global(.tyzo) .Input::placeholder {
+.Input::placeholder {
     color: var(--color-silver);
 }
 
-:global(.tyzo) .Input[type="checkbox"] {
+.Input[type="checkbox"] {
     appearance: auto;
 }
 
-:global(.tyzo) .Input:disabled,
-:global(.tyzo) .Input.disabled,
-:global(.tyzo) .Input:read-only,
-:global(.tyzo) .Input.readonly {
+.Input:disabled,
+.Input.disabled,
+.Input:read-only,
+.Input.readonly {
     /* background-image: url('@mw/brand/icons/field-lock.icon.svg'); */
     background-position: calc(100% - 0.5em) center;
     background-repeat: no-repeat;
@@ -51,12 +51,12 @@
     padding-right: 2em;
 }
 
-:global(.tyzo) .Input:disabled,
-:global(.tyzo) .Input.disabled {
+.Input:disabled,
+.Input.disabled {
     cursor: not-allowed;
 }
 
-:global(.tyzo) .Input:invalid,
-:global(.tyzo) .Input.error {
+.Input:invalid,
+.Input.error {
     border-color: var(--color-light-red);
 }

@@ -62,8 +62,8 @@ export function Render({
       props={props}
       tepmlateFunction={templateFunction}
       preElement={(el) => <HackTyzoIdAttribute id={el.id} />}
-      preChildElement={(el) =>
-        (el.children?.length ?? 0) === 0 && (
+      preChildElement={(key, el, property) =>
+        (el.childrenByProperty?.[key]?.length ?? 0) === 0 && (
           <div
             style={{
               textAlign: "center",
@@ -75,20 +75,21 @@ export function Render({
               margin: "1em",
             }}
           >
-            {translations.containerEmpty.replace(
-              "{{}}",
-              componentsById[el.componentId]?.name ?? el.componentId
-            )}
+            {!property.noEmptyLabel &&
+              translations.containerEmpty.replace(
+                "{{}}",
+                componentsById[el.componentId]?.name ?? el.componentId
+              )}
           </div>
         )
       }
-      afterChildElement={(el) => {
+      afterChildElement={(key, el) => {
         if (isDragging) {
           return (
             <DropZone
               label={componentsById[el.componentId]?.name}
               elementContainer={elementContainer}
-              parentId={el.id}
+              parent={{ id: el.id, propertyName: key }}
             />
           );
         }

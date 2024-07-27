@@ -51,6 +51,15 @@ export type RichTextProperty = {
   };
 };
 
+export type ChildrenProperty = {
+  name: string;
+  label?: string;
+  description?: string;
+  type: "children";
+  noEmptyLabel?: boolean;
+  defaultData: any;
+};
+
 export type PlainProperty = {
   name: string;
   label?: string;
@@ -72,6 +81,7 @@ export type TemplateProperty = {
 
 export type ComponentProperty =
   | PlainProperty
+  | ChildrenProperty
   | RichTextProperty
   | StringProperty
   | ArrayProperty
@@ -110,8 +120,8 @@ export interface PageElement {
   id: PageElementId;
   componentId: ComponentId;
   data?: any;
-  parent?: PageElementId;
-  children?: PageElementId[];
+  parent?: { id: PageElementId; propertyName: string };
+  childrenByProperty?: Record<string, PageElementId[]>;
 }
 
 export interface ElementContainer {

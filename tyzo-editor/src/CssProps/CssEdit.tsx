@@ -173,7 +173,7 @@ export function CssDropdown({
   const { translations } = useTranslations();
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className={s.Margin}>
+      <DropdownMenuTrigger className={s.Button}>
         <Plus />
       </DropdownMenuTrigger>
       <DropdownMenuContent>

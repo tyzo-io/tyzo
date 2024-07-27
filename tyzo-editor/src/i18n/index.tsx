@@ -6,6 +6,7 @@ export type Translations = {
   containerEmpty: string;
   emptyPageInfo: string;
   dropHere: string;
+  noElements: string;
 
   saved: string;
   saving: string;
@@ -86,6 +87,7 @@ export const en: Translations = {
   containerEmpty: "This {{}} is empty",
   emptyPageInfo: "Drag and drop elements from the left side here.",
   dropHere: "Drop {{}}elements here",
+  noElements: "Nothing here",
 
   saved: "Saved",
   saving: "Saving...",

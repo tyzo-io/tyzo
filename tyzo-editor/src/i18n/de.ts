@@ -6,6 +6,7 @@ export const de: Translations = {
   containerEmpty: "{{}} ist leer",
   emptyPageInfo: "Ziehe Komponenten von der linken Seite hierher.",
   dropHere: "Platziere {{}}Elemente hier",
+  noElements: "Leer",
 
   saved: "Gespeichert",
   saving: "Speichert...",

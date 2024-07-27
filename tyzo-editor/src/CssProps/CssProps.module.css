@@ -1,40 +1,40 @@
-:global(.tyzo) .Icon {
+.Icon {
   height: 16px;
   width: 16px;
   margin-right: 8px;
 }
 
-:global(.tyzo) .IconNoMargin {
+.IconNoMargin {
   height: 16px;
   width: 16px;
 }
 
-:global(.tyzo) .SmallIcon {
+.SmallIcon {
   height: 12px;
   width: 12px;
   margin-right: 8px;
 }
 
-:global(.tyzo) .BigIcon {
+.BigIcon {
   height: 20px;
   width: 20px;
   margin-right: 8px;
 }
 
-:global(.tyzo) .Margin {
+.Margin {
   margin: 4px;
 }
 
-:global(.tyzo) .MarginTop {
+.MarginTop {
   margin-top: 4px;
 }
 
-:global(.tyzo) .PaddingVertical {
+.PaddingVertical {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-:global(.tyzo) .LabelRow {
+.LabelRow {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -42,16 +42,84 @@
   margin-bottom: 4px
 }
 
-:global(.tyzo) .Prop {
+.Prop {
   border-bottom: 1px solid rgba(127, 127, 127, 0.2);
   padding: 8px;
   font-size: 0.8em;
 }
 
-:global(.tyzo) .PropTitle {
+.PropTitle {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 4px;
   justify-content: space-between;
+}
+
+
+.Button {
+  margin: 4px;
+
+  --background: 0, 0%, 100%, 1;
+  --foreground: 222.2 84% 4.9%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 222.2 84% 4.9%;
+
+  --radius: 0.5rem;
+
+  border-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  --radius: 0.5em;
+  border-radius: calc(var(--radius) - 2px);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  --tw-ring-offset-color: hsl(var(--background));
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  border-style: solid;
+}
+
+.Button,
+input.Button:where([type='button']),
+input.Button:where([type='reset']),
+input.Button:where([type='submit']) {
+  -webkit-appearance: button;
+  /* 1 */
+  background-color: transparent;
+  /* 2 */
+  background-image: none;
+  /* 2 */
+}
+
+.Button,
+.Button[role="button"] {
+  cursor: pointer;
 }

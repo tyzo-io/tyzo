@@ -168,6 +168,7 @@ export function DefaultStringInput({
           {cardHeader?.buttons}
         </div>
         <select
+          className={s.select}
           value={safeValue}
           onChange={(e) => {
             if (e.target.value === "undefined") {

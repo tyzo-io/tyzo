@@ -42,7 +42,8 @@ function Center({
   head,
   templateFunction,
   getScale,
-  contextData
+  maxWidth,
+  contextData,
 }: {
   page: ElementContainer;
   contentWrapper:
@@ -53,6 +54,7 @@ function Center({
     | ((template: string, props: Record<string, any>) => string)
     | undefined;
   getScale: () => number;
+  maxWidth: string;
   contextData?: Record<string, any>;
 }) {
   const { elementContainer, editTemplate, ...hoverState } = useEditor();
@@ -75,6 +77,7 @@ function Center({
         </>
       }
       getScale={getScale}
+      maxWidth={maxWidth}
     >
       <div
         onMouseOver={(e) => overHandler(e, { isClick: false })}
@@ -112,13 +115,10 @@ function Center({
                   : contextData) ?? {}
               }
             />
-            <DropZone
-              elementContainer={elementContainer}
-              parentId={undefined}
-            />
+            <DropZone elementContainer={elementContainer} parent={undefined} />
             <HoverControls
-              elementContainer={elementContainer}
               hoverFrame={hoverFrame}
+              elementContainer={elementContainer}
               focusedItem={focusedItem}
               setFocusedItem={hoverState.setFocusedItem}
             />
@@ -158,16 +158,16 @@ export function EditorContentInner({
     | undefined;
   contextData?: Record<string, any>;
 }) {
-  const [maxWidth, setMaxWidth] = useState<string>();
+  const [maxWidth, setMaxWidth] = useState<string>("1280px");
   const { undoManager, isSaving, hasChanges } = usePage({ id });
   const [didInitPanzoom, setDidInitPanzoom] = useState(false);
   const { translations } = useTranslations();
-  const { elementContainer, setEditTemplate, editTemplate } = useEditor();
+  const { elementContainer, setEditTemplate, editTemplate, focusedItem } = useEditor();
   const [panzoomInstance, setPanzoomInstance] = useState<PanZoom>();
 
   return (
     <div className={s.editor}>
-      <div className={classNames("tyzo", s.header)}>
+      <div className={classNames(s.tyzo, s.header)}>
         {headerLeft ?? <div></div>}
         <div className={s.headerCenter}>
           <div className={s.maxWidthSelector}>
@@ -184,7 +184,7 @@ export function EditorContentInner({
               <Tablet className={s.icon} />
             </button>
             <button
-              onClick={() => setMaxWidth(undefined)}
+              onClick={() => setMaxWidth("1280px")}
               aria-label={translations.desktopScreenSize}
             >
               <Monitor className={s.icon} />
@@ -197,9 +197,11 @@ export function EditorContentInner({
       </div>
 
       <div className={s.belowHeader}>
-        <div className={classNames("tyzo", s.leftSide)}>
-          <ComponentsList elementContainer={elementContainer} />
-          <ElementTree elementsContainer={elementContainer} />
+        <div className={classNames(s.tyzo, s.leftSide)}>
+          <div className={s.leftSideContent}>
+            <ComponentsList elementContainer={elementContainer} />
+            <ElementTree elementsContainer={elementContainer} />
+          </div>
         </div>
         <div className={s.center}>
           {editTemplate && (
@@ -218,9 +220,7 @@ export function EditorContentInner({
           )}
           <div
             style={{
-              maxWidth,
-              margin: "0 auto",
-              // minHeight: "1000px",
+              width: maxWidth,
               backgroundColor: "#fff",
             }}
             ref={(el) => {
@@ -228,7 +228,15 @@ export function EditorContentInner({
               if (el) {
                 if (!didInitPanzoom) {
                   setDidInitPanzoom(true);
-                  const instance = panzoom(el);
+                  const padding = 20;
+                  const leftSideWidth = 300 + padding;
+                  const zoom =
+                    (el.parentElement!.clientWidth - leftSideWidth - padding) /
+                    1280;
+                  const instance = panzoom(el, {
+                    initialZoom: zoom,
+                  });
+                  instance.moveTo(leftSideWidth + padding / 2, padding / 2);
                   setPanzoomInstance(instance);
                 }
               }
@@ -240,12 +248,17 @@ export function EditorContentInner({
               head={head}
               templateFunction={templateFunction}
               getScale={() => panzoomInstance?.getTransform().scale ?? 1}
+              maxWidth={maxWidth}
               contextData={contextData}
             />
           </div>
         </div>
-        <div className={classNames("tyzo", s.rightSide)}>
-          <Props />
+        <div className={classNames(s.tyzo, s.rightSide)}>
+          {focusedItem && (
+            <div className={s.rightSideContent}>
+              <Props />
+            </div>
+          )}
         </div>
       </div>
     </div>

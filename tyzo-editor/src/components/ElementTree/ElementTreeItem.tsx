@@ -3,11 +3,7 @@ import { duplicateElement, moveElement, removeElement } from "../../operations";
 import { useState } from "react";
 import { TrashIcon } from "../Icons/TrashIcon";
 import s from "./ElementTreeItem.module.css";
-import {
-  ComponentInfo,
-  ElementContainer,
-  PageElement,
-} from "../../types";
+import { ComponentInfo, ElementContainer, PageElement } from "../../types";
 import { useEditor } from "../Editor/EditorContext";
 import { classNames } from "../../util/classNames";
 import { Button } from "../Button";
@@ -44,6 +40,13 @@ export function ElementTreeItem({
   const { setIsDragging, isDragging, focusedItem, setFocusedItem } =
     useEditor();
   const [isDraggingOver, setIsDraggingOver] = useState(false);
+  let hasChildren = false;
+  for (const key of Object.keys(element.childrenByProperty ?? {})) {
+    if (element.childrenByProperty![key]!.length > 0) {
+      hasChildren = true;
+      break;
+    }
+  }
   return (
     <div
       className={classNames(
@@ -133,7 +136,7 @@ export function ElementTreeItem({
           <TrashIcon />
         </Button>
         <div>
-          {element.children?.length ? (
+          {hasChildren ? (
             isExpanded ? (
               <svg
                 width="24"
@@ -166,17 +169,24 @@ export function ElementTreeItem({
       </div>
       {isExpanded && (
         <div style={{ marginLeft: "10px" }}>
-          {element.children?.map(
-            (childId) =>
-              elementContainer.elements[childId] && (
-                <ElementTreeItem
-                  key={childId}
-                  elementContainer={elementContainer}
-                  element={elementContainer.elements[childId]!}
-                  components={components}
-                />
-              )
-          )}
+          {Object.keys(element.childrenByProperty ?? {}).map((propertyName) => (
+            <div key={propertyName}>
+              <p>
+                {component?.properties?.[propertyName]?.label ?? propertyName}
+              </p>
+              {element.childrenByProperty?.[propertyName]?.map(
+                (childId) =>
+                  elementContainer.elements[childId] && (
+                    <ElementTreeItem
+                      key={childId}
+                      elementContainer={elementContainer}
+                      element={elementContainer.elements[childId]!}
+                      components={components}
+                    />
+                  )
+              )}
+            </div>
+          ))}
         </div>
       )}
       {isDragging && isDraggingOver && (

@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import type {
+  ChildrenProperty,
   ComponentInfo,
   ComponentProperty,
   ElementContainer,
@@ -87,8 +88,16 @@ export function RenderElement({
   componentsById: Record<string, ComponentInfo | undefined>;
   isEditMode: boolean;
   preElement?: (element: PageElement) => React.ReactNode;
-  preChildElement?: (element: PageElement) => React.ReactNode;
-  afterChildElement?: (element: PageElement) => React.ReactNode;
+  preChildElement?: (
+    propertyName: string,
+    element: PageElement,
+    property: ChildrenProperty
+  ) => React.ReactNode;
+  afterChildElement?: (
+    propertyName: string,
+    element: PageElement,
+    property: ChildrenProperty
+  ) => React.ReactNode;
   tepmlateFunction:
     | ((templateString: string, props: Record<string, any>) => string)
     | undefined;
@@ -109,16 +118,19 @@ export function RenderElement({
     ? JSON.parse(JSON.stringify(el.data)) // This is a proxy object since we're usig yjs, structuredClone doesn't work :(
     : {};
   for (const key of Object.keys(properties)) {
-    if (properties[key].type === "children") {
+    const property = properties[key];
+    if (property.type === "children") {
+      const childProperty = property as ChildrenProperty;
       // We want to interfere as little as possible with the DOM when rendering children
       // That's why we are doing it like this, so we get one element per child, which at least makes stuff like `children.map` work
-      if (!el.children || el.children.length === 0) {
+      const children = el.childrenByProperty?.[key];
+      if (!children || children.length === 0) {
         childrenData[key] = (
           <>
-            {preChildElement?.(el) ?? null}
+            {preChildElement?.(key, el, childProperty) ?? null}
             <Render
               elementContainer={elementContainer}
-              elements={el.children ?? []}
+              elements={children ?? []}
               componentsById={componentsById}
               isEditMode={isEditMode}
               preElement={preElement}
@@ -127,15 +139,15 @@ export function RenderElement({
               props={props}
               tepmlateFunction={tepmlateFunction}
             />
-            {afterChildElement?.(el) ?? null}
+            {afterChildElement?.(key, el, childProperty) ?? null}
           </>
         );
       } else {
-        childrenData[key] = el.children.map((child, i) => {
-          if (i === 0 && i === el.children!.length - 1) {
+        childrenData[key] = children.map((child, i) => {
+          if (i === 0 && i === children!.length - 1) {
             return (
               <Fragment key={child}>
-                {preChildElement?.(el) ?? null}
+                {preChildElement?.(key, el, childProperty) ?? null}
                 <Render
                   elementContainer={elementContainer}
                   elements={[child]}
@@ -147,14 +159,14 @@ export function RenderElement({
                   props={props}
                   tepmlateFunction={tepmlateFunction}
                 />
-                {afterChildElement?.(el) ?? null}
+                {afterChildElement?.(key, el, childProperty) ?? null}
               </Fragment>
             );
           }
           if (i === 0) {
             return (
               <Fragment key={child}>
-                {preChildElement?.(el) ?? null}
+                {preChildElement?.(key, el, childProperty) ?? null}
                 <Render
                   elementContainer={elementContainer}
                   elements={[child]}
@@ -169,7 +181,7 @@ export function RenderElement({
               </Fragment>
             );
           }
-          if (i === el.children!.length - 1) {
+          if (i === children!.length - 1) {
             return (
               <Fragment key={child}>
                 <Render
@@ -183,7 +195,7 @@ export function RenderElement({
                   props={props}
                   tepmlateFunction={tepmlateFunction}
                 />
-                {afterChildElement?.(el) ?? null}
+                {afterChildElement?.(key, el, childProperty) ?? null}
               </Fragment>
             );
           }

@@ -26,6 +26,11 @@ const config: Config = {
           type: "string",
           defaultData: "Heading",
         },
+        prop2: {
+          name: "prop2",
+          type: "string",
+          defaultData: "Heading",
+        },
       },
       component: ({ children }: { children: string }) => <h1>{children}</h1>,
     },
@@ -145,6 +150,29 @@ const config: Config = {
           </div>
         );
       },
+    },
+    LeftRight: {
+      id: "LeftRight",
+      name: "Left Right",
+      groupName: "Layout",
+      properties: {
+        left: {
+          name: "left",
+          type: "children",
+          defaultData: undefined,
+        },
+        right: {
+          name: "right",
+          type: "children",
+          defaultData: undefined,
+        },
+      },
+      component: ({ left, right }: { left: string; right: string }) => (
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <div>{left}</div>
+          <div>{right}</div>
+        </div>
+      ),
     },
     Container: withCss({
       id: "Container",

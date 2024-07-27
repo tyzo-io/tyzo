@@ -1,4 +1,4 @@
-:global(.tyzo) .elementItem {
+.elementItem {
     /* padding: 5px; */
     /* margin: 20px 0; */
     text-align: left;
@@ -6,9 +6,12 @@
     /* border-radius: 10px; */
     /* padding: 10px; */
     border-bottom: 1px solid rgba(127, 127, 127, 0.1);
+    padding-top: 1px;
+    padding-left: 1px;
+    padding-right: 1px;
 }
 
-:global(.tyzo) .title {
+.title {
     display: flex;
     flex-direction: row;
     gap: 0.5em;
@@ -18,27 +21,27 @@
     padding: 10px;
 }
 
-:global(.tyzo) .label {
+.label {
     flex: 1;
     font-weight: bold;
     /* margin-bottom: 10px; */
 }
 
-:global(.tyzo) .dragIcon {
+.dragIcon {
     color: rgba(0, 0, 0, 0.7);
     cursor: pointer;
 }
 
-:global(.tyzo) .trashIcon {
+.trashIcon {
     opacity: 0;
 }
 
-:global(.tyzo) .title:hover .trashIcon {
+.title:hover .trashIcon {
     opacity: 1;
     cursor: pointer;
 }
 
-:global(.tyzo) .propertyToggle {
+.propertyToggle {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -66,19 +69,26 @@
     transform: rotate(180deg);
 } */
 
-:global(.tyzo) .editor {
+.editor {
     padding: 10px 20px;
 
 }
 
-:global(.tyzo) .dragOverIndicator {
+.dragOverIndicator {
     height: 3px;
+    --primary: 222.2 47.4% 11.2%;
     background-color: hsl(var(--primary));
 }
 
-:global(.tyzo) .focused {
+.focused {
     --element-select-border-color: rgba(50, 150, 255, 0.6);
     --element-select-bg-color: rgba(50, 150, 255, 0.2);
     --element-select-border: 1px solid var(--element-select-border-color);
     border: var(--element-select-border);
+    padding: 0;
+}
+
+.focused:last-child {
+    border-bottom-left-radius: 0.5em;
+    border-bottom-right-radius: 0.5em;
 }

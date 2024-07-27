@@ -1,26 +1,26 @@
-:global(.tyzo) .field {
+.field {
     display: flex;
     flex-direction: column;
     gap: 5px;
     /* align-items: center; */
-    margin-bottom: 10px;
 
     padding: 10px;
-    border-bottom: 1px solid rgba(127, 127, 127, 0.2);
+    /* margin-bottom: 10px; */
+    /* border-bottom: 1px solid rgba(127, 127, 127, 0.2); */
 }
 
-:global(.tyzo) .fieldTitle {
+.fieldTitle {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
 }
 
-:global(.tyzo) .arrayTitle {
+.arrayTitle {
     margin-bottom: 5px;
 }
 
-:global(.tyzo) .field input {
+.field input {
     border: none;
     border: 1px solid rgba(127, 127, 127, 0.2);
     padding: 0;
@@ -29,13 +29,13 @@
     /* padding-bottom: 5px; */
 }
 
-:global(.tyzo) .arrayItems {
+.arrayItems {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-:global(.tyzo) .object {
+.object {
     /* border-left: 1px solid rgba(127, 127, 127, 0.2); */
     /* padding: 10px; */
     border: 1px solid rgba(127, 127, 127, 0.2);
@@ -44,7 +44,7 @@
     background-color: white;
 }
 
-:global(.tyzo) .objectHeader {
+.objectHeader {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -52,24 +52,24 @@
     padding: 5px 10px;
 }
 
-:global(.tyzo) .expandedObject.objectHeader {
+.expandedObject.objectHeader {
     border-bottom: 1px solid rgba(127, 127, 127, 0.2);
     margin-bottom: 5px;
 }
 
-:global(.tyzo) .cardHeaderTitle {
+.cardHeaderTitle {
     flex: 1;
 }
 
-:global(.tyzo) .objectBody {
+.objectBody {
     padding: 10px;
 }
 
-:global(.tyzo) .field .labels {
+.field .labels {
     flex: 1;
 }
 
-:global(.tyzo) .labels {
+.labels {
     display: flex;
     flex-direction: row;
     gap: 10px;
@@ -78,11 +78,11 @@
     /* text-align: right; */
 }
 
-:global(.tyzo) .field input {
+.field input {
     flex: 5;
 }
 
-:global(.tyzo) .code {
+.code {
     font-family: monospace;
     opacity: 0.8;
     font-size: 0.8em;
@@ -90,30 +90,30 @@
     padding-left: 2px;
 }
 
-:global(.tyzo) .treeDeeper {
+.treeDeeper {
     border-left: 1px solid #bbb;
     padding-left: 10px;
     margin-left: 10px;
 }
 
-:global(.tyzo) .descriptionIcon {
+.descriptionIcon {
     height: 1em;
     width: 1em;
     opacity: 0.5;
 }
 
-:global(.tyzo) .fieldInput {
+.fieldInput {
     position: relative;
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
-:global(.tyzo) .fieldInput input {
+.fieldInput input {
     flex: 1;
 }
 
-:global(.tyzo) .fieldInput button {
+.fieldInput button {
     border: none;
     background-color: transparent;
     cursor: pointer;
@@ -122,6 +122,19 @@
     color: #666;
 }
 
-:global(.tyzo) .fieldInput button:hover {
+.fieldInput button:hover {
     color: black;
+}
+
+.select {
+  font-family: inherit; /* 1 */
+  font-feature-settings: inherit; /* 1 */
+  font-variation-settings: inherit; /* 1 */
+  font-size: 100%; /* 1 */
+  font-weight: inherit; /* 1 */
+  line-height: inherit; /* 1 */
+  letter-spacing: inherit; /* 1 */
+  color: inherit; /* 1 */
+  margin: 0; /* 2 */
+  padding: 0; /* 3 */
 }

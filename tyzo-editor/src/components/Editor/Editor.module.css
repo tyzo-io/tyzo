@@ -1,4 +1,4 @@
-/* :global(.tyzo) {
+.editor {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --border: 214.3 31.8% 91.4%;
@@ -11,16 +11,16 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
     --radius: 0.5rem;
-} */
+}
 
-:global(.tyzo) .backHeader {
+.backHeader {
     display: flex;
     flex-direction: row;
     gap: 0.5em;
     padding: 1em;
 }
 
-:global(.tyzo) .field {
+.field {
     display: flex;
     flex-direction: row;
     gap: 10px;
@@ -28,40 +28,40 @@
     padding: 10px;
 }
 
-:global(.tyzo) .field label {
+.field label {
     flex: 1;
     text-align: right;
 }
 
-:global(.tyzo) .field input {
+.field input {
     flex: 5;
 }
 
-:global(.tyzo) .center {
+.center {
     flex: 1;
     background-color: white;
 }
 
-:global(.tyzo) .smallIcon {
+.smallIcon {
     width: 20px;
     height: 20px;
 }
 
-:global(.tyzo) .tree {
+.tree {
     /* padding: 10px; */
     margin-bottom: 20px;
 }
 
-:global(.tyzo) .componentControls h3 {
+.componentControls h3 {
     padding-left: 10px;
 }
 
-:global(.tyzo) .sectionTitle {
+.sectionTitle {
     font-size: 1.4em;
 }
 
 .editor {
-    max-height: 100vh;
+    max-height: 100svh;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -72,7 +72,7 @@
             --primary: yellow; */
 }
 
-:global(.tyzo).header {
+.header {
     position: relative;
     z-index: 100;
     background-color: white;
@@ -88,7 +88,7 @@
     padding-right: 1em;
 }
 
-:global(.tyzo) .headerCenter {
+.headerCenter {
     display: flex;
     flex-direction: row;
     gap: 1em;
@@ -100,16 +100,17 @@
     display: flex;
     flex-direction: row;
     overflow: hidden;
+    position: relative;
 }
 
-:global(.tyzo) .maxWidthSelector {
+.maxWidthSelector {
     display: flex;
     flex-direction: row;
     gap: 10px;
     justify-content: center;
 }
 
-:global(.tyzo) .maxWidthSelector>button {
+.maxWidthSelector>button {
     border: none;
     background: transparent;
     cursor: pointer;
@@ -123,30 +124,39 @@
     overflow: hidden;
 }
 
-:global(.tyzo).leftSide {
-    background-color: white;
-    position: relative;
-    border-right: 1px solid #ccc;
+.leftSide {
     z-index: 100;
     width: 300px;
     overflow: auto;
-    /* flex: 1;
+    /* flex: 1i
     display: flex;
     flex-direction: row; */
+    position: absolute;
+    top: 1em;
+    left: 1em;
+    bottom: 1em;
+    pointer-events: none;
 }
 
-:global(.tyzo).rightSide {
+.leftSideContent, .rightSideContent {
     background-color: white;
-    position: relative;
-    border-left: 1px solid #ccc;
+    border: 1px solid #ccc;
+    border-radius: calc(var(--radius) - 2px);
+    border: 1px solid hsl(var(--border));
+    pointer-events: auto;
+}
+
+.rightSide {
     z-index: 100;
     width: 250px;
-    overflow: auto;
-}
+    overflow-y: auto;
+    overflow-x: hidden;
 
-:global(.tyzo) .rightSide button {
-    border: none;
-    background-color: white;
+    position: absolute;
+    top: 1em;
+    right: 1em;
+    bottom: 1em;
+    pointer-events: none;
 }
 
 .templateEditorControls {
@@ -155,7 +165,7 @@
     display: flex;
     flex-direction: row;
     gap: 10px;
-    justify-content: flex-end;
+    justify-content: center;
     align-items: center;
 }
 

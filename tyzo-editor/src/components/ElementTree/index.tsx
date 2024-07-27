@@ -15,6 +15,18 @@ export function ElementTree({
       <p style={{ margin: "0.5em", fontWeight: "bold" }}>
         {translations.content}
       </p>
+      {!elementsContainer.children.length && (
+        <p
+          style={{
+            margin: "1em",
+            textAlign: "center",
+            fontSize: "0.9em",
+            opacity: 0.7,
+          }}
+        >
+          {translations.noElements}
+        </p>
+      )}
       {elementsContainer.children.map(
         (elId) =>
           elementsContainer.elements[elId] && (

@@ -1,4 +1,4 @@
-import { ReactNode, forwardRef, useEffect, useState } from "react";
+import { ReactNode, forwardRef, useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 type EditorPreviewProps = JSX.IntrinsicElements["iframe"] & {
@@ -6,10 +6,11 @@ type EditorPreviewProps = JSX.IntrinsicElements["iframe"] & {
   children: ReactNode;
   head: ReactNode;
   getScale: () => number;
+  maxWidth: string;
 };
 
 export const EditorPreview = forwardRef<HTMLIFrameElement, EditorPreviewProps>(
-  ({ children, head, getScale, ...rest }, ref) => {
+  ({ children, head, getScale, maxWidth, ...rest }, ref) => {
     const [liveRef, setLiveRef] = useState<HTMLIFrameElement | null>(null);
 
     // const headContent = useMemo(
@@ -26,8 +27,8 @@ export const EditorPreview = forwardRef<HTMLIFrameElement, EditorPreviewProps>(
           e.preventDefault();
           e.stopImmediatePropagation();
           const dp = liveRef.getBoundingClientRect();
-          const scale = getScale()
-          const dx = dp.left ;
+          const scale = getScale();
+          const dx = dp.left;
           const dy = dp.top;
           const newEvent = new WheelEvent("wheel", {
             bubbles: e.bubbles,
@@ -178,23 +179,22 @@ export const EditorPreview = forwardRef<HTMLIFrameElement, EditorPreviewProps>(
           );
         };
       }
-    }, [bodyElement, liveRef]);
+    }, [bodyElement, liveRef, getScale]);
 
-    useEffect(() => {
-      function setIframeHeight() {
-        if (!liveRef?.contentWindow) {
-          return;
-        }
-        // const rect = bodyElement?.getBoundingClientRect();
-        // // console.log(bodyElement, rect)
-        // const height = (rect?.height ?? 0) + (rect?.top ?? 0);
-        // // liveRef.height = `${height}px`;
+    const setIframeHeight = useCallback(() => {
+      if (!liveRef?.contentWindow) {
+        return;
+      }
+      // const rect = bodyElement?.getBoundingClientRect();
+      // // console.log(bodyElement, rect)
+      // const height = (rect?.height ?? 0) + (rect?.top ?? 0);
+      // // liveRef.height = `${height}px`;
 
-        let height = 0;
-        // let height2 = 0;
-        // let i =0
-        for (const child of liveRef.contentWindow.document.body.children) {
-          height += child.scrollHeight;
+      let height = 0;
+      // let height2 = 0;
+      // let i =0
+      for (const child of liveRef.contentWindow.document.body.children) {
+        height += child.scrollHeight;
         //   const rect = child.getBoundingClientRect()
         //   height2 += rect.height;
         //   console.log(child, rect)
@@ -202,38 +202,38 @@ export const EditorPreview = forwardRef<HTMLIFrameElement, EditorPreviewProps>(
         //     height2 += rect.top
         //   }
         //   i++
-
-        }
-        // const finalHeight = height > height2 ? height : height2;
-
-        // const height = liveRef.contentWindow?.document.body.scrollHeight;
-        // const offset = rect?.top ?? 0;
-        // console.log(rect, height2)
-
-        const window = liveRef.contentWindow;
-        const marginTop = parseFloat(
-          window
-            .getComputedStyle(window.document.body, null)
-            .getPropertyValue("margin-top") ?? 0
-        );
-        const marginBottom = parseFloat(
-          window
-            .getComputedStyle(window.document.body, null)
-            .getPropertyValue("margin-bottom") ?? 0
-        );
-        liveRef.height = `${
-          height +
-          // offset +
-          (isNaN(marginTop) ? 0 : marginTop) +
-          (isNaN(marginBottom) ? 0 : marginBottom) +
-          1
-        }px`;
-        // liveRef.height = `${finalHeight + 1}px`;
-
-        // console.log(finalHeight)
-        // liveRef.height = `${2514 + 1}px`;
       }
+      // const finalHeight = height > height2 ? height : height2;
 
+      // const height = liveRef.contentWindow?.document.body.scrollHeight;
+      // const offset = rect?.top ?? 0;
+      // console.log(rect, height2)
+
+      const window = liveRef.contentWindow;
+      const marginTop = parseFloat(
+        window
+          .getComputedStyle(window.document.body, null)
+          .getPropertyValue("margin-top") ?? 0
+      );
+      const marginBottom = parseFloat(
+        window
+          .getComputedStyle(window.document.body, null)
+          .getPropertyValue("margin-bottom") ?? 0
+      );
+      liveRef.height = `${
+        height +
+        // offset +
+        (isNaN(marginTop) ? 0 : marginTop) +
+        (isNaN(marginBottom) ? 0 : marginBottom) +
+        20
+      }px`;
+      // liveRef.height = `${finalHeight + 1}px`;
+
+      // console.log(finalHeight)
+      // liveRef.height = `${2514 + 1}px`;
+    }, [liveRef]);
+
+    useEffect(() => {
       if (liveRef?.contentWindow && liveRef.contentDocument) {
         if (liveRef.contentWindow.document.body.parentElement) {
           liveRef.contentWindow.document.body.parentElement.style.height =
@@ -263,7 +263,11 @@ export const EditorPreview = forwardRef<HTMLIFrameElement, EditorPreviewProps>(
           observer.disconnect();
         };
       }
-    }, [liveRef, bodyElement]);
+    }, [liveRef, bodyElement, setIframeHeight]);
+
+    useEffect(() => {
+      setIframeHeight();
+    }, [maxWidth, setIframeHeight]);
 
     return (
       <iframe

@@ -1,5 +1,6 @@
 import {
   ComponentInfo,
+  ChildrenProperty,
   ElementContainer,
   PageElement,
   PageElementId,
@@ -11,8 +12,16 @@ export type RenderProps = {
   componentsById: Record<string, ComponentInfo | undefined>;
   isEditMode: boolean;
   preElement?: (element: PageElement) => React.ReactNode;
-  preChildElement?: (element: PageElement) => React.ReactNode;
-  afterChildElement?: (element: PageElement) => React.ReactNode;
+  preChildElement?: (
+    propertyName: string,
+    element: PageElement,
+    property: ChildrenProperty
+  ) => React.ReactNode;
+  afterChildElement?: (
+    propertyName: string,
+    element: PageElement,
+    property: ChildrenProperty
+  ) => React.ReactNode;
   tepmlateFunction:
     | ((templateString: string, props: Record<string, any>) => string)
     | undefined;

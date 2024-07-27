@@ -28,21 +28,23 @@ export function ComponentProperties({ id }: { id: string }) {
     <div className={s.Props}>
       <h3 className={s.Title}>{component?.name}</h3>
       {Object.values(properties).map((property) => (
-        <PropertyInput
-          key={property.name}
-          element={element}
-          elementContainer={elementContainer}
-          components={components}
-          inputs={inputs}
-          property={property}
-          value={element.data?.[property.name]}
-          setValue={(value) => {
-            if (!element.data) {
-              element.data = {};
-            }
-            element.data[property.name] = value;
-          }}
-        />
+        <>
+          <PropertyInput
+            key={property.name}
+            element={element}
+            elementContainer={elementContainer}
+            components={components}
+            inputs={inputs}
+            property={property}
+            value={element.data?.[property.name]}
+            setValue={(value) => {
+              if (!element.data) {
+                element.data = {};
+              }
+              element.data[property.name] = value;
+            }}
+          />
+        </>
       ))}
     </div>
   );

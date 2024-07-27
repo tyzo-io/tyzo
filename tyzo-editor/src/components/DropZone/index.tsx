@@ -9,11 +9,11 @@ import { useTranslations } from "../../i18n";
 export function DropZone({
   label,
   elementContainer,
-  parentId,
+  parent,
 }: {
   label?: string;
   elementContainer: ElementContainer;
-  parentId: PageElementId | undefined;
+  parent: { id: PageElementId; propertyName: string } | undefined;
 }) {
   const { isDragging, setIsDragging, setFocusedItem } = useEditor();
   const { componentsById } = useComponents();
@@ -47,7 +47,7 @@ export function DropZone({
           | undefined;
         const Comp = componentId && componentsById[componentId];
         if (Comp) {
-          const el = addNewElement(elementContainer, Comp, parentId);
+          const el = addNewElement(elementContainer, Comp, parent);
           setFocusedItem({ id: el.id, isFromTree: false, isClick: false });
           return;
         }
@@ -57,7 +57,7 @@ export function DropZone({
           | undefined;
         const el = elementId && elementContainer.elements[elementId];
         if (el) {
-          moveElement(elementContainer, elementId, parentId);
+          moveElement(elementContainer, elementId, parent);
         }
       }}
     >

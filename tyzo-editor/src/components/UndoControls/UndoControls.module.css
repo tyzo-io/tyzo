@@ -1,15 +1,15 @@
-:global(.tyzo) .documentActions {
+.documentActions {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
 }
 
-:global(.tyzo) .documentActions button {
+.documentActions button {
     margin: 0;
 }
 
-:global(.tyzo) .button {
+.button {
     border: none;
     background: transparent;
     cursor: pointer;
