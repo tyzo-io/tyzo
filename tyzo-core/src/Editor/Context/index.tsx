@@ -4,9 +4,9 @@ import serviceClientConfig from "@/serviceClient";
 import { useData } from "@/lib/useData";
 import { ComponentInfo, Config } from "@tyzo/page-editor";
 
-const ConfigContext = createContext<
-  TyzoConfig & { components: Record<string, ComponentInfo> }
->({} as TyzoConfig & { components: Record<string, ComponentInfo> });
+const ConfigContext = createContext<TyzoConfig >(
+  {} as TyzoConfig 
+);
 
 export function useConfig() {
   return useContext(ConfigContext);
@@ -15,14 +15,10 @@ export function useConfig() {
 export function ConfigProvider({
   spaceId,
   children,
-  components,
-  config: configFromProps,
   serviceConfig,
 }: {
   spaceId: string | null | undefined;
   children: React.ReactNode;
-  components: Record<string, ComponentInfo>;
-  config?: Partial<Config>;
   serviceConfig?: {
     backendUrl?: string;
     anonKey?: string;
@@ -33,19 +29,41 @@ export function ConfigProvider({
       return null;
     }
     const config = serviceClientConfig({ ...serviceConfig, spaceId });
-    return { ...config, ...configFromProps };
-  }, [spaceId, configFromProps, serviceConfig]);
+    return config;
+  }, [spaceId, serviceConfig]);
 
   if (!config) {
     return <div>No space id passed in your config</div>;
   }
 
   return (
-    <ConfigContext.Provider value={{ ...config, components }}>
-      {children}
-    </ConfigContext.Provider>
+    <ConfigContext.Provider value={config}>{children}</ConfigContext.Provider>
   );
 }
+
+const EditorContext = createContext<Config>({} as Config);
+
+export function useEditorConfig() {
+  return useContext(EditorContext);
+}
+
+export function EditorProvider({
+  children,
+  components,
+  config,
+}: {
+  children: React.ReactNode;
+  components: Record<string, ComponentInfo>;
+  config?: Partial<Config>;
+}) {
+  return (
+    <EditorContext.Provider value={{ ...config, components }}>
+      {children}
+    </EditorContext.Provider>
+  );
+}
+
+
 const TreeContext = createContext<{
   selectTree: (tree: Tree | null) => void;
   tree: Tree | null;

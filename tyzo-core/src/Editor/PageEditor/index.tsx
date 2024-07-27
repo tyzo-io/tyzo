@@ -3,7 +3,7 @@ import type { Config, Page } from "@tyzo/page-editor";
 import "@tyzo/page-editor/style.css";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useConfig } from "../Context";
+import { useConfig, useEditorConfig } from "../Context";
 import { useData } from "@/lib/useData";
 import { ImageProps } from "@/std/Inputs";
 import { Button } from "@/components/ui/button";
@@ -36,10 +36,11 @@ const initialData: Page = {
 };
 
 export function PageEditor() {
-  const config = useConfig();
+  const service = useConfig();
+  const config = useEditorConfig();
   const { id } = useParams();
   const { data, isLoading } = useData(
-    async () => (id ? await config.pages.get(id) : null),
+    async () => (id ? await service.pages.get(id) : null),
     [id]
   );
 
@@ -68,7 +69,7 @@ export function PageEditor() {
           if (!id) {
             return;
           }
-          await config.pages.update(id, {
+          await service.pages.update(id, {
             content: data,
           });
         },
@@ -81,6 +82,7 @@ export function PageEditor() {
           image: ImageProps,
           stackBaseRule: StackEdit,
           stackAdditionalRules: StackBreakpointsEdit,
+          ...config.additionalInputs,
         },
         headerLeft: (
           <Button variant="link" asChild>
@@ -104,7 +106,7 @@ export function PageEditor() {
                     return;
                   }
                   setPageDetailsIsSaving(true);
-                  await config.pages.update(id, {
+                  await service.pages.update(id, {
                     title: pageDetails.title,
                     path: pageDetails.path,
                   });

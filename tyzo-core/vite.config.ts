@@ -35,6 +35,8 @@ export default defineConfig({
         ),
         Page: fileURLToPath(new URL("src/Page/index.tsx", import.meta.url)),
         Editor: fileURLToPath(new URL("src/Editor/index.tsx", import.meta.url)),
+        PageEditor: fileURLToPath(new URL("src/PageEditor.ts", import.meta.url)),
+        EmailEditor: fileURLToPath(new URL("src/EmailEditor.ts", import.meta.url)),
         std: fileURLToPath(new URL("src/std/index.tsx", import.meta.url)),
       },
 

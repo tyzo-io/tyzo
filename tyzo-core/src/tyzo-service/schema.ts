@@ -34,6 +34,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      email_templates: {
+        Row: {
+          content: Json
+          created_at: string | null
+          id: string
+          space_id: string
+          subject: string
+          title: string
+          tree_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          content: Json
+          created_at?: string | null
+          id?: string
+          space_id: string
+          subject: string
+          title: string
+          tree_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: Json
+          created_at?: string | null
+          id?: string
+          space_id?: string
+          subject?: string
+          title?: string
+          tree_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_templates_space_id_fkey"
+            columns: ["space_id"]
+            isOneToOne: false
+            referencedRelation: "spaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_templates_tree_id_fkey"
+            columns: ["tree_id"]
+            isOneToOne: false
+            referencedRelation: "space_trees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pages: {
         Row: {
           content: Json
@@ -289,6 +337,7 @@ export type Database = {
         | "space_details"
         | "trees"
         | "pages"
+        | "email_templates"
       role_name: "admin"
     }
     CompositeTypes: {

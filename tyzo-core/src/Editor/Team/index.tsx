@@ -44,7 +44,7 @@ import s from "./style.module.css";
 const formSchema = z.object({
   email: z.string().email(),
   permission: z.enum(["read", "write"]),
-  scope: z.enum(["everything", "pages", "permissions"]),
+  scope: z.enum(["everything", "email_templates", "pages", "permissions"]),
 });
 
 export function Team() {
@@ -136,6 +136,9 @@ export function Team() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="everything">Everything</SelectItem>
+                    <SelectItem value="email_templates">
+                      Email Templates
+                    </SelectItem>
                     <SelectItem value="pages">Pages</SelectItem>
                     <SelectItem value="permissions">Permissions</SelectItem>
                   </SelectContent>
@@ -266,6 +269,9 @@ function AddUserForm({ onUpdate }: { onUpdate: () => void }) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="everything">Everything</SelectItem>
+                    <SelectItem value="email_templates">
+                      Email Templates
+                    </SelectItem>
                     <SelectItem value="pages">Pages</SelectItem>
                     <SelectItem value="permissions">Permissions</SelectItem>
                   </SelectContent>

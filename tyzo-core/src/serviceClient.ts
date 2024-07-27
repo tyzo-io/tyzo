@@ -8,7 +8,7 @@ export * from "./tyzo-service/config";
 // const supabaseUrl = "http://127.0.0.1:54321";
 // const authUrl = "http://localhost:4321/login";
 // const anonKey =
-  // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
+//   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
 const supabaseUrl = "https://tufhcjjqwiplrbbxelod.supabase.co";
 const authUrl = "https://www.tyzo.io/login";
 const anonKey =
@@ -363,6 +363,99 @@ export const serviceClientConfig = ({
       async remove(id) {
         await supabase
           .from("pages")
+          .delete()
+          .eq("id", id)
+          .eq("space_id", spaceId);
+      },
+    },
+    emailTemplates: {
+      name: "Email Tmplate",
+      async list(options) {
+        const query = supabase
+          .from("email_templates")
+          .select("*")
+          .eq("space_id", spaceId);
+        // .eq("tree_id", treeId);
+
+        if (options?.filters?.treeId?.equals) {
+          query.eq("tree_id", options.filters.treeId.equals);
+        }
+
+        const { data } = await query;
+
+        return {
+          data:
+            data?.map((email) => ({
+              id: email.id,
+              treeId: email.tree_id,
+              subject: email.subject,
+              title: email.title,
+              content: (email.content ?? {}) as unknown as ElementContainer,
+            })) ?? [],
+        };
+      },
+      async get(id) {
+        const query = supabase
+          .from("email_templates")
+          .select("*")
+          .eq("space_id", spaceId)
+          .eq("id", id)
+          .single();
+
+        const { data } = await query;
+        if (!data) {
+          throw new Error("Email template not found");
+        }
+
+        return {
+          id: data.id,
+          treeId: data.tree_id,
+          subject: data.subject,
+          title: data.title,
+          content: (data.content ?? {}) as unknown as ElementContainer,
+        };
+      },
+      async add(email) {
+        const { data } = await supabase
+          .from("email_templates")
+          .insert({
+            id: email.id,
+            space_id: spaceId,
+            tree_id: email.treeId,
+            subject: email.subject,
+            title: email.title,
+            content: email.content as unknown as Json,
+          })
+          .select()
+          .single();
+        if (!data) {
+          throw new Error("Could not save email template");
+        }
+        return {
+          id: data.id,
+          treeId: data.tree_id,
+          subject: data.subject,
+          title: data.title,
+          content: (data.content ?? {}) as unknown as ElementContainer,
+        };
+      },
+      async update(id, email) {
+        const { error } = await supabase
+          .from("email_templates")
+          .update({
+            subject: email.subject,
+            title: email.title,
+            content: email.content as unknown as Json,
+          })
+          .eq("id", id)
+          .eq("space_id", spaceId);
+        if (error) {
+          throw new Error("Could not save email template");
+        }
+      },
+      async remove(id) {
+        await supabase
+          .from("email_templates")
           .delete()
           .eq("id", id)
           .eq("space_id", spaceId);

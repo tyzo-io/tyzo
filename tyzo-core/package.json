@@ -1,7 +1,7 @@
 {
   "name": "@tyzo/core",
   "private": false,
-  "version": "0.0.7",
+  "version": "0.0.9",
   "repository": {
     "url": "https://github.com/tyzo-io/tyzo"
   },
@@ -10,6 +10,8 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": "./dist/index.js",
+    "./pageEditor": "./dist/PageEditor.js",
+    "./emailEditor": "./dist/EmailEditor.js",
     "./editor": "./dist/Editor.js",
     "./render": "./dist/render.js",
     "./serviceClient": "./dist/serviceClient.js",
@@ -67,7 +69,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tabs": "^1.0.4",
     "@supabase/supabase-js": "^2.43.1",
-    "@tyzo/page-editor": "^0.2.4",
+    "@tyzo/page-editor": "^0.2.5",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",

@@ -4,7 +4,6 @@ export * from "./std/index";
 export * from "./Editor/Context";
 
 export { Branches } from "./Editor/Branches";
-export { PageEditor } from "./Editor/PageEditor";
 export { EmailEditor } from "./Editor/EmailEditor";
 export { Home } from "./Editor/Home";
 export { Profile } from "./Editor/Profile";

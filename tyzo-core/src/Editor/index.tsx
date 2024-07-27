@@ -5,10 +5,11 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { ConfigProvider, TreeProvider } from "./Context";
+import { ConfigProvider, EditorProvider, TreeProvider } from "./Context";
 import { CheckSession } from "./CheckSession";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { PageEditor } from "./Editor";
+import { PageEditor } from "./PageEditor";
+import { EmailEditor } from "./EmailEditor";
 import { SideBar } from "./SideBar";
 import { Home } from "./Home";
 import { Team } from "./Team";
@@ -26,7 +27,8 @@ export * from "./Context";
 
 export { CheckSession } from "./CheckSession";
 export { Branches } from "./Branches";
-export { PageEditor } from "./Editor";
+export { PageEditor } from "./PageEditor";
+export { EmailEditor } from "./EmailEditor";
 export { Home } from "./Home";
 export { Profile } from "./Profile";
 export { SpaceSettings } from "./SpaceSettings";
@@ -55,14 +57,20 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
 
 export function Editor({
   spaceId,
-  components,
-  config,
+  pagesConfig,
+  emailTemplatesConfig,
   basename,
   serviceConfig,
 }: {
   spaceId: string | null | undefined;
-  components: Record<string, ComponentInfo>;
-  config?: Partial<Config>;
+  pagesConfig: {
+    components: Record<string, ComponentInfo>;
+    config?: Partial<Config>;
+  };
+  emailTemplatesConfig: {
+    components: Record<string, ComponentInfo>;
+    config?: Partial<Config>;
+  };
   basename?: string;
   serviceConfig?: {
     backendUrl?: string;
@@ -165,7 +173,25 @@ export function Editor({
             },
             {
               path: "/pages/:id",
-              element: <PageEditor />,
+              element: (
+                <EditorProvider
+                  components={pagesConfig.components}
+                  config={pagesConfig.config}
+                >
+                  <PageEditor />
+                </EditorProvider>
+              ),
+            },
+            {
+              path: "/email-templates/:id",
+              element: (
+                <EditorProvider
+                  components={emailTemplatesConfig.components}
+                  config={emailTemplatesConfig.config}
+                >
+                  <EmailEditor />
+                </EditorProvider>
+              ),
             },
           ],
         },
@@ -177,12 +203,7 @@ export function Editor({
   );
 
   return (
-    <ConfigProvider
-      spaceId={spaceId}
-      components={components}
-      config={config}
-      serviceConfig={serviceConfig}
-    >
+    <ConfigProvider spaceId={spaceId} serviceConfig={serviceConfig}>
       <TreeProvider>
         <RouterProvider router={router} />
       </TreeProvider>
