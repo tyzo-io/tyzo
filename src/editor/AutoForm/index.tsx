@@ -23,13 +23,14 @@ import { useForm, UseFormReturn } from "react-hook-form";
 import { ajvResolver } from "@hookform/resolvers/ajv";
 import { format as dateFormat } from "date-fns";
 import { getDefaultValue } from "./defaults";
-import { ImageInput } from "./ImageInput";
-import { VideoInput } from "./VideoInput";
+import { ImageInput } from "../ImageInput";
+import { VideoInput } from "../VideoInput";
 import { AssetInput } from "./AssetInput";
 import { DurationInput } from "./DurationInput";
 import { ArrayInput } from "./ArrayInput";
 import { ReferenceInput } from "./ReferenceInput";
 import { ajvFormats } from "../../validate";
+import { MarkdownEditor, RichTextEditor } from "../RichTextEditor";
 
 const renderField = (
   key: string,
@@ -99,6 +100,46 @@ const renderField = (
               <AssetInput
                 value={field.value || { url: "" }}
                 onChange={field.onChange}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    );
+  }
+
+  if (fieldSchema.$ref === "#/definitions/markdownSchema") {
+    return (
+      <FormField
+        {...commonProps}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{title}</FormLabel>
+            <FormControl>
+              <MarkdownEditor
+                value={field.value?.markdown}
+                onChange={(value) => field.onChange({ markdown: value })}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    );
+  }
+
+  if (fieldSchema.$ref === "#/definitions/richTextSchema") {
+    return (
+      <FormField
+        {...commonProps}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{title}</FormLabel>
+            <FormControl>
+              <RichTextEditor
+                value={field.value?.richText}
+                onChange={(value) => field.onChange({ richText: value })}
               />
             </FormControl>
             <FormMessage />
@@ -380,7 +421,8 @@ const renderField = (
                       }
                       value={value || ""}
                       onChange={(e) => {
-                        let newValue = e.target.value;
+                        let newValue: string | number | boolean | undefined =
+                          e.target.value;
                         if (fieldSchema.items.type === "number") {
                           newValue = e.target.value
                             ? Number(e.target.value)

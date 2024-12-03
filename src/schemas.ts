@@ -1,6 +1,6 @@
 import { ignoreOverride, zodToJsonSchema } from "zod-to-json-schema";
 import { Collection, Global, Id } from "./types";
-import { assetSchema, imageSchema, videoSchema, z } from "./content";
+import { assetSchema, imageSchema, markdownSchema, richTextSchema, videoSchema, z } from "./content";
 
 export interface SerializedCollection {
   name: string;
@@ -22,6 +22,8 @@ export function convertZodSchema(
       imageSchema,
       videoSchema,
       assetSchema,
+      markdownSchema,
+      richTextSchema,
       ...allCollections,
     },
     override(def, refs, seen, forceResolution) {

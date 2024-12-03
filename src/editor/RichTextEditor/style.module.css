@@ -1,0 +1,106 @@
+.editor :where(p):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.editor :where(h1):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.editor :where(h2):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.editor :where(h3):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.editor :where(h4):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.editor :where(h5):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.editor :where(h6):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+:global(.tyzo-bold) {
+  font-weight: bold;
+}
+
+:global(.tyzo-italic) {
+  font-style: italic;
+}
+
+:global(.tyzo-underline) {
+  text-decoration: underline;
+}
+
+:global(.tyzo-strikethrough) {
+  text-decoration: line-through;
+}
+
+:global(.tyzo-color) {
+  color: var(--text-color);
+}
+
+:global(.tyzo-font-size) {
+  font-size: var(--text-size);
+}
+
+.markdown h1::before {
+  content: "# ";
+}
+
+.markdown h2::before {
+  content: "## ";
+}
+
+.markdown h3::before {
+  content: "### ";
+}
+
+.markdown h4::before {
+  content: "#### ";
+}
+
+.markdown h5::before {
+  content: "##### ";
+}
+
+.markdown h6::before {
+  content: "###### ";
+}
+
+.markdown :global(.tyzo-bold)::before {
+  content: "**";
+}
+
+.markdown :global(.tyzo-bold)::after {
+  content: "**";
+}
+
+.markdown :global(.tyzo-italic)::before {
+  content: "_"
+}
+
+.markdown :global(.tyzo-italic)::after {
+  content: "_";
+}
+
+.markdown :global(.tyzo-strikethrough)::before {
+  content: "~~"
+}
+
+.markdown :global(.tyzo-strikethrough)::after {
+  content: "~~";
+}

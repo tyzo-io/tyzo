@@ -110,7 +110,7 @@ export const AssetInput = React.forwardRef<
                     onChange={async (e) => {
                       const file = e.target.files?.[0];
                       if (file) {
-                        const asset = await uploadAsset.mutateAsync({ file });
+                        const asset = await uploadAsset.mutate(file);
                         onChange({
                           url: makeAssetUrl(asset.key),
                         });

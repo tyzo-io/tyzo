@@ -174,7 +174,9 @@ export function isAsset(schema: z.AnyZodObject) {
   return (schema as any)[isAssetSymbol];
 }
 
-export const richTextSchema = z.array(z.any());
+export const richTextSchema = z.object({
+  richText: z.string(),
+});
 
 const isRichTextSymbol = Symbol.for("isRichText");
 (richTextSchema as any)[isRichTextSymbol] = true;

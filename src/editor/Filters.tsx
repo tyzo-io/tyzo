@@ -14,7 +14,7 @@ import { Comparators, Where } from "../filters";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Filter, X } from "lucide-react";
 import { Badge } from "./ui/badge";
-import { SerializedCollection } from "../localServer";
+import { SerializedCollection } from "../schemas";
 
 type FilterCondition = {
   field: string;
