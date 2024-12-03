@@ -1,0 +1,4 @@
+/node_modules
+/test/tyzo-build
+.env
+/dist
