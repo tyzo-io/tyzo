@@ -17,30 +17,14 @@ import {
 } from "./ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { useAssets, useUploadAsset } from "./useApi";
-import { makeAssetUrl } from "../content";
+import { ImageType, makeAssetUrl } from "../content";
 import { ImageIcon, Link, Upload } from "lucide-react";
 
 export const ImageInput = React.forwardRef<
   HTMLInputElement,
   {
-    value: {
-      url: string;
-      alt?: string;
-      width?: number;
-      height?: number;
-      sizes?: string;
-      srcset?: string;
-      loading?: "eager" | "lazy";
-    };
-    onChange: (value: {
-      url: string;
-      alt?: string;
-      width?: number;
-      height?: number;
-      sizes?: string;
-      srcset?: string;
-      loading?: "eager" | "lazy";
-    }) => void;
+    value: ImageType | undefined;
+    onChange: (value: ImageType) => void;
   }
 >(({ value, onChange }, ref) => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -91,6 +75,7 @@ export const ImageInput = React.forwardRef<
         <Input
           ref={ref}
           type="text"
+          disabled={Boolean(value?.key)}
           value={value?.url || ""}
           onChange={(e) => onChange({ ...value, url: e.target.value })}
           placeholder="Image URL"
@@ -124,7 +109,9 @@ export const ImageInput = React.forwardRef<
                 <Input
                   type="url"
                   value={value?.url || ""}
-                  onChange={(e) => onChange({ ...value, url: e.target.value })}
+                  onChange={(e) =>
+                    onChange({ ...value, key: undefined, url: e.target.value })
+                  }
                   placeholder="Enter image URL"
                 />
               </TabsContent>
@@ -144,6 +131,7 @@ export const ImageInput = React.forwardRef<
                             // height: asset.height,
                           });
                           onChange({
+                            key: asset.key,
                             ...value,
                             ...config,
                           });
@@ -179,6 +167,7 @@ export const ImageInput = React.forwardRef<
                         const asset = await uploadAsset.mutate(file);
                         const config = generateImageConfig(asset.key);
                         onChange({
+                          key: asset.key,
                           ...value,
                           ...config,
                         });
@@ -205,13 +194,13 @@ export const ImageInput = React.forwardRef<
         <Input
           type="text"
           value={value?.alt || ""}
-          onChange={(e) => onChange({ ...value, alt: e.target.value })}
+          onChange={(e) => onChange({ ...value!, alt: e.target.value })}
           placeholder="Alt text (optional)"
         />
         <Select
           value={value?.loading}
           onValueChange={(loading) =>
-            onChange({ ...value, loading: loading as "eager" | "lazy" })
+            onChange({ ...value!, loading: loading as "eager" | "lazy" })
           }
         >
           <SelectTrigger>
@@ -227,7 +216,7 @@ export const ImageInput = React.forwardRef<
           value={value?.width || ""}
           onChange={(e) =>
             onChange({
-              ...value,
+              ...value!,
               width: e.target.value ? Number(e.target.value) : undefined,
             })
           }
@@ -238,7 +227,7 @@ export const ImageInput = React.forwardRef<
           value={value?.height || ""}
           onChange={(e) =>
             onChange({
-              ...value,
+              ...value!,
               height: e.target.value ? Number(e.target.value) : undefined,
             })
           }
@@ -249,13 +238,13 @@ export const ImageInput = React.forwardRef<
         <Input
           type="text"
           value={value?.srcset || ""}
-          onChange={(e) => onChange({ ...value, srcset: e.target.value })}
+          onChange={(e) => onChange({ ...value!, srcset: e.target.value })}
           placeholder="Srcset (optional)"
         />
         <Input
           type="text"
           value={value?.sizes || ""}
-          onChange={(e) => onChange({ ...value, sizes: e.target.value })}
+          onChange={(e) => onChange({ ...value!, sizes: e.target.value })}
           placeholder="Sizes (optional)"
         />
       </div>

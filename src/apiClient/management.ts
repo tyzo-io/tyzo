@@ -1,5 +1,5 @@
-import { Id } from "../types";
-import type { SerializedCollection, SerializedGlobal } from "../localServer";
+import { SerializedCollection, SerializedGlobal } from "../schemas";
+import { Asset, Id } from "../types";
 import { apiClient } from "./values";
 export * from "./values";
 
@@ -12,7 +12,6 @@ export function managementApiClient(options: {
 
   // Schema
   async function getSchema() {
-    console.log('schema', API_URL)
     const res = await fetch(`${API_URL}/schema`);
     const data = (await res.json()) as {
       collections: Record<string, SerializedCollection>;
@@ -26,7 +25,6 @@ export function managementApiClient(options: {
     collections: Record<string, SerializedCollection>;
     globals: Record<string, SerializedGlobal>;
   }) {
-    console.log(schema)
     const res = await fetch(`${API_URL}/schema`, {
       method: "PUT",
       headers: {
@@ -39,6 +37,10 @@ export function managementApiClient(options: {
       collections: Record<string, SerializedCollection>;
       globals: Record<string, SerializedGlobal>;
     };
+    if (!res.ok) {
+      console.log(data);
+      throw new Error("Failed to update schema");
+    }
     return data;
   }
 
@@ -59,7 +61,12 @@ export function managementApiClient(options: {
         body: JSON.stringify(data),
       }
     );
-    return res.json();
+    const result = await res.json();
+    if (!res.ok) {
+      console.log(result);
+      throw new Error("Failed to update entry");
+    }
+    return result;
   }
 
   async function deleteEntry(collection: string, id: Id): Promise<boolean> {
@@ -72,7 +79,12 @@ export function managementApiClient(options: {
         method: "DELETE",
       }
     );
-    return res.ok;
+    const result = await res.json();
+    if (!res.ok) {
+      console.log(result);
+      throw new Error("Failed to delete entry");
+    }
+    return result;
   }
 
   // Globals
@@ -88,7 +100,12 @@ export function managementApiClient(options: {
       },
       body: JSON.stringify(data),
     });
-    return res.json();
+    const result = await res.json();
+    if (!res.ok) {
+      console.log(result);
+      throw new Error("Failed to update global");
+    }
+    return result;
   }
 
   // Assets
@@ -107,6 +124,16 @@ export function managementApiClient(options: {
     return res.json();
   }
 
+  async function listAssets() {
+    const res = await fetch(`${API_URL}/assets`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return (await res.json()) as { assets: Asset[] };
+  }
+
+
   async function deleteAsset(filename: string): Promise<boolean> {
     const res = await fetch(`${API_URL}/assets/${filename}`, {
       method: "DELETE",
@@ -119,6 +146,7 @@ export function managementApiClient(options: {
   return {
     ...apiClient(options),
     getSchema,
+    listAssets,
     updateSchema,
     setEntry,
     deleteEntry,

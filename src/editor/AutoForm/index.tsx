@@ -31,6 +31,13 @@ import { ArrayInput } from "./ArrayInput";
 import { ReferenceInput } from "./ReferenceInput";
 import { ajvFormats } from "../../validate";
 import { MarkdownEditor, RichTextEditor } from "../RichTextEditor";
+import {
+  isAssetJsonSchema,
+  isImageJsonSchema,
+  isMarkdownJsonSchema,
+  isRichTextJsonSchema,
+  isVideoJsonSchema,
+} from "../../schemas";
 
 const renderField = (
   key: string,
@@ -49,7 +56,7 @@ const renderField = (
     name: key,
   };
 
-  if (fieldSchema.$ref === "#/definitions/imageSchema") {
+  if (isImageJsonSchema(fieldSchema)) {
     return (
       <FormField
         {...commonProps}
@@ -69,7 +76,7 @@ const renderField = (
     );
   }
 
-  if (fieldSchema.$ref === "#/definitions/videoSchema") {
+  if (isVideoJsonSchema(fieldSchema)) {
     return (
       <FormField
         {...commonProps}
@@ -89,7 +96,7 @@ const renderField = (
     );
   }
 
-  if (fieldSchema.$ref === "#/definitions/assetSchema") {
+  if (isAssetJsonSchema(fieldSchema)) {
     return (
       <FormField
         {...commonProps}
@@ -109,7 +116,7 @@ const renderField = (
     );
   }
 
-  if (fieldSchema.$ref === "#/definitions/markdownSchema") {
+  if (isMarkdownJsonSchema(fieldSchema)) {
     return (
       <FormField
         {...commonProps}
@@ -129,7 +136,7 @@ const renderField = (
     );
   }
 
-  if (fieldSchema.$ref === "#/definitions/richTextSchema") {
+  if (isRichTextJsonSchema(fieldSchema)) {
     return (
       <FormField
         {...commonProps}

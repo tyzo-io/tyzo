@@ -10,24 +10,14 @@ import {
 } from "./ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { useAssets, useUploadAsset } from "./useApi";
-import { makeAssetUrl } from "../content";
+import { makeAssetUrl, VideoType } from "../content";
 import { Link, Upload, Video } from "lucide-react";
 
 export const VideoInput = React.forwardRef<
   HTMLInputElement,
   {
-    value: {
-      url: string;
-      alt?: string;
-      width?: number;
-      height?: number;
-    };
-    onChange: (value: {
-      url: string;
-      alt?: string;
-      width?: number;
-      height?: number;
-    }) => void;
+    value: VideoType | undefined;
+    onChange: (value: VideoType) => void;
   }
 >(({ value, onChange }, ref) => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -42,6 +32,7 @@ export const VideoInput = React.forwardRef<
           ref={ref}
           type="text"
           value={value?.url || ""}
+          disabled={Boolean(value?.key)}
           onChange={(e) => onChange({ ...value, url: e.target.value })}
           placeholder="Video URL"
         />
@@ -74,7 +65,9 @@ export const VideoInput = React.forwardRef<
                 <Input
                   type="url"
                   value={value?.url || ""}
-                  onChange={(e) => onChange({ ...value, url: e.target.value })}
+                  onChange={(e) =>
+                    onChange({ ...value, key: undefined, url: e.target.value })
+                  }
                   placeholder="Enter video URL"
                 />
               </TabsContent>
@@ -91,6 +84,7 @@ export const VideoInput = React.forwardRef<
                         onClick={() => {
                           onChange({
                             ...value,
+                            key: asset.key,
                             url: makeAssetUrl(asset.key),
                           });
                           setIsOpen(false);
@@ -127,6 +121,7 @@ export const VideoInput = React.forwardRef<
                         const asset = await uploadAsset.mutate(file);
                         onChange({
                           ...value,
+                          key: asset.key,
                           url: makeAssetUrl(asset.key),
                         });
                         setIsOpen(false);
@@ -148,7 +143,7 @@ export const VideoInput = React.forwardRef<
         <Input
           type="text"
           value={value?.alt || ""}
-          onChange={(e) => onChange({ ...value, alt: e.target.value })}
+          onChange={(e) => onChange({ ...value!, alt: e.target.value })}
           placeholder="Alt text (optional)"
         />
         <Input
@@ -156,7 +151,7 @@ export const VideoInput = React.forwardRef<
           value={value?.width || ""}
           onChange={(e) =>
             onChange({
-              ...value,
+              ...value!,
               width: e.target.value ? Number(e.target.value) : undefined,
             })
           }
@@ -167,7 +162,7 @@ export const VideoInput = React.forwardRef<
           value={value?.height || ""}
           onChange={(e) =>
             onChange({
-              ...value,
+              ...value!,
               height: e.target.value ? Number(e.target.value) : undefined,
             })
           }

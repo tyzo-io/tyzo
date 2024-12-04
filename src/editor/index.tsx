@@ -137,7 +137,10 @@ const Sidebar = () => {
           checked={apiClient.apiUrl === remoteUrl}
           onCheckedChange={(checked) => {
             if (!checked || (user?.user && space)) {
-              setApiUrl(checked ? remoteUrl : localApiUrl);
+              setApiUrl(
+                checked ? remoteUrl : localApiUrl,
+                checked ? getAuthToken() ?? "" : ""
+              );
             } else {
               setShowDialog(true);
             }

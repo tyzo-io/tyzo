@@ -1,6 +1,7 @@
+import React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { localApiUrl } from "./useApi";
-import { SyncStatus } from "../localServer";
+import { SyncStatus } from "../sync";
 import { Progress } from "./ui/progress";
 
 const listeners = new Set<() => void>();
@@ -25,6 +26,7 @@ export function useSyncStatus() {
       current: 0,
       phase: "",
     },
+    syncLogs: [],
   });
 
   useEffect(() => {
@@ -70,7 +72,18 @@ export function SyncStatus() {
   const { status } = useSyncStatus();
 
   if (!status.inProgress) {
-    return null;
+    if (status.syncLogs.length > 0) {
+      return (
+        <div className="mt-4">
+          <h3 className="text-lg font-semibold mb-2">Sync Complete</h3>
+          {status.syncLogs.map((log, index) => (
+            <p key={index}>{log}</p>
+          ))}
+        </div>
+      );
+    } else {
+      return null;
+    }
   }
 
   const progress = Math.round(
@@ -89,6 +102,9 @@ export function SyncStatus() {
       <p className="mt-2 text-sm text-gray-600">
         {status.progress.current} / {status.progress.total}
       </p>
+      {status.syncLogs.map((log, index) => (
+        <p key={index}>{log}</p>
+      ))}
     </div>
   );
 }

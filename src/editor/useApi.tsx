@@ -8,7 +8,7 @@ export const localApiUrl = "http://localhost:3456/api";
 
 const ApiClientContext = createContext({
   apiClient: {} as ReturnType<typeof managementApiClient>,
-  setApiUrl: (url: string) => {},
+  setApiUrl: (url: string, token: string) => {},
 });
 
 export const ApiProvider = ({
@@ -25,8 +25,8 @@ export const ApiProvider = ({
     <ApiClientContext.Provider
       value={{
         apiClient: client,
-        setApiUrl: (url) => {
-          setClient(managementApiClient({ API_URL: url, token: "" }));
+        setApiUrl: (url, token) => {
+          setClient(managementApiClient({ API_URL: url, token }));
         },
       }}
     >

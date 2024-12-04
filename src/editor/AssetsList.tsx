@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { useAssets, useUploadAsset, useDeleteAsset } from "./useApi";
+import { useAssets, useUploadAsset, useDeleteAsset, useApiClient } from "./useApi";
 import { cn } from "./utils";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
@@ -102,6 +102,7 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const apiClient = useApiClient();
   const { data, loading: assetsLoading, refetch } = useAssets();
   const { mutate: uploadAsset, loading: uploading } = useUploadAsset();
   const { mutate: deleteAsset, loading: deleting } = useDeleteAsset();
@@ -225,7 +226,11 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
                 </Button>
                 {fileType === "image" ? (
                   <img
-                    src={makeAssetUrl(asset.key, { width: 200, height: 200 })}
+                    src={makeAssetUrl(asset.key, {
+                      width: 200,
+                      height: 200,
+                      baseUrl: apiClient.apiUrl,
+                    })}
                     alt={asset.name}
                     className="w-full h-full object-cover"
                   />
@@ -261,7 +266,10 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
         })}
       </div>
 
-      <Dialog open={!!selectedAsset} onOpenChange={() => setSelectedAsset(null)}>
+      <Dialog
+        open={!!selectedAsset}
+        onOpenChange={() => setSelectedAsset(null)}
+      >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Asset Information</DialogTitle>
@@ -285,85 +293,156 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
               </div>
             </div>
 
-            {selectedAsset && getFileType(selectedAsset.httpMetadata?.contentType) === "image" && (
-              <>
-                <div className="grid gap-2">
-                  <Label>Image Options</Label>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Width</Label>
-                      <Input
-                        type="number"
-                        placeholder="Auto"
-                        value={urlParams.width}
-                        onChange={(e) =>
-                          setUrlParams({ ...urlParams, width: e.target.value })
-                        }
-                      />
+            {selectedAsset &&
+              getFileType(selectedAsset.httpMetadata?.contentType) ===
+                "image" && (
+                <>
+                  <div className="grid gap-2">
+                    <Label>Image Options</Label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Width</Label>
+                        <Input
+                          type="number"
+                          placeholder="Auto"
+                          value={urlParams.width}
+                          onChange={(e) =>
+                            setUrlParams({
+                              ...urlParams,
+                              width: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Height</Label>
+                        <Input
+                          type="number"
+                          placeholder="Auto"
+                          value={urlParams.height}
+                          onChange={(e) =>
+                            setUrlParams({
+                              ...urlParams,
+                              height: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label>Height</Label>
-                      <Input
-                        type="number"
-                        placeholder="Auto"
-                        value={urlParams.height}
-                        onChange={(e) =>
-                          setUrlParams({ ...urlParams, height: e.target.value })
-                        }
-                      />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Format</Label>
+                        <Select
+                          value={urlParams.format}
+                          onValueChange={(value) =>
+                            setUrlParams({ ...urlParams, format: value })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="original">Original</SelectItem>
+                            <SelectItem value="webp">WebP</SelectItem>
+                            <SelectItem value="jpeg">JPEG</SelectItem>
+                            <SelectItem value="png">PNG</SelectItem>
+                            <SelectItem value="avif">AVIF</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Quality</Label>
+                        <Input
+                          type="number"
+                          min="1"
+                          max="100"
+                          value={urlParams.quality}
+                          onChange={(e) =>
+                            setUrlParams({
+                              ...urlParams,
+                              quality: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Format</Label>
-                      <Select
-                        value={urlParams.format}
-                        onValueChange={(value) =>
-                          setUrlParams({ ...urlParams, format: value })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="original">Original</SelectItem>
-                          <SelectItem value="webp">WebP</SelectItem>
-                          <SelectItem value="jpeg">JPEG</SelectItem>
-                          <SelectItem value="png">PNG</SelectItem>
-                          <SelectItem value="avif">AVIF</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Quality</Label>
-                      <Input
-                        type="number"
-                        min="1"
-                        max="100"
-                        value={urlParams.quality}
-                        onChange={(e) =>
-                          setUrlParams({ ...urlParams, quality: e.target.value })
-                        }
-                      />
-                    </div>
-                  </div>
-                </div>
 
+                  <div className="space-y-2">
+                    <Label>Generated URL</Label>
+                    <div className="relative">
+                      <Input
+                        readOnly
+                        value={
+                          selectedAsset
+                            ? makeAssetUrl(selectedAsset.key, {
+                                baseUrl: apiClient.apiUrl,
+                                width: urlParams.width
+                                  ? Number(urlParams.width)
+                                  : undefined,
+                                height: urlParams.height
+                                  ? Number(urlParams.height)
+                                  : undefined,
+                                format:
+                                  urlParams.format !== "original"
+                                    ? (urlParams.format as
+                                        | "webp"
+                                        | "jpeg"
+                                        | "png"
+                                        | "avif")
+                                    : undefined,
+                                quality: Number(urlParams.quality),
+                              })
+                            : ""
+                        }
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-1 top-1"
+                        onClick={() => {
+                          if (!selectedAsset) return;
+                          navigator.clipboard.writeText(
+                            makeAssetUrl(selectedAsset.key, {
+                              baseUrl: apiClient.apiUrl,
+                              width: urlParams.width
+                                ? Number(urlParams.width)
+                                : undefined,
+                              height: urlParams.height
+                                ? Number(urlParams.height)
+                                : undefined,
+                              format:
+                                urlParams.format !== "original"
+                                  ? (urlParams.format as
+                                      | "webp"
+                                      | "jpeg"
+                                      | "png"
+                                      | "avif")
+                                  : undefined,
+                              quality: Number(urlParams.quality),
+                            })
+                          );
+                        }}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </>
+              )}
+
+            {selectedAsset &&
+              getFileType(selectedAsset.httpMetadata?.contentType) !==
+                "image" && (
                 <div className="space-y-2">
-                  <Label>Generated URL</Label>
+                  <Label>Asset URL</Label>
                   <div className="relative">
                     <Input
                       readOnly
                       value={
                         selectedAsset
                           ? makeAssetUrl(selectedAsset.key, {
-                              width: urlParams.width ? Number(urlParams.width) : undefined,
-                              height: urlParams.height ? Number(urlParams.height) : undefined,
-                              format:
-                                urlParams.format !== "original"
-                                  ? (urlParams.format as "webp" | "jpeg" | "png" | "avif")
-                                  : undefined,
-                              quality: Number(urlParams.quality),
+                              baseUrl: apiClient.apiUrl,
                             })
                           : ""
                       }
@@ -375,15 +454,7 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
                       onClick={() => {
                         if (!selectedAsset) return;
                         navigator.clipboard.writeText(
-                          makeAssetUrl(selectedAsset.key, {
-                            width: urlParams.width ? Number(urlParams.width) : undefined,
-                            height: urlParams.height ? Number(urlParams.height) : undefined,
-                            format:
-                              urlParams.format !== "original"
-                                ? (urlParams.format as "webp" | "jpeg" | "png" | "avif")
-                                : undefined,
-                            quality: Number(urlParams.quality),
-                          })
+                          makeAssetUrl(selectedAsset.key)
                         );
                       }}
                     >
@@ -391,41 +462,21 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
                     </Button>
                   </div>
                 </div>
-              </>
-            )}
-
-            {selectedAsset && getFileType(selectedAsset.httpMetadata?.contentType) !== "image" && (
-              <div className="space-y-2">
-                <Label>Asset URL</Label>
-                <div className="relative">
-                  <Input
-                    readOnly
-                    value={selectedAsset ? makeAssetUrl(selectedAsset.key) : ""}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-1 top-1"
-                    onClick={() => {
-                      if (!selectedAsset) return;
-                      navigator.clipboard.writeText(makeAssetUrl(selectedAsset.key));
-                    }}
-                  >
-                    <Copy className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            )}
+              )}
           </div>
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={!!itemToDelete} onOpenChange={() => setItemToDelete(null)}>
+      <AlertDialog
+        open={!!itemToDelete}
+        onOpenChange={() => setItemToDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the asset.
+              This action cannot be undone. This will permanently delete the
+              asset.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

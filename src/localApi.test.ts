@@ -88,8 +88,8 @@ describe("LocalApi", () => {
       );
 
       const retrieved = await api.getEntries(posts);
-      expect(retrieved).toHaveLength(2);
-      expect(retrieved).toEqual(expect.arrayContaining(entries));
+      expect(retrieved.entries).toHaveLength(2);
+      expect(retrieved.entries).toEqual(expect.arrayContaining(entries));
     });
 
     it("should delete an entry", async () => {
@@ -212,16 +212,22 @@ describe("LocalApi", () => {
       expect(assets).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            filename: "image1.jpg",
-            contentType: "image/jpeg",
+            key: "image1.jpg",
+            httpMetadata: {
+              contentType: "image/jpeg",
+            },
           }),
           expect.objectContaining({
-            filename: "image2.png",
-            contentType: "image/png",
+            key: "image2.png",
+            httpMetadata: {
+              contentType: "image/png",
+            },
           }),
           expect.objectContaining({
-            filename: "doc.pdf",
-            contentType: "application/pdf",
+            key: "doc.pdf",
+            httpMetadata: {
+              contentType: "application/pdf",
+            },
           }),
         ])
       );

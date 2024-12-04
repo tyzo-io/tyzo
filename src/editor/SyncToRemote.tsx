@@ -3,14 +3,19 @@ import { Alert, AlertDescription } from "./ui/alert";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
-import { notifySyncStatusListeners, useSyncStatus } from "./SyncStatus";
+import {
+  notifySyncStatusListeners,
+  SyncStatus,
+  useSyncStatus,
+} from "./SyncStatus";
 import { localApiUrl } from "./useApi";
 import { getAuthToken } from "./utils";
 import { Input } from "./ui/input";
 
 interface SyncOptions {
   schema: boolean;
-  content: boolean;
+  entries: boolean;
+  globals: boolean;
   assets: boolean;
   stage: string;
 }
@@ -18,7 +23,8 @@ interface SyncOptions {
 export const SyncToRemote: React.FC = () => {
   const [syncOptions, setSyncOptions] = useState<SyncOptions>({
     schema: false,
-    content: false,
+    entries: false,
+    globals: false,
     assets: false,
     stage: "main",
   });
@@ -43,7 +49,8 @@ export const SyncToRemote: React.FC = () => {
       },
       body: JSON.stringify({
         schema: syncOptions.schema,
-        content: syncOptions.content,
+        entries: syncOptions.entries,
+        globals: syncOptions.globals,
         assets: syncOptions.assets,
         stage: syncOptions.stage,
         token: getAuthToken(),
@@ -75,13 +82,24 @@ export const SyncToRemote: React.FC = () => {
 
         <div className="flex items-center space-x-2">
           <Checkbox
-            id="content"
-            checked={syncOptions.content}
+            id="entries"
+            checked={syncOptions.entries}
             onCheckedChange={(checked) =>
-              handleOptionChange("content", checked as boolean)
+              handleOptionChange("entries", checked as boolean)
             }
           />
-          <Label htmlFor="content">Content</Label>
+          <Label htmlFor="entries">Entries</Label>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="globals"
+            checked={syncOptions.globals}
+            onCheckedChange={(checked) =>
+              handleOptionChange("globals", checked as boolean)
+            }
+          />
+          <Label htmlFor="globals">Globals</Label>
         </div>
 
         <div className="flex items-center space-x-2">
@@ -111,7 +129,8 @@ export const SyncToRemote: React.FC = () => {
           disabled={
             !Object.values({
               assets: syncOptions.assets,
-              content: syncOptions.content,
+              entries: syncOptions.entries,
+              globals: syncOptions.globals,
               schema: syncOptions.schema,
             }).some(Boolean) ||
             !syncOptions.stage.length ||
@@ -121,6 +140,7 @@ export const SyncToRemote: React.FC = () => {
         >
           Sync to Remote
         </Button>
+        <SyncStatus />
       </div>
     </div>
   );

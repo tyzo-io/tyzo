@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useCollection, useEntries, useDeleteEntry } from "./useApi";
+import { useCollection, useEntries, useDeleteEntry, useApiClient } from "./useApi";
 import { Button } from "./ui/button";
 import {
   Table,
@@ -25,11 +25,15 @@ import { capitalizeFirstLetter } from "./utils";
 import { Where } from "../filters";
 import { FilterUI } from "./Filters";
 import { FileIcon, Link2Icon } from "lucide-react";
+import { isImageJsonSchema, isMarkdownJsonSchema, isRichTextJsonSchema } from "../schemas";
+import Markdown from "react-markdown";
+import { makeAssetUrl } from "../content";
 
 export const EntriesList = ({ linkPrefix }: { linkPrefix?: string }) => {
   const { collection } = useParams();
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const [filter, setFilter] = useState<Where<any>>({});
+  const apiClient = useApiClient();
 
   const { data, loading: collectionLoading } = useCollection(collection);
   const { collection: currentCollection } = data ?? {};
@@ -81,37 +85,43 @@ export const EntriesList = ({ linkPrefix }: { linkPrefix?: string }) => {
           </div>
         );
       }
+      if (isMarkdownJsonSchema(schema)) {
+        return <Markdown>{value.markdown}</Markdown>;
+      }
+      if (isRichTextJsonSchema(schema)) {
+        return <div dangerouslySetInnerHTML={{ __html: value.richText }}></div>;
+      }
+      if (isImageJsonSchema(schema)) {
+        const url = makeAssetUrl(value.key, {
+          baseUrl: apiClient.apiUrl,
+        });
+        return (
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 relative bg-muted rounded overflow-hidden">
+              <img
+                src={url}
+                alt={value.alt}
+                className="object-cover w-full h-full"
+              />
+            </div>
+            <span className="truncate max-w-xs" title={value.alt}>
+              {value.alt || "No alt text"}
+            </span>
+          </div>
+        );
+      }
       if (value.url) {
-        const url = value.url;
-        if (value.alt !== undefined) {
-          // Image
-          return (
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 relative bg-muted rounded overflow-hidden">
-                <img
-                  src={url}
-                  alt={value.alt}
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <span className="truncate max-w-xs" title={value.alt}>
-                {value.alt || "No alt text"}
-              </span>
+        // File
+        return (
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 flex items-center justify-center bg-muted rounded">
+              <FileIcon className="w-4 h-4" />
             </div>
-          );
-        } else {
-          // File
-          return (
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 flex items-center justify-center bg-muted rounded">
-                <FileIcon className="w-4 h-4" />
-              </div>
-              <span className="truncate max-w-xs" title={value.url}>
-                {value.url.split("/").pop()}
-              </span>
-            </div>
-          );
-        }
+            <span className="truncate max-w-xs" title={value.url}>
+              {value.url.split("/").pop()}
+            </span>
+          </div>
+        );
       }
       return (
         <span className="truncate max-w-xs" title={JSON.stringify(value)}>

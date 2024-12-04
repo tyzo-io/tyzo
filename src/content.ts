@@ -101,6 +101,7 @@ export async function getAsset(filename: string) {
 export function makeAssetUrl(
   filepath: string,
   options?: {
+    baseUrl?: string;
     width?: number;
     height?: number;
     format?: "avif" | "webp" | "jpeg" | "png";
@@ -112,10 +113,11 @@ export function makeAssetUrl(
   if (options?.height) query.set("height", options.height.toString());
   if (options?.format) query.set("format", options.format);
   if (options?.quality) query.set("quality", options.quality.toString());
+  const baseUrl = options?.baseUrl ?? apiUrl;
   if (query.toString()) {
-    return `${apiUrl}/assets/${filepath}?${query.toString()}`;
+    return `${baseUrl}/assets/${filepath}?${query.toString()}`;
   }
-  return `${apiUrl}/assets/${filepath}`;
+  return `${baseUrl}/assets/${filepath}`;
 }
 
 export const linkSchema = z.object({
@@ -132,45 +134,76 @@ export function isLink(schema: z.AnyZodObject) {
   return (schema as any)[isLinkSymbol];
 }
 
-export const imageSchema = z.object({
-  url: z.string(),
-  alt: z.string().optional(),
-  width: z.number().optional(),
-  height: z.number().optional(),
-  sizes: z.string().optional(),
-  srcset: z.string().optional(),
-  loading: z.enum(["eager", "lazy"]).optional(),
+export const entryReference = (collection: string) => {
+  const schema = z.object({
+    id: z.string(),
+    collection: z.literal(collection),
+  });
+  (schema._def as any)[isEntryReferenceSymbol] = true;
+  (schema as any)[isEntryReferenceSymbol] = true;
+  return schema;
+};
+
+const isEntryReferenceSymbol = Symbol.for("isEntryReference");
+
+export function isEntryReference(schema: z.ZodTypeDef) {
+  return (schema as any)[isEntryReferenceSymbol];
+}
+
+export const assetReference = z.object({
+  key: z.string().optional(),
 });
+
+export const imageSchema = assetReference.and(
+  z.object({
+    url: z.string(),
+    alt: z.string().optional(),
+    width: z.number().optional(),
+    height: z.number().optional(),
+    sizes: z.string().optional(),
+    srcset: z.string().optional(),
+    loading: z.enum(["eager", "lazy"]).optional(),
+  })
+);
+
+export type ImageType = z.infer<typeof imageSchema>;
 
 const isImageSymbol = Symbol.for("isImage");
 (imageSchema as any)[isImageSymbol] = true;
 
-export function isImage(schema: z.AnyZodObject) {
+export function isImage(schema: z.ZodTypeDef) {
   return (schema as any)[isImageSymbol];
 }
 
-export const videoSchema = z.object({
-  url: z.string(),
-  alt: z.string().optional(),
-  width: z.number().optional(),
-  height: z.number().optional(),
-});
+export const videoSchema = assetReference.and(
+  z.object({
+    url: z.string(),
+    alt: z.string().optional(),
+    width: z.number().optional(),
+    height: z.number().optional(),
+  })
+);
+
+export type VideoType = z.infer<typeof videoSchema>;
 
 const isVideoSymbol = Symbol.for("isVideo");
 (videoSchema as any)[isVideoSymbol] = true;
 
-export function isVideo(schema: z.AnyZodObject) {
+export function isVideo(schema: z.ZodTypeDef) {
   return (schema as any)[isVideoSymbol];
 }
 
 export const assetSchema = z.object({
+  key: z.string(),
   url: z.string(),
 });
+
+export type AssetType = z.infer<typeof assetSchema>;
 
 const isAssetSymbol = Symbol.for("isAsset");
 (assetSchema as any)[isAssetSymbol] = true;
 
-export function isAsset(schema: z.AnyZodObject) {
+export function isAsset(schema: z.ZodTypeDef) {
   return (schema as any)[isAssetSymbol];
 }
 

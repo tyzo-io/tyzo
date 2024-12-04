@@ -10,16 +10,14 @@ import {
 } from "../ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { useAssets, useUploadAsset } from "../useApi";
-import { makeAssetUrl } from "../../content";
+import { AssetType, makeAssetUrl } from "../../content";
 import { Link, Upload, File } from "lucide-react";
 
 export const AssetInput = React.forwardRef<
   HTMLInputElement,
   {
-    value: {
-      url: string;
-    };
-    onChange: (value: { url: string }) => void;
+    value: AssetType | undefined;
+    onChange: (value: AssetType) => void;
   }
 >(({ value, onChange }, ref) => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -33,8 +31,9 @@ export const AssetInput = React.forwardRef<
         <Input
           ref={ref}
           type="text"
+          disabled
           value={value?.url || ""}
-          onChange={(e) => onChange({ url: e.target.value })}
+          // onChange={(e) => onChange({ url: e.target.value })}
           placeholder="Asset URL"
         />
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -47,12 +46,12 @@ export const AssetInput = React.forwardRef<
             <DialogHeader>
               <DialogTitle>Select Asset</DialogTitle>
             </DialogHeader>
-            <Tabs defaultValue="url">
+            <Tabs defaultValue="assets">
               <TabsList>
-                <TabsTrigger value="url">
+                {/* <TabsTrigger value="url">
                   <Link className="w-4 h-4 mr-2" />
                   URL
-                </TabsTrigger>
+                </TabsTrigger> */}
                 <TabsTrigger value="assets">
                   <File className="w-4 h-4 mr-2" />
                   Assets
@@ -62,14 +61,14 @@ export const AssetInput = React.forwardRef<
                   Upload
                 </TabsTrigger>
               </TabsList>
-              <TabsContent value="url" className="space-y-4">
+              {/* <TabsContent value="url" className="space-y-4">
                 <Input
                   type="url"
                   value={value?.url || ""}
                   onChange={(e) => onChange({ url: e.target.value })}
                   placeholder="Enter asset URL"
                 />
-              </TabsContent>
+              </TabsContent> */}
               <TabsContent value="assets" className="space-y-4">
                 <div className="grid grid-cols-4 gap-4">
                   {assets?.assets?.map((asset) => (
@@ -78,6 +77,7 @@ export const AssetInput = React.forwardRef<
                       className="relative group cursor-pointer rounded-lg overflow-hidden border hover:border-primary p-4"
                       onClick={() => {
                         onChange({
+                          key: asset.key,
                           url: makeAssetUrl(asset.key),
                         });
                         setIsOpen(false);
@@ -112,6 +112,7 @@ export const AssetInput = React.forwardRef<
                       if (file) {
                         const asset = await uploadAsset.mutate(file);
                         onChange({
+                          key: asset.key,
                           url: makeAssetUrl(asset.key),
                         });
                         setIsOpen(false);

@@ -3,6 +3,7 @@ import {
   assetSchema,
   defineCollection,
   defineGlobal,
+  entryReference,
   getEntries,
   getGlobal,
   imageSchema,
@@ -44,7 +45,7 @@ export const collections = {
       image: imageSchema,
       video: videoSchema,
       file: assetSchema,
-      author: z.lazy(() => collections.author.schema),
+      author: entryReference("author"),
     }),
   }),
 };
@@ -80,7 +81,7 @@ export function App() {
             <h2>{post.title}</h2>
             <p>{post.content}</p>
             <img
-              src={post.image.url}
+              src={'key' in post.image ? post.image.key : post.image.url}
               alt={post.image.alt}
               width={post.image.width}
               height={post.image.height}

@@ -1,6 +1,6 @@
 import { ignoreOverride, zodToJsonSchema } from "zod-to-json-schema";
 import { Collection, Global, Id } from "./types";
-import { assetSchema, imageSchema, markdownSchema, richTextSchema, videoSchema, z } from "./content";
+import { assetSchema, imageSchema, isEntryReference, markdownSchema, richTextSchema, videoSchema, z } from "./content";
 
 export interface SerializedCollection {
   name: string;
@@ -30,21 +30,15 @@ export function convertZodSchema(
       if (def === schema) {
         return undefined;
       }
-      if ("typeName" in def && def.typeName === "ZodLazy" && "getter" in def) {
-        const otherType = (def.getter as () => z.ZodType<any>)();
-        if (otherType === schema) {
-          return undefined;
-        }
-        const otherCollection = Object.keys(allCollections ?? {}).find(
-          (key) => allCollections![key] === otherType
-        );
+      if (isEntryReference(def)) {
+        const collection = (def as any).shape().collection._def.value;
 
         return {
           type: "object",
-          format: `#/ref/collections/${otherCollection}`,
+          format: `#/ref/collections/${collection}`,
           properties: {
             id: { type: "string" },
-            collection: { type: "string" },
+            collection: { type: "string", const: collection },
           },
           required: ["id", "collection"],
         };
@@ -62,6 +56,46 @@ export function convertZodSchema(
     //   return ignoreOverride;
     // },
   });
+}
+
+export function isImageJsonSchema(schema: any) {
+  return (
+    schema &&
+    typeof schema === "object" &&
+    schema.$ref === "#/definitions/imageSchema"
+  );
+}
+
+export function isVideoJsonSchema(schema: any) {
+  return (
+    schema &&
+    typeof schema === "object" &&
+    schema.$ref === "#/definitions/videoSchema"
+  );
+}
+
+export function isAssetJsonSchema(schema: any) {
+  return (
+    schema &&
+    typeof schema === "object" &&
+    schema.$ref === "#/definitions/assetSchema"
+  );
+}
+
+export function isRichTextJsonSchema(schema: any) {
+  return (
+    schema &&
+    typeof schema === "object" &&
+    schema.$ref === "#/definitions/richTextSchema"
+  );
+}
+
+export function isMarkdownJsonSchema(schema: any) {
+  return (
+    schema &&
+    typeof schema === "object" &&
+    schema.$ref === "#/definitions/markdownSchema"
+  );
 }
 
 export function serializeCollection(

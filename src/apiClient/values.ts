@@ -50,11 +50,6 @@ export function apiClient(options: { API_URL: string }) {
   }
 
   // Assets
-  async function listAssets() {
-    const res = await fetch(`${API_URL}/assets`);
-    return (await res.json()) as { assets: Asset[] };
-  }
-
   async function getAsset(filename: string) {
     const res = await fetch(`${API_URL}/assets/${filename}`);
     if (!res.ok) return null;
@@ -77,7 +72,6 @@ export function apiClient(options: { API_URL: string }) {
     getEntries,
     getEntry,
     getGlobalValue,
-    listAssets,
     getAsset,
     getAssetUrl,
   };

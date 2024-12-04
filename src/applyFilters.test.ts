@@ -22,6 +22,11 @@ describe("doesMatchFilter", () => {
     },
   };
 
+  it("should match empty filter", () => {
+    const where: Where<TestType> = {};
+    expect(doesMatchFilter(testEntry, where)).toBe(true);
+  });
+
   // Basic comparison operators
   it("should match direct value comparison", () => {
     const where: Where<TestType> = { name: "John Doe" };

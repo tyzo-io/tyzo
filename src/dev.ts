@@ -55,7 +55,7 @@ async function startExample() {
 
   await server.listen();
   server.printUrls();
-  server.bindCLIShortcuts({ print: true });
+  // server.bindCLIShortcuts({ print: true });
   // server.openBrowser();
 }
 
@@ -98,7 +98,7 @@ async function startEditor() {
 
   await server.listen();
   server.printUrls();
-  server.bindCLIShortcuts({ print: true });
+  // server.bindCLIShortcuts({ print: true });
   // server.openBrowser();
 }
 
