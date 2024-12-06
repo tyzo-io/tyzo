@@ -5,7 +5,7 @@ export * from "./values";
 
 export function managementApiClient(options: {
   API_URL: string;
-  token: string;
+  token: () => string | null;
 }) {
   const { API_URL } = options;
   const token = options.token;
@@ -29,7 +29,7 @@ export function managementApiClient(options: {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token()}`,
       },
       body: JSON.stringify(schema),
     });
@@ -56,7 +56,7 @@ export function managementApiClient(options: {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token()}`,
         },
         body: JSON.stringify(data),
       }
@@ -74,7 +74,7 @@ export function managementApiClient(options: {
       `${API_URL}/collections/${collection}/entries/${id}`,
       {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token()}`,
         },
         method: "DELETE",
       }
@@ -96,7 +96,7 @@ export function managementApiClient(options: {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token()}`,
       },
       body: JSON.stringify(data),
     });
@@ -116,7 +116,7 @@ export function managementApiClient(options: {
     const res = await fetch(`${API_URL}/assets/${options.filename}`, {
       method: "PUT",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token()}`,
         "Content-Type": options.contentType ?? "application/octet-stream",
       },
       body: file,
@@ -127,18 +127,17 @@ export function managementApiClient(options: {
   async function listAssets() {
     const res = await fetch(`${API_URL}/assets`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token()}`,
       },
     });
     return (await res.json()) as { assets: Asset[] };
   }
 
-
   async function deleteAsset(filename: string): Promise<boolean> {
     const res = await fetch(`${API_URL}/assets/${filename}`, {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token()}`,
       },
     });
     return res.ok;

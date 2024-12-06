@@ -11,8 +11,6 @@ import {
 import { Request, Response } from "express";
 import { managementApiClient } from "./apiClient";
 import { LocalApi } from "./localApi";
-import { z } from "zod";
-import { isAsset, isImage, isVideo, isRichText, isMarkdown } from "./content";
 import { JSONSchemaType } from "ajv";
 
 const localApiUrl = "http://localhost:3456/api";
@@ -184,7 +182,10 @@ export function syncRoutesFactory(api: LocalApi) {
   }) {
     const remoteUrl = `${remoteBaseUrl}/content/${space}:${stage}`;
     console.log("Remote API URL:", remoteUrl);
-    const remoteApi = managementApiClient({ API_URL: remoteUrl, token });
+    const remoteApi = managementApiClient({
+      API_URL: remoteUrl,
+      token: () => token,
+    });
     return remoteApi;
   }
 

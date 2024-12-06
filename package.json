@@ -6,6 +6,7 @@
   "files": [
     "dist"
   ],
+  "sideEffects": ["*.css"],
   "exports": {
     ".": {
       "import": "./dist/content.js",
@@ -15,7 +16,8 @@
     "./components": {
       "import": "./dist/components/tyzo.mjs",
       "types": "./dist/components/components.d.ts"
-    }
+    },
+    "./components/tyzo.css": "./dist/components/tyzo.css"
   },
   "scripts": {
     "dev": "tsx src/dev.ts",
@@ -37,6 +39,7 @@
     "@lexical/selection": "^0.21.0",
     "@lexical/utils": "^0.21.0",
     "@radix-ui/react-alert-dialog": "^1.1.2",
+    "@radix-ui/react-avatar": "^1.1.1",
     "@radix-ui/react-checkbox": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-dropdown-menu": "^2.1.2",
@@ -61,6 +64,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-async-errors": "^3.1.1",
+    "framer-motion": "^11.13.1",
     "inquirer": "^12.1.0",
     "json-schema-to-zod": "^2.4.1",
     "lexical": "^0.21.0",

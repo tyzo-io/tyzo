@@ -1,6 +1,7 @@
 import React, { lazy } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  useApiClientContext,
   useCollection,
   useEntry,
   usePutEntry,
@@ -15,6 +16,7 @@ const AutoForm = lazy(() => import("./AutoForm"));
 export const CollectionItemEditor = () => {
   const { collection, id } = useParams();
   const navigate = useNavigate();
+  const { routePrefix } = useApiClientContext();
 
   const { data } = useCollection(collection);
   const { collection: currentCollection, collections } = data ?? {};
@@ -42,7 +44,7 @@ export const CollectionItemEditor = () => {
       } else {
         await putEntry.mutate({ id: data[currentCollection.idField], data });
       }
-      navigate(`/collections/${collection}`);
+      navigate(`${routePrefix}/collections/${collection}`);
     } catch (error) {
       console.error("Failed to save entry:", error);
     }

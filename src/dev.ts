@@ -21,8 +21,8 @@ async function startExample() {
     mode: "development",
     define: {
       "process.env": {
-        REMOTE_TYZO_URL: "http://localhost:8787",
-        TYZO_AUTH_URL: "http://localhost:5173",
+        REMOTE_TYZO_URL: process.env.REMOTE_TYZO_URL ?? "http://localhost:8787",
+        TYZO_AUTH_URL: process.env.TYZO_AUTH_URL ?? "http://localhost:5173",
         TYZO_SPACE: process.env.TYZO_SPACE,
         // TYZO_ADMIN_URL: process.env.TYZO_ADMIN_URL,
         // TYZO_LIBRARIES_URL: process.env.TYZO_LIBRARIES_URL,

@@ -81,9 +81,7 @@ export async function startLocalServer(options?: {
     ) {
       await fs.writeFile(dotenv, `TYZO_SPACE=${space}\n`);
     } else {
-      await fs.writeFile(dotenv, `TYZO_SPACE=${space}\n`, {
-        mode: "a",
-      });
+      await fs.appendFile(dotenv, `\nTYZO_SPACE=${space}\n`);
     }
     process.env.TYZO_SPACE = space;
     await startViteServer();

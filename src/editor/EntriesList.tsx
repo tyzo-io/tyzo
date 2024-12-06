@@ -24,10 +24,16 @@ import {
 import { capitalizeFirstLetter } from "./utils";
 import { Where } from "../filters";
 import { FilterUI } from "./Filters";
-import { FileIcon, Link2Icon } from "lucide-react";
+import { FileIcon, Link2Icon, ExternalLink } from "lucide-react";
 import { isImageJsonSchema, isMarkdownJsonSchema, isRichTextJsonSchema } from "../schemas";
 import Markdown from "react-markdown";
 import { makeAssetUrl } from "../content";
+import { Badge } from "./ui/badge";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "./ui/popover";
 
 export const EntriesList = ({ linkPrefix }: { linkPrefix?: string }) => {
   const { collection } = useParams();
@@ -67,6 +73,129 @@ export const EntriesList = ({ linkPrefix }: { linkPrefix?: string }) => {
     if (value === null || value === undefined) return "-";
     if (typeof value === "boolean") return value ? "Yes" : "No";
 
+    // Handle numbers
+    if (typeof value === "number") {
+      if (schema?.format === "currency") {
+        return (
+          <span className="font-medium tabular-nums">
+            {new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(value)}
+          </span>
+        );
+      }
+      if (schema?.format === "percentage") {
+        return (
+          <span className="font-medium tabular-nums">
+            {new Intl.NumberFormat("en-US", {
+              style: "percent",
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 2,
+            }).format(value / 100)}
+          </span>
+        );
+      }
+      return (
+        <span className="font-medium tabular-nums">
+          {new Intl.NumberFormat("en-US").format(value)}
+        </span>
+      );
+    }
+
+    // Handle strings
+    if (typeof value === "string") {
+      if (schema?.format === "email") {
+        return (
+          <a
+            href={`mailto:${value}`}
+            className="text-primary hover:underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {value}
+          </a>
+        );
+      }
+      if (schema?.format === "url") {
+        try {
+          const urlObj = new URL(value);
+          return (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="link"
+                  className="h-auto p-0 text-primary hover:no-underline"
+                >
+                  {urlObj.hostname}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 p-3">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Open URL</p>
+                  <p className="text-xs text-muted-foreground break-all">
+                    {value}
+                  </p>
+                  <div className="flex justify-end">
+                    <Button
+                      size="sm"
+                      className="gap-1.5"
+                      onClick={() => window.open(value, "_blank")}
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      Open in new tab
+                    </Button>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          );
+        } catch (e) {
+          return <span className="text-muted-foreground">{value}</span>;
+        }
+      }
+      if (value.length > 100) {
+        return (
+          <span className="text-sm text-muted-foreground" title={value}>
+            {value.substring(0, 100)}...
+          </span>
+        );
+      }
+    }
+
+    // Handle dates
+    if (schema?.format === "date-time" || schema?.type === "date") {
+      try {
+        const date = new Date(value);
+        if (!isNaN(date.getTime())) {
+          return (
+            <time dateTime={date.toISOString()} className="text-sm tabular-nums">
+              {new Intl.DateTimeFormat("en-US", {
+                dateStyle: "medium",
+                timeStyle: "short",
+              }).format(date)}
+            </time>
+          );
+        }
+      } catch (e) {
+        console.warn("Failed to parse date:", value);
+      }
+    }
+
+    // Handle arrays
+    if (Array.isArray(value)) {
+      if (value.length === 0)
+        return <span className="text-muted-foreground">Empty array</span>;
+
+      return (
+        <div className="flex flex-wrap gap-1.5 max-w-md">
+          {value.map((item, index) => (
+            <Badge key={index}>{String(item)}</Badge>
+          ))}
+        </div>
+      );
+    }
+
     if (typeof value === "object") {
       if (value.collection && value.id) {
         // Reference
@@ -76,7 +205,9 @@ export const EntriesList = ({ linkPrefix }: { linkPrefix?: string }) => {
               <Link2Icon className="w-4 h-4" />
             </div>
             <Link
-              to={`/collections/${value.collection}/${value.id}`}
+              to={`${linkPrefix ?? ""}/collections/${value.collection}/${
+                value.id
+              }`}
               className="truncate max-w-xs hover:underline"
               title={`${value.collection}/${value.id}`}
             >
@@ -86,10 +217,51 @@ export const EntriesList = ({ linkPrefix }: { linkPrefix?: string }) => {
         );
       }
       if (isMarkdownJsonSchema(schema)) {
-        return <Markdown>{value.markdown}</Markdown>;
+        const preview = value.markdown.substring(0, 100).replace(/[#*`]/g, '');
+        return (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="link"
+                className="h-auto p-0 text-left font-normal"
+              >
+                <span className="line-clamp-2 text-sm">
+                  {preview}
+                  {value.markdown.length > 100 && "..."}
+                </span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[32rem] p-4">
+              <div className="prose prose-sm dark:prose-invert max-h-[60vh] overflow-y-auto">
+                <Markdown>{value.markdown}</Markdown>
+              </div>
+            </PopoverContent>
+          </Popover>
+        );
       }
       if (isRichTextJsonSchema(schema)) {
-        return <div dangerouslySetInnerHTML={{ __html: value.richText }}></div>;
+        const preview = value.richText.replace(/<[^>]+>/g, '').substring(0, 100);
+        return (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="link"
+                className="h-auto p-0 text-left font-normal"
+              >
+                <span className="line-clamp-2 text-sm">
+                  {preview}
+                  {value.richText.length > 100 && "..."}
+                </span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[32rem] p-4">
+              <div 
+                className="prose prose-sm dark:prose-invert max-h-[60vh] overflow-y-auto"
+                dangerouslySetInnerHTML={{ __html: value.richText }}
+              />
+            </PopoverContent>
+          </Popover>
+        );
       }
       if (isImageJsonSchema(schema)) {
         const url = makeAssetUrl(value.key, {
@@ -123,10 +295,27 @@ export const EntriesList = ({ linkPrefix }: { linkPrefix?: string }) => {
           </div>
         );
       }
+      // For other objects, show truncated JSON
+      const jsonStr = JSON.stringify(value, null, 2);
       return (
-        <span className="truncate max-w-xs" title={JSON.stringify(value)}>
-          {JSON.stringify(value)}
-        </span>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="link"
+              className="h-auto p-0 text-left font-normal"
+            >
+              <span className="line-clamp-2 text-sm font-mono">
+                {jsonStr.substring(0, 100)}
+                {jsonStr.length > 100 && "..."}
+              </span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[32rem] p-4">
+            <pre className="text-xs font-mono bg-muted p-4 rounded-lg overflow-x-auto max-h-[60vh]">
+              {jsonStr}
+            </pre>
+          </PopoverContent>
+        </Popover>
       );
     }
 
@@ -142,7 +331,7 @@ export const EntriesList = ({ linkPrefix }: { linkPrefix?: string }) => {
   if (!currentCollection) return <div>Collection not found</div>;
 
   return (
-    <div className="p-4">
+    <div>
       <div className="flex flex-row items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">
           {capitalizeFirstLetter(currentCollection.name)}
@@ -199,48 +388,50 @@ export const EntriesList = ({ linkPrefix }: { linkPrefix?: string }) => {
                     {renderCellValue(entry[column], schemaProperties[column])}
                   </TableCell>
                 ))}
-                <TableCell className="flex gap-2">
-                  <Button variant="link" asChild>
-                    <Link
-                      to={`${linkPrefix ?? ""}/collections/${collection}/${
-                        entry[idField]
-                      }`}
-                    >
-                      Edit
-                    </Link>
-                  </Button>
-                  <AlertDialog
-                    open={itemToDelete === entry[idField]}
-                    onOpenChange={(open) => {
-                      if (!open) setItemToDelete(null);
-                    }}
-                  >
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="destructive"
-                        onClick={() => setItemToDelete(entry[idField])}
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button variant="link" asChild>
+                      <Link
+                        to={`${linkPrefix ?? ""}/collections/${collection}/${
+                          entry[idField]
+                        }`}
                       >
-                        Delete
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Entry</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to delete this entry? This
-                          action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => handleDelete(entry[idField])}
+                        Edit
+                      </Link>
+                    </Button>
+                    <AlertDialog
+                      open={itemToDelete === entry[idField]}
+                      onOpenChange={(open) => {
+                        if (!open) setItemToDelete(null);
+                      }}
+                    >
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          onClick={() => setItemToDelete(entry[idField])}
                         >
                           Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Entry</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete this entry? This
+                            action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDelete(entry[idField])}
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

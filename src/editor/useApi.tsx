@@ -1,32 +1,89 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useState, useEffect, createContext, useContext } from "react";
 import { managementApiClient } from "../apiClient";
 import { Id } from "../types";
 import { Where } from "../filters";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { getAuthToken } from "./utils";
 
 export const localApiUrl = "http://localhost:3456/api";
 
+export const remoteBaseUrl =
+  process.env.REMOTE_TYZO_URL ?? "https://api.tyzo.io";
+const getRemoteUrl = (space: string, stage: string) =>
+  `${remoteBaseUrl}/content/${space}:${stage}`;
+
 const ApiClientContext = createContext({
   apiClient: {} as ReturnType<typeof managementApiClient>,
-  setApiUrl: (url: string, token: string) => {},
+  isLocal: true,
+  stage: undefined as string | undefined,
+  setTarget: (target: { local: true } | { remote: true; stage: string }) => {},
+  space: undefined as string | undefined,
+  setSpace: (space: string) => {},
+  routePrefix: "/local",
 });
 
 export const ApiProvider = ({
   children,
-  apiUrl,
+  routePrefix: routePrefixFromProps,
+  apiUrl: apiUrlFromProps,
+  space: spaceFromProps,
+  stage: stageFromProps,
+  getAuthToken: getAuthTokenFromProps,
 }: {
   children: React.ReactNode;
-  apiUrl: string;
+  routePrefix?: string;
+  apiUrl?: string;
+  space?: string;
+  stage?: string;
+  getAuthToken?: () => string | null;
 }) => {
-  const [client, setClient] = useState(() =>
-    managementApiClient({ API_URL: apiUrl, token: "" })
+  const location = useLocation();
+  const [space, setSpace] = useState<string | undefined>(spaceFromProps);
+  const { stage: stageFromParams } = useParams();
+  const isLocal = location.pathname.startsWith("/local");
+  const stage = stageFromProps ?? stageFromParams;
+  const apiUrl =
+    apiUrlFromProps ??
+    (isLocal ? localApiUrl : getRemoteUrl(space!, stage ?? "main"));
+  const nav = useNavigate();
+
+  const client = useMemo(
+    () =>
+      managementApiClient({
+        API_URL: apiUrl,
+        token: getAuthTokenFromProps ?? getAuthToken,
+      }),
+    [apiUrl]
   );
+
+  useEffect(() => {
+    const savedSpace = process.env.TYZO_SPACE;
+    if (savedSpace) {
+      setSpace(savedSpace);
+    }
+  }, []);
+
+  const routePrefix =
+    routePrefixFromProps ?? (isLocal ? "/local" : `/remote/${stage}`);
+
   return (
     <ApiClientContext.Provider
       value={{
         apiClient: client,
-        setApiUrl: (url, token) => {
-          setClient(managementApiClient({ API_URL: url, token }));
+        isLocal,
+        stage,
+        routePrefix,
+        space,
+        setSpace,
+        setTarget: (
+          target: { local: true } | { remote: true; stage: string }
+        ) => {
+          if ("local" in target && !isLocal) {
+            nav("/local");
+          } else if ("remote" in target) {
+            nav(`/remote/${target.stage}`);
+          }
         },
       }}
     >
@@ -63,6 +120,7 @@ function useApi<T>(
   deps: any[] = [],
   options: UseApiOptions = {}
 ): UseApiState<T> & { refetch: () => Promise<void> } {
+  const { apiClient, isLocal, space } = useApiClientContext();
   const [state, setState] = useState<UseApiState<T>>({
     data: null,
     loading: Boolean(options.enabled),
@@ -84,9 +142,10 @@ function useApi<T>(
   };
 
   useEffect(() => {
+    if (!isLocal && !space) return;
     if (options.enabled === false) return;
     fetchData();
-  }, [...deps, options.enabled]);
+  }, [...deps, options.enabled, apiClient.apiUrl]);
 
   return { ...state, refetch: fetchData };
 }
@@ -94,23 +153,21 @@ function useApi<T>(
 // Collection hooks
 export function useSchema() {
   const api = useApiClient();
-  return useApi(() => api.getSchema(), []);
+  return useApi(() => api.getSchema(), [api.apiUrl]);
 }
 
 export function useCollection(collectionName: string | undefined) {
   const api = useApiClient();
   return useApi(
     () =>
-      api
-        .getSchema()
-        .then((cols) =>
-          collectionName
-            ? {
-                collection: cols.collections[collectionName],
-                collections: cols.collections,
-              }
-            : undefined
-        ),
+      api.getSchema().then((cols) =>
+        collectionName
+          ? {
+              collection: cols.collections[collectionName],
+              collections: cols.collections,
+            }
+          : undefined
+      ),
     [collectionName],
     { enabled: Boolean(collectionName) }
   );
@@ -239,7 +296,7 @@ export function useUploadAsset() {
   const api = useApiClient();
   return useMutation(async (file: File) => {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
     const response = await fetch(`${localApiUrl}/assets/${file.name}`, {
       method: "PUT",
       body: file,
@@ -248,7 +305,7 @@ export function useUploadAsset() {
       },
     });
     if (!response.ok) {
-      throw new Error('Failed to upload file');
+      throw new Error("Failed to upload file");
     }
     return response.json();
   });
@@ -261,7 +318,7 @@ export function useDeleteAsset() {
       method: "DELETE",
     });
     if (!response.ok) {
-      throw new Error('Failed to delete file');
+      throw new Error("Failed to delete file");
     }
     return response.json();
   });
