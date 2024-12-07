@@ -53,25 +53,53 @@ await build({
   },
 });
 
-await esbuild.build({
-  entryPoints: ["src/content.ts"],
-  platform: "node",
-  format: "esm",
-  target: ["node20.0"],
-  outfile: "dist/content.js",
-  bundle: true,
-  external: ["zod"],
-});
-await esbuild.build({
-  entryPoints: ["src/content.ts"],
-  platform: "node",
-  format: "cjs",
-  target: ["node20.0"],
-  outfile: "dist/content.cjs",
-  bundle: true,
-  external: ["zod"],
-});
+// await esbuild.build({
+//   entryPoints: ["src/content.ts"],
+//   platform: "node",
+//   format: "esm",
+//   target: ["node20.0"],
+//   outfile: "dist/content.js",
+//   bundle: true,
+//   external: ["zod"],
+// });
+// await esbuild.build({
+//   entryPoints: ["src/content.ts"],
+//   platform: "node",
+//   format: "cjs",
+//   target: ["node20.0"],
+//   outfile: "dist/content.cjs",
+//   bundle: true,
+//   external: ["zod"],
+// });
 
+const files = [
+  "src/cli.ts",
+  "src/localServer.ts",
+  "src/localApi.ts",
+  "src/schemas.ts",
+  "src/apiClient/index.ts",
+  "src/apiClient/management.ts",
+  "src/apiClient/url.ts",
+  "src/apiClient/values.ts",
+  "src/sync.ts",
+  "src/applyFilters.ts",
+  "src/content.ts",
+  "src/filters.ts",
+  "src/sort.ts",
+  "src/validate.ts",
+  "src/apiClient/values.ts",
+];
+for (const file of files) {
+  await esbuild.build({
+    entryPoints: [file],
+    platform: "node",
+    format: "cjs",
+    target: ["node20.0"],
+    outfile: file.replace("src/", "dist/").replace(".ts", ".js"),
+  });
+}
+
+await fs.chmod("dist/cli.js", 0o555);
 
 function compileTypes(fileNames, options) {
   // Create a Program with an in-memory emit

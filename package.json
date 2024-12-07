@@ -2,16 +2,19 @@
   "name": "tyzo",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/content.js",
+  "main": "dist/cli.js",
+  "bin": "dist/cli.js",
   "files": [
     "dist"
   ],
-  "sideEffects": ["*.css"],
+  "sideEffects": [
+    "*.css"
+  ],
   "exports": {
     ".": {
       "import": "./dist/content.js",
       "types": "./dist/content.d.ts",
-      "require": "./dist/content.cjs"
+      "require": "./dist/content.js"
     },
     "./components": {
       "import": "./dist/components/tyzo.mjs",
@@ -22,7 +25,8 @@
   "scripts": {
     "dev": "tsx src/dev.ts",
     "build": "node build.mjs",
-    "test": "vitest"
+    "test": "vitest",
+    "preview": "dist/cli.js dev --config example/src/config.ts -d example/content"
   },
   "keywords": [],
   "author": "",
@@ -75,6 +79,8 @@
     "react-markdown": "^9.0.1",
     "react-router-dom": "^7.0.1",
     "tailwind-merge": "^2.5.5",
+    "tsx": "^4.19.2",
+    "vite": "^6.0.1",
     "zod": "^3.23.8",
     "zod-to-json-schema": "^3.23.5"
   },
@@ -92,9 +98,7 @@
     "tailwind-scrollbar-hide": "^1.1.7",
     "tailwindcss": "^3.4.15",
     "tailwindcss-animate": "^1.0.7",
-    "tsx": "^4.19.2",
     "typescript": "^5.7.2",
-    "vite": "^6.0.1",
     "vite-plugin-dts": "^4.3.0",
     "vitest": "^2.1.6"
   }

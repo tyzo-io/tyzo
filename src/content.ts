@@ -6,9 +6,9 @@ import type { Where } from "./filters";
 import type { Sort } from "./sort";
 
 export type { Where } from "./filters";
-export { whereSchema } from "./filters";
+export { whereSchema } from "./filters.js";
 export type { Sort } from "./sort";
-export { sortSchema } from "./sort";
+export { sortSchema } from "./sort.js";
 
 const collections: Record<string, Collection<any>> = {};
 const globals: Record<string, Global<any>> = {};
@@ -170,8 +170,9 @@ export type ImageType = z.infer<typeof imageSchema>;
 
 const isImageSymbol = Symbol.for("isImage");
 (imageSchema as any)[isImageSymbol] = true;
+(imageSchema._def as any)[isImageSymbol] = true;
 
-export function isImage(schema: z.ZodTypeDef) {
+export function isImage(schema: z.ZodTypeDef | z.ZodTypeDef) {
   return (schema as any)[isImageSymbol];
 }
 
@@ -188,8 +189,9 @@ export type VideoType = z.infer<typeof videoSchema>;
 
 const isVideoSymbol = Symbol.for("isVideo");
 (videoSchema as any)[isVideoSymbol] = true;
+(videoSchema._def as any)[isVideoSymbol] = true;
 
-export function isVideo(schema: z.ZodTypeDef) {
+export function isVideo(schema: z.ZodTypeDef | z.ZodTypeDef) {
   return (schema as any)[isVideoSymbol];
 }
 
@@ -202,8 +204,9 @@ export type AssetType = z.infer<typeof assetSchema>;
 
 const isAssetSymbol = Symbol.for("isAsset");
 (assetSchema as any)[isAssetSymbol] = true;
+(assetSchema._def as any)[isAssetSymbol] = true;
 
-export function isAsset(schema: z.ZodTypeDef) {
+export function isAsset(schema: z.ZodTypeDef | z.ZodTypeDef) {
   return (schema as any)[isAssetSymbol];
 }
 
@@ -213,8 +216,9 @@ export const richTextSchema = z.object({
 
 const isRichTextSymbol = Symbol.for("isRichText");
 (richTextSchema as any)[isRichTextSymbol] = true;
+(richTextSchema._def as any)[isRichTextSymbol] = true;
 
-export function isRichText(schema: z.ZodType<any>) {
+export function isRichText(schema: z.ZodType<any> | z.ZodTypeDef) {
   return (schema as any)[isRichTextSymbol];
 }
 
@@ -224,7 +228,8 @@ export const markdownSchema = z.object({
 
 const isMarkdownSymbol = Symbol.for("isMarkdown");
 (markdownSchema as any)[isMarkdownSymbol] = true;
+(markdownSchema._def as any)[isMarkdownSymbol] = true;
 
-export function isMarkdown(schema: z.ZodType<any>) {
+export function isMarkdown(schema: z.ZodType<any> | z.ZodTypeDef) {
   return (schema as any)[isMarkdownSymbol];
 }

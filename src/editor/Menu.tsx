@@ -39,6 +39,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { MenuLayout, type MenuGroup } from "./MenuLayout";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import { Input } from "./ui/input";
 
 export const Menu = () => {
   const { data, loading } = useSchema();
@@ -137,43 +138,26 @@ export const Menu = () => {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <Select
-                  value={stage}
-                  onValueChange={(value) => {
-                    setTarget({ remote: true, stage: value });
+                <span className="text-xs text-muted-foreground">Stage:</span>
+                <Input
+                  type="text"
+                  className="focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  placeholder="main"
+                  value={stage ?? ""}
+                  onChange={(e) => {
+                    setTarget({
+                      remote: true,
+                      stage: e.target.value || "main",
+                    });
                   }}
-                >
-                  <SelectTrigger className="w-full h-8 text-xs focus:outline-none focus:ring-0 focus:ring-offset-0">
-                    <SelectValue placeholder="Select stage" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="development">
-                      <span className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-yellow-500" />
-                        Development
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="staging">
-                      <span className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-orange-500" />
-                        Staging
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="production">
-                      <span className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-green-500" />
-                        Production
-                      </span>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                />
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
       <div className="flex flex-col items-stretch mt-4">
-        {isLocal && (
+        {/* {isLocal && (
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="outline">Sync remote to local</Button>
@@ -189,7 +173,7 @@ export const Menu = () => {
               <SyncFromRemote />
             </DialogContent>
           </Dialog>
-        )}
+        )} */}
         {!isLocal && (
           <Dialog>
             <DialogTrigger asChild>

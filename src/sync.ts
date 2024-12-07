@@ -156,7 +156,6 @@ export function convertLocalUrlsToRemote<T>({
 }
 
 export function syncRoutesFactory(api: LocalApi) {
-
   function getRemoteConfig(stage: string | undefined) {
     const remoteBaseUrl = process.env.REMOTE_TYZO_URL ?? "https://api.tyzo.io";
     const space = process.env.TYZO_SPACE as string;
@@ -492,8 +491,25 @@ export function syncRoutesFactory(api: LocalApi) {
   //     });
   //   }
   // });
+
+  async function downloadAsset(stage: string, token: string, key: string) {
+    const remoteConfig = getRemoteConfig(stage);
+    const remoteApi = getRemoteApiClient({ ...remoteConfig, token });
+    const response = await remoteApi.downloadAsset(key);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const blob = await response.blob();
+    const buffer: Buffer = Buffer.from(await blob.arrayBuffer());
+    await api.uploadAsset(buffer, {
+      filename: key,
+      contentType: blob.type,
+    });
+  }
+
   return {
     syncUp,
+    downloadAsset,
     currentSyncStatus() {
       return {
         ...currentSyncStatus,

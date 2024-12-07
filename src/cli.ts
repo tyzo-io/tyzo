@@ -1,44 +1,62 @@
+#!/usr/bin/env -S npx tsx
+
 import inquirer from "inquirer";
 import { program } from "commander";
-// import { initLocalPackage, initLocalLibrary } from "./init.js";
-// import {
-//   loadTyzoConfig,
-//   loadTyzoLibraryPackage,
-//   loadTyzoPackage,
-// } from "./config.js";
-// import {
-//   buildLibrary,
-//   buildLocalLibrary,
-//   syncLibraryUp,
-//   syncPagesUp,
-// } from "./syncUp.js";
-// import { dev } from "./devServer.js";
-// import path from "node:path";
-// import { downloadSpace } from "./syncDown.js";
-// import { buildWebsite } from "./build.js";
-// import { getSpaceUtils } from "./space.js";
-// import fs from "node:fs/promises";
-// import { syncLibrariesUp } from "./syncUp.js";
-// import { downloadPages, uploadPages } from "./pages.js";
-// import { loadTyzoPackage } from "./config.js";
-// import { downloadAndUnpackLibrary } from "./downloadLibrary.js";
+import { startLocalServer } from "./localServer.js";
+import path from "node:path";
+import fs from "node:fs/promises";
+
+const configTemplate = `
+export const collections = {
+  // place your collections here
+};
+
+export const globals = {
+  // place your globals here
+};
+
+`;
 
 export async function cli() {
   program.name("tyzo");
 
-  // program
-  //   .command("init")
-  //   .description("Initialize tyzo CMS in the current directory")
-  //   .action(async () => {
-  //     // await initLocalPackage({ root: process.cwd() });
-  //   });
-
   program
     .command("dev")
     .description("Start the development server to edit content locally")
-    .action(async () => {
-      // await dev();
+    .option("-c, --config <configFile>", "Path to tyzo config file")
+    .option("-d, --content <contentDir>", "Path to content dir")
+    .action(async (options) => {
+      const root = process.cwd();
+      const defaultConfigFile = path.join(root, "src", "tyzo-config.ts");
+      let configFile = options.config ?? defaultConfigFile;
+      if (
+        !(await fs
+          .access(configFile)
+          .then(() => true)
+          .catch(() => false))
+      ) {
+        const response = await inquirer.prompt([
+          {
+            type: "confirm",
+            name: "configFile",
+            message: "No tyzo config file found. Do you want to create one?",
+          },
+        ]);
+        if (response.configFile) {
+          const configFile = path.join(root, "src", "tyzo-config.ts");
+          await fs.writeFile(configFile, configTemplate);
+        } else {
+          console.log("No tyzo config file found, exiting.");
+          process.exit(1);
+        }
+      }
+      startLocalServer({
+        configFile: configFile,
+        contentDir: options.content ?? path.join(root, "content"),
+      });
     });
 
-  program.parse();
+  program.parse(process.argv);
 }
+
+cli();

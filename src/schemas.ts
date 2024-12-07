@@ -1,6 +1,19 @@
 import { ignoreOverride, zodToJsonSchema } from "zod-to-json-schema";
 import { Collection, Global, Id } from "./types";
-import { assetSchema, imageSchema, isEntryReference, markdownSchema, richTextSchema, videoSchema, z } from "./content";
+import {
+  assetSchema,
+  imageSchema,
+  isAsset,
+  isEntryReference,
+  isImage,
+  isMarkdown,
+  isRichText,
+  isVideo,
+  markdownSchema,
+  richTextSchema,
+  videoSchema,
+  z,
+} from "./content";
 
 export interface SerializedCollection {
   name: string;
@@ -29,6 +42,36 @@ export function convertZodSchema(
     override(def, refs, seen, forceResolution) {
       if (def === schema) {
         return undefined;
+      }
+      if (isMarkdown(def)) {
+        return {
+          type: "object",
+          $ref: "#/definitions/markdownSchema",
+        };
+      }
+      if (isRichText(def)) {
+        return {
+          type: "object",
+          $ref: "#/definitions/richTextSchema",
+        };
+      }
+      if (isImage(def)) {
+        return {
+          type: "object",
+          $ref: "#/definitions/imageSchema",
+        };
+      }
+      if (isVideo(def)) {
+        return {
+          type: "object",
+          $ref: "#/definitions/videoSchema",
+        };
+      }
+      if (isAsset(def)) {
+        return {
+          type: "object",
+          $ref: "#/definitions/assetSchema",
+        };
       }
       if (isEntryReference(def)) {
         const collection = (def as any).shape().collection._def.value;

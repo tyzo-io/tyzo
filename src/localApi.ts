@@ -372,10 +372,26 @@ export class LocalApi {
     }
   }
 
-  async listAssets(): Promise<Asset[]> {
+  async listAssets(options?: {
+    search?: string;
+    limit?: number;
+    startAfter?: string;
+  }): Promise<Asset[]> {
     const dir = this.getAssetDir();
     try {
-      const files = await fs.readdir(dir);
+      let files = await fs.readdir(dir);
+      if (options?.search) {
+        files = files.filter((file) => file.includes(options!.search!));
+      }
+      if (options?.startAfter) {
+        const index = files.indexOf(options!.startAfter!);
+        if (index !== -1) {
+          files = files.slice(index + 1);
+        }
+      }
+      if (options?.limit) {
+        files = files.slice(0, options.limit);
+      }
       const assets = await Promise.all(
         files.map(async (filename) => {
           const filePath = path.join(dir, filename);

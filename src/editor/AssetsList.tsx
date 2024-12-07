@@ -1,6 +1,13 @@
-import React, { useState, useRef } from "react";
-import { useAssets, useUploadAsset, useDeleteAsset, useApiClient } from "./useApi";
-import { cn } from "./utils";
+import React, { useState, useRef, useEffect } from "react";
+import {
+  useAssets,
+  useUploadAsset,
+  useDeleteAsset,
+  useApiClient,
+  localApiUrl,
+  useApiClientContext,
+} from "./useApi";
+import { cn, getAuthToken, useDebouncedValue } from "./utils";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import {
@@ -16,6 +23,8 @@ import {
   Trash2,
   Copy,
   Info,
+  Download,
+  Loader2Icon,
 } from "lucide-react";
 import { makeAssetUrl } from "../content";
 import {
@@ -45,6 +54,19 @@ import {
   SelectValue,
 } from "./ui/select";
 import { Asset } from "../types";
+
+const PageLimit = 100;
+
+async function downloadAsset(stage: string, token: string, key: string) {
+  await fetch(`${localApiUrl}/sync/download-asset`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ stage, token, key }),
+  });
+}
+
 
 function getFileType(contentType: string | undefined) {
   if (!contentType) return "unknown";
@@ -94,6 +116,9 @@ function formatFileSize(bytes: number) {
 export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 500);
+  const { stage } = useApiClientContext();
   const [urlParams, setUrlParams] = useState({
     width: "",
     height: "",
@@ -103,12 +128,21 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const apiClient = useApiClient();
-  const { data, loading: assetsLoading, refetch } = useAssets();
+  const [paginationToken, setPaginationToken] = useState<string>();
+  const [hasMore, setHasMore] = useState(true);
+  const {
+    data,
+    loading: assetsLoading,
+    refetch,
+  } = useAssets({
+    search: debouncedSearchQuery,
+    limit: PageLimit,
+    startAfter: paginationToken,
+  });
   const { mutate: uploadAsset, loading: uploading } = useUploadAsset();
   const { mutate: deleteAsset, loading: deleting } = useDeleteAsset();
+  const [downloadingAsset, setDownloadingAsset] = useState<string | null>(null);
   const assets = data?.assets;
-
-  if (assetsLoading) return <div>Loading...</div>;
 
   const handleDelete = async (key: string) => {
     try {
@@ -120,6 +154,17 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
     }
   };
 
+  const handleDownload = async (key: string) => {
+    try {
+      setDownloadingAsset(key);
+      await downloadAsset(stage!, getAuthToken()!, key);
+    } catch (error) {
+      console.error("Failed to download asset:", error);
+    } finally {
+      setDownloadingAsset(null);
+    }
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -127,11 +172,35 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
     try {
       await uploadAsset(file);
       refetch();
-      e.target.value = ''; // Reset the input
+      e.target.value = ""; // Reset the input
     } catch (error) {
-      console.error('Failed to upload file:', error);
+      console.error("Failed to upload file:", error);
     }
   };
+
+  const handleLoadMore = () => {
+    if (assets && assets.length > 0) {
+      const lastAsset = assets[assets.length - 1];
+      setPaginationToken(lastAsset.key);
+    }
+  };
+
+  useEffect(() => {
+    // Reset pagination when search changes
+    setPaginationToken(undefined);
+    setHasMore(true);
+  }, [debouncedSearchQuery]);
+
+  useEffect(() => {
+    // Update hasMore flag based on returned results
+    if (data?.assets && data.assets.length < PageLimit) {
+      setHasMore(false);
+    } else {
+      setHasMore(true);
+    }
+  }, [data?.assets]);
+
+  if (assetsLoading && !paginationToken) return <div>Loading...</div>;
 
   if (!assets?.length && !uploading) {
     return (
@@ -167,17 +236,30 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
     <div className="p-4">
       <div className="flex flex-row items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">Assets</h1>
-        <Button
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploading}
-        >
-          {uploading ? (
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-          ) : (
-            <Upload className="w-4 h-4 mr-2" />
-          )}
-          {uploading ? "Uploading..." : "Upload File"}
-        </Button>
+        <div className="flex items-center gap-4">
+          <div className="w-64">
+            <Input
+              type="text"
+              placeholder="Search assets..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+              }}
+              className="w-full"
+            />
+          </div>
+          <Button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+          >
+            {uploading ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Upload className="w-4 h-4 mr-2" />
+            )}
+            {uploading ? "Uploading..." : "Upload File"}
+          </Button>
+        </div>
         <input
           ref={fileInputRef}
           type="file"
@@ -185,6 +267,7 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
           onChange={handleFileChange}
         />
       </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {assets?.map((asset) => {
           const fileType = getFileType(asset.httpMetadata?.contentType);
@@ -197,22 +280,6 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
               onClick={() => setSelectedAsset(asset)}
             >
               <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center relative">
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setItemToDelete(asset.key);
-                  }}
-                  disabled={deleting}
-                >
-                  {deleting && itemToDelete === asset.key ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Trash2 className="h-4 w-4" />
-                  )}
-                </Button>
                 <Button
                   variant="secondary"
                   size="icon"
@@ -261,10 +328,53 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
                   {formatFileSize(asset.size)}
                 </div>
               </div>
+              <div className="flex flex-row gap-2 mt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setItemToDelete(asset.key);
+                  }}
+                  disabled={deleting}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleDownload(asset.key);
+                  }}
+                  disabled={downloadingAsset === asset.key}
+                >
+                  {downloadingAsset === asset.key ? (
+                    <Loader2Icon className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Download className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
             </Card>
           );
         })}
       </div>
+
+      {/* Pagination Controls */}
+      {hasMore && (
+        <div className="flex justify-center items-center gap-2 mt-6">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleLoadMore}
+            disabled={assetsLoading}
+          >
+            {assetsLoading ? "Loading..." : "Load more"}
+          </Button>
+        </div>
+      )}
 
       <Dialog
         open={!!selectedAsset}

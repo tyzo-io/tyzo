@@ -124,8 +124,22 @@ export function managementApiClient(options: {
     return res.json();
   }
 
-  async function listAssets() {
-    const res = await fetch(`${API_URL}/assets`, {
+  async function listAssets(options?: {
+    search?: string;
+    limit?: number;
+    startAfter?: string;
+  }) {
+    const query = new URLSearchParams();
+    if (options?.search) {
+      query.set("search", options.search);
+    }
+    if (options?.limit) {
+      query.set("limit", options.limit.toString());
+    }
+    if (options?.startAfter) {
+      query.set("startAfter", options.startAfter);
+    }
+    const res = await fetch(`${API_URL}/assets?${query.toString()}`, {
       headers: {
         Authorization: `Bearer ${token()}`,
       },
@@ -142,6 +156,12 @@ export function managementApiClient(options: {
     });
     return res.ok;
   }
+
+  async function downloadAsset(key: string) {
+    const res = await fetch(`${API_URL}/assets/${key}`);
+    return res
+  }
+
   return {
     ...apiClient(options),
     getSchema,
@@ -152,6 +172,7 @@ export function managementApiClient(options: {
     setGlobalValue,
     uploadAsset,
     deleteAsset,
+    downloadAsset,
     apiUrl: API_URL,
   };
 }

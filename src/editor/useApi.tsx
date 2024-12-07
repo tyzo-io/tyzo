@@ -287,9 +287,16 @@ export function useUpdateGlobalValue<T = any>(globalName: string | undefined) {
 }
 
 // Assets hooks
-export function useAssets() {
+export function useAssets(options?: {
+  search?: string;
+  limit?: number;
+  startAfter?: string;
+}) {
   const api = useApiClient();
-  return useApi(() => api.listAssets(), []);
+  return useApi(
+    () => api.listAssets(options),
+    [options?.search, options?.limit, options?.startAfter]
+  );
 }
 
 export function useUploadAsset() {

@@ -59,52 +59,8 @@ async function startExample() {
   // server.openBrowser();
 }
 
-async function startEditor() {
-  const server = await createServer({
-    // root: currentDir,
-    // root: path.join(__dirname, ".."),
-    configFile: false,
-    mode: "development",
-    define: {
-      "process.env": {
-        // TYZO_ADMIN_URL: process.env.TYZO_ADMIN_URL,
-        // TYZO_LIBRARIES_URL: process.env.TYZO_LIBRARIES_URL,
-        // TYZO_SPACES_API_URL: spacesUrl.replace(
-        //   "{}",
-        //   tyzoPackage.tyzoPackage.spaceSlug
-        // ),
-      },
-    },
-    // build: {
-    //   rollupOptions: {
-    //     // input: indexHtmlTargetPath,
-    //     input: path.join(__dirname, "..", "example", "index.html"),
-    //   },
-    // },
-    // resolve: {
-    //   // preserveSymlinks: true,
-    //   alias: [
-    //     {
-    //       find: "@/tyzo.config",
-    //       replacement: indexFilePath,
-    //     },
-    //   ],
-    // },
-    server: {
-      // open: "src/index.html",
-      port: 3457,
-    },
-  });
-
-  await server.listen();
-  server.printUrls();
-  // server.bindCLIShortcuts({ print: true });
-  // server.openBrowser();
-}
-
 startLocalServer({
   configFile: "example/src/config.ts",
   contentDir: "example/content",
 });
 startExample();
-startEditor();

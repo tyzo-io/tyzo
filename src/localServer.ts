@@ -5,13 +5,16 @@ import { fileURLToPath } from "url";
 import express from "express";
 import "express-async-errors";
 import cors from "cors";
-import { LocalApi } from "./localApi";
-import { serializeCollection, serializeGlobal } from "./schemas";
-import { syncRoutesFactory } from "./sync";
+import { LocalApi } from "./localApi.js";
+import { serializeCollection, serializeGlobal } from "./schemas.js";
+import { syncRoutesFactory } from "./sync.js";
 
-// @ts-expect-error
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+if (typeof __filename === "undefined") {
+  // @ts-expect-error
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  globalThis.__dirname = __dirname;
+}
 
 let vite: ViteDevServer;
 async function startViteServer() {
@@ -28,7 +31,7 @@ async function startViteServer() {
       },
     },
     server: {
-      port: 3000,
+      port: 7120,
     },
   });
   await vite.listen();
@@ -58,7 +61,6 @@ export async function startLocalServer(options?: {
   app.use(cors());
   app.use(express.json());
 
-
   const syncRoutes = syncRoutesFactory(api);
 
   // Sync status endpoint
@@ -68,6 +70,24 @@ export async function startLocalServer(options?: {
 
   // Sync to remote endpoint
   app.post("/api/sync/up", syncRoutes.syncUp);
+
+  app.post("/api/sync/download-asset", async (req, res) => {
+    const { key, stage, token } = req.body;
+    if (!token) {
+      res.status(400).json({
+        error: "Must specify a token",
+      });
+      return;
+    }
+    if (!stage) {
+      res.status(400).json({
+        error: "Must specify a stage",
+      });
+      return;
+    }
+    await syncRoutes.downloadAsset(stage, token, key);
+    res.status(201).json({ success: true });
+  });
 
   app.post("/api/save-space", async (req, res) => {
     // locate .env file
@@ -172,7 +192,14 @@ export async function startLocalServer(options?: {
 
   // Assets
   app.get("/api/assets", async (req, res) => {
-    const assets = await api.listAssets();
+    const limit = Number(req.query.limit ?? 100);
+    const search = req.query.search as string;
+    const startAfter = req.query.startAfter as string | undefined;
+    const assets = await api.listAssets({
+      limit,
+      search,
+      startAfter,
+    });
     res.json({ assets });
   });
 
