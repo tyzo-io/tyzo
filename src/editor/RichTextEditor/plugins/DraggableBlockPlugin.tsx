@@ -67,7 +67,8 @@ function setMenuPosition(
   const top =
     targetRect.top +
     (parseInt(targetStyle.lineHeight, 10) - floatingElemRect.height) / 2 -
-    anchorElementRect.top;
+    anchorElementRect.top +
+    10;
 
   const left = SPACE;
 

@@ -43,15 +43,11 @@ const renderField = (
   key: string,
   form: UseFormReturn<any, any, undefined>,
   fieldSchema: JSONSchemaType<any>,
-  allCollections?: Record<
-    string,
-    { schema: JSONSchemaType<any>; name: string }
-  >,
+  allCollections?: Record<string, { schema: JSONSchemaType<any>; name: string }>
 ) => {
   const title = capitalizeFirstLetter(key);
 
   const commonProps = {
-    key,
     control: form.control,
     name: key,
   };
@@ -59,6 +55,7 @@ const renderField = (
   if (isImageJsonSchema(fieldSchema)) {
     return (
       <FormField
+        key={key}
         {...commonProps}
         render={({ field }) => (
           <FormItem>
@@ -79,6 +76,7 @@ const renderField = (
   if (isVideoJsonSchema(fieldSchema)) {
     return (
       <FormField
+        key={key}
         {...commonProps}
         render={({ field }) => (
           <FormItem>
@@ -99,6 +97,7 @@ const renderField = (
   if (isAssetJsonSchema(fieldSchema)) {
     return (
       <FormField
+        key={key}
         {...commonProps}
         render={({ field }) => (
           <FormItem>
@@ -119,6 +118,7 @@ const renderField = (
   if (isMarkdownJsonSchema(fieldSchema)) {
     return (
       <FormField
+        key={key}
         {...commonProps}
         render={({ field }) => (
           <FormItem>
@@ -139,6 +139,7 @@ const renderField = (
   if (isRichTextJsonSchema(fieldSchema)) {
     return (
       <FormField
+        key={key}
         {...commonProps}
         render={({ field }) => (
           <FormItem>
@@ -156,14 +157,15 @@ const renderField = (
     );
   }
 
-  if (fieldSchema.format?.startsWith('#/ref/collections/')) {
+  if (fieldSchema.$ref?.startsWith("#/definitions/")) {
     const collectionReference = Object.keys(allCollections ?? {}).find(
-      (key) => fieldSchema.format === `#/ref/collections/${key}`
+      (key) => fieldSchema.$ref === `#/definitions/${key}`
     );
 
     if (collectionReference) {
       return (
         <FormField
+          key={key}
           {...commonProps}
           render={({ field }) => (
             <FormItem>
@@ -191,6 +193,7 @@ const renderField = (
     if (fieldSchema.enum) {
       return (
         <FormField
+          key={key}
           {...commonProps}
           render={({ field }) => (
             <FormItem>
@@ -221,6 +224,7 @@ const renderField = (
     if (format === "email") {
       return (
         <FormField
+          key={key}
           {...commonProps}
           render={({ field }) => (
             <FormItem>
@@ -238,6 +242,7 @@ const renderField = (
     if (format === "uri") {
       return (
         <FormField
+          key={key}
           {...commonProps}
           render={({ field }) => (
             <FormItem>
@@ -255,6 +260,7 @@ const renderField = (
     if (format === "uuid") {
       return (
         <FormField
+          key={key}
           {...commonProps}
           render={({ field }) => (
             <FormItem>
@@ -281,6 +287,7 @@ const renderField = (
     if (format === "date-time") {
       return (
         <FormField
+          key={key}
           {...commonProps}
           render={({ field }) => (
             <FormItem>
@@ -311,6 +318,7 @@ const renderField = (
     if (format === "duration") {
       return (
         <FormField
+          key={key}
           {...commonProps}
           render={({ field }) => (
             <FormItem>
@@ -331,6 +339,7 @@ const renderField = (
     if (fieldSchema.maxLength && fieldSchema.maxLength > 100) {
       return (
         <FormField
+          key={key}
           {...commonProps}
           render={({ field }) => (
             <FormItem>
@@ -347,6 +356,7 @@ const renderField = (
 
     return (
       <FormField
+        key={key}
         {...commonProps}
         render={({ field }) => (
           <FormItem>
@@ -364,6 +374,7 @@ const renderField = (
   if (fieldSchema.type === "number" || fieldSchema.type === "integer") {
     return (
       <FormField
+        key={key}
         {...commonProps}
         render={({ field }) => (
           <FormItem>
@@ -385,6 +396,7 @@ const renderField = (
   if (fieldSchema.type === "boolean") {
     return (
       <FormField
+        key={key}
         {...commonProps}
         render={({ field }) => (
           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
@@ -410,6 +422,7 @@ const renderField = (
 
     return (
       <FormField
+        key={key}
         {...commonProps}
         render={({ field }) => (
           <FormItem>
@@ -420,6 +433,19 @@ const renderField = (
                 onChange={field.onChange}
                 minItems={fieldSchema.minItems}
                 maxItems={fieldSchema.maxItems}
+                defaultValue={
+                  fieldSchema.items.type === "string"
+                    ? ""
+                    : fieldSchema.items.type === "number"
+                    ? 0
+                    : fieldSchema.items.type === "boolean"
+                    ? false
+                    : fieldSchema.items.type === "object"
+                    ? {}
+                    : fieldSchema.items.type === "array"
+                    ? []
+                    : ""
+                }
                 renderItem={(value, onChange) =>
                   isPrimitiveArray ? (
                     <Input
@@ -512,7 +538,13 @@ const AutoForm: React.FC<AutoFormProps> = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={form.handleSubmit(onSubmit, (errors) => {
+          console.log(errors);
+          console.log(form.getValues());
+        })}
+        className="space-y-6"
+      >
         {Object.entries(schema.properties || {}).map(([key, fieldSchema]) =>
           renderField(
             key,

@@ -24,6 +24,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "./ui/dialog";
 import { SyncToRemote } from "./SyncToRemote";
 import { SyncFromRemote } from "./SyncFromRemote";
@@ -60,10 +61,9 @@ export const Menu = () => {
     }
   );
   const [, setSearchParams] = useSearchParams();
-  const location = useLocation();
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
+    const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
     const spaceParam = params.get("space");
 
@@ -73,7 +73,7 @@ export const Menu = () => {
 
     if (spaceParam) {
       setSpace(spaceParam);
-      fetch(`${localApiUrl}/save-space`, {
+      fetch(`${localApiUrl}/space`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,11 +85,11 @@ export const Menu = () => {
     if (token || spaceParam) {
       setSearchParams({});
     }
-  }, [location]);
+  }, [window.location.search]);
 
   const header = (
     <div className="flex flex-col p-3 rounded-lg border border-border bg-muted/30 mb-8">
-      <div className="flex flex-row items-center justify-between">
+      <div className="flex flex-row items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <div
             className={cn(
@@ -105,6 +105,7 @@ export const Menu = () => {
           disabled={userLoading}
           checked={!isLocal}
           onCheckedChange={(checked) => {
+            console.log(user, space)
             if (!checked || (user?.user && space)) {
               setTarget(
                 checked ? { remote: true, stage: "main" } : { local: true }
@@ -190,6 +191,34 @@ export const Menu = () => {
             </DialogContent>
           </Dialog>
         )}
+        <Dialog open={showDialog} onOpenChange={setShowDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Authentication Required</DialogTitle>
+            </DialogHeader>
+            <p className="mb-4">
+              You need to be authenticated and select a space to use the remote
+              API. You will be redirected to the authentication page.
+            </p>
+            <DialogFooter>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  const authUrl = `${
+                    process.env.TYZO_AUTH_URL ?? "https://www.tyzo.io"
+                  }/auth/local-auth?redirect_url=${encodeURIComponent(
+                    window.location.href
+                  )}`;
+                  window.location.href = authUrl;
+                  return false;
+                }}
+              >
+                Proceed
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
@@ -208,7 +237,7 @@ export const Menu = () => {
             <ChevronRight className="w-3 h-3 ml-auto opacity-0 group-hover:opacity-50 transition-opacity duration-200" />
           </Link>
         ),
-        isActive: location.pathname === `/collections/${collection.name}`,
+        // isActive: location.pathname === `/collections/${collection.name}`,
       })),
     },
     {
@@ -224,7 +253,7 @@ export const Menu = () => {
             <ChevronRight className="w-3 h-3 ml-auto opacity-0 group-hover:opacity-50 transition-opacity duration-200" />
           </Link>
         ),
-        isActive: location.pathname === `/globals/${global.name}`,
+        // isActive: location.pathname === `/globals/${global.name}`,
       })),
     },
     {
@@ -240,7 +269,7 @@ export const Menu = () => {
               <ChevronRight className="w-3 h-3 ml-auto opacity-0 group-hover:opacity-50 transition-opacity duration-200" />
             </Link>
           ),
-          isActive: location.pathname === "/assets",
+          // isActive: location.pathname === "/assets",
         },
       ],
     },

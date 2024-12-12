@@ -50,7 +50,7 @@ export function BaseEditor({
       >
         <RichTextPlugin
           contentEditable={
-            <ContentEditable className="editor-input border rounded-lg py-2 px-8 w-full min-h-[100px]" />
+            <ContentEditable className="editor-input border rounded-lg py-4 px-8 w-full min-h-[100px]" />
           }
           placeholder={
             <div className="editor-placeholder text-muted-foreground absolute top-2.5 left-8 pointer-events-none">

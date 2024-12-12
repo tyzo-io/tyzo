@@ -9,7 +9,7 @@ import { getAuthToken } from "./utils";
 export const localApiUrl = "http://localhost:3456/api";
 
 export const remoteBaseUrl =
-  process.env.REMOTE_TYZO_URL ?? "https://api.tyzo.io";
+  process.env.REMOTE_TYZO_URL ?? "https://cd.tyzo.io";
 const getRemoteUrl = (space: string, stage: string) =>
   `${remoteBaseUrl}/content/${space}:${stage}`;
 
@@ -41,7 +41,7 @@ export const ApiProvider = ({
   const location = useLocation();
   const [space, setSpace] = useState<string | undefined>(spaceFromProps);
   const { stage: stageFromParams } = useParams();
-  const isLocal = location.pathname.startsWith("/local");
+  const isLocal = !location.pathname.startsWith("/remote");
   const stage = stageFromProps ?? stageFromParams;
   const apiUrl =
     apiUrlFromProps ??
@@ -58,10 +58,10 @@ export const ApiProvider = ({
   );
 
   useEffect(() => {
-    const savedSpace = process.env.TYZO_SPACE;
-    if (savedSpace) {
-      setSpace(savedSpace);
-    }
+    fetch(`${localApiUrl}/space`).then(async (res) => {
+      const { space } = await res.json();
+      setSpace(space);
+    });
   }, []);
 
   const routePrefix =

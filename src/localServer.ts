@@ -1,6 +1,9 @@
+// import tsx from "tsx/cjs/api";
+// @ts-expect-error
+import tsxEsm from 'tsx/esm/api'
 import fs from "node:fs/promises";
 import path from "node:path";
-import { createServer, ViteDevServer } from "vite";
+import { type ViteDevServer } from "vite";
 import { fileURLToPath } from "url";
 import express from "express";
 import "express-async-errors";
@@ -8,6 +11,8 @@ import cors from "cors";
 import { LocalApi } from "./localApi.js";
 import { serializeCollection, serializeGlobal } from "./schemas.js";
 import { syncRoutesFactory } from "./sync.js";
+import chokidar from "chokidar";
+import { addToDotEnv } from './dotenv.js';
 
 if (typeof __filename === "undefined") {
   // @ts-expect-error
@@ -17,12 +22,13 @@ if (typeof __filename === "undefined") {
 }
 
 let vite: ViteDevServer;
-async function startViteServer() {
+async function startViteServer(root: string) {
+  const { createServer } = await import("vite");
   if (vite) {
     vite.close();
   }
   vite = await createServer({
-    root: path.join(__dirname, ".."),
+    root,
     define: {
       "process.env": {
         REMOTE_TYZO_URL: process.env.REMOTE_TYZO_URL,
@@ -35,24 +41,94 @@ async function startViteServer() {
     },
   });
   await vite.listen();
+  console.log("Started local UI at http://localhost:7120");
 }
 
 export async function startLocalServer(options?: {
   configFile?: string;
   contentDir?: string;
+  viteRoot?: string;
+  useViteServer?: boolean;
 }) {
   const app = express();
   const port = 3456;
 
   const currentDir = process.cwd();
-  const config = require(path.join(
-    currentDir,
-    options?.configFile ?? "config.ts"
-  ));
+  const configPath = path.join(currentDir, options?.configFile ?? "config.ts");
+
+  async function loadConfig() {
+    const api = tsxEsm.register({
+      namespace: Date.now().toString(),
+    });
+
+    const loaded = await api.import(configPath, __filename);
+    api.unregister();
+
+    // const api = tsx.register({
+    //   namespace: Date.now().toString(),
+    // });
+    // console.log(api.require.cache);
+    // console.log(
+    //   tsx.require.cache?.[tsx.require.resolve(configPath, __filename)]
+    // );
+    // console.log(
+    //   api.require.cache?.[tsx.require.resolve(configPath, __filename)]
+    // );
+
+    // const config = api.require(configPath, __filename);
+    // console.log(api.require.cache);
+    // api.unregister();
+    return loaded;
+  }
+
+  let config = await loadConfig();
+
+  // console.log("watching", currentDir);
+  const extensions = [
+    "ts",
+    "tsx",
+    "js",
+    "jsx",
+    "json",
+    "astro",
+    "svelte",
+    "vue",
+  ];
+  chokidar
+    .watch(currentDir, {
+      ignored: (path, stats) => {
+        if (path.includes("node_modules")) {
+          return true;
+        }
+        if (!stats) {
+          return false;
+        }
+        if (stats?.isDirectory()) {
+          return false;
+        }
+        const ignore = !extensions.includes(path.split(".").pop() ?? "");
+        return ignore;
+      },
+      ignoreInitial: true,
+    })
+    .on("all", async () => {
+      // console.log("file changed");
+      const newConfig = await loadConfig();
+      // delete require.cache[require.resolve(configPath)];
+      // const newConfig = require(configPath);
+      config = newConfig;
+      api.setConfig({
+        collections: Object.values(config.collections ?? {}),
+        globals: Object.values(config.globals ?? {}),
+      });
+    });
 
   // Create LocalApi instance with collections and globals
   const api = new LocalApi({
-    contentDir: path.join(process.cwd(), options?.contentDir ?? "src/content"),
+    contentDir:
+      options?.contentDir && path.isAbsolute(options?.contentDir)
+        ? options?.contentDir
+        : path.join(process.cwd(), options?.contentDir ?? "src/content"),
     collections: Object.values(config.collections ?? {}),
     globals: Object.values(config.globals ?? {}),
   });
@@ -89,22 +165,34 @@ export async function startLocalServer(options?: {
     res.status(201).json({ success: true });
   });
 
-  app.post("/api/save-space", async (req, res) => {
+  app.get("/api/space", async (req, res) => {
     // locate .env file
     const dotenv = path.join(process.cwd(), ".env");
-    const space = req.body.space;
     if (
       !(await fs
         .stat(dotenv)
         .then(() => true)
         .catch(() => false))
     ) {
-      await fs.writeFile(dotenv, `TYZO_SPACE=${space}\n`);
-    } else {
-      await fs.appendFile(dotenv, `\nTYZO_SPACE=${space}\n`);
+      const content = await fs.readFile(dotenv, "utf-8");
+      const spaceMatch = content.match(/TYZO_SPACE=([^\\n]+)/)?.[1];
+      if (spaceMatch) {
+        process.env.TYZO_SPACE = spaceMatch;
+        res.status(200).json({ space: spaceMatch });
+        return;
+      }
     }
+    res.status(201).json({ space: null });
+  });
+
+  app.post("/api/space", async (req, res) => {
+    // locate .env file
+    const space = req.body.space;
+    await addToDotEnv("TYZO_SPACE", `TYZO_SPACE=${space}`);
     process.env.TYZO_SPACE = space;
-    await startViteServer();
+    if (options?.useViteServer) {
+      await startViteServer(options?.viteRoot ?? __dirname);
+    }
     res.status(201).json({ success: true });
   });
 
@@ -136,6 +224,7 @@ export async function startLocalServer(options?: {
     const filters = JSON.parse((req.query.filters as string) ?? "{}");
     const sort = JSON.parse((req.query.sort as string) ?? "[]");
     const includeCount = Boolean(req.query.includeCount);
+    const include = JSON.parse((req.query.include as string) ?? "[]");
 
     const entries = await api.getEntries(req.params.collection, {
       includeCount,
@@ -143,12 +232,16 @@ export async function startLocalServer(options?: {
       offset,
       filters,
       sort,
+      include,
     });
     res.json(entries);
   });
 
   app.get("/api/collections/:collection/entries/:id", async (req, res) => {
-    const entry = await api.getEntry(req.params.collection, req.params.id);
+    const include = JSON.parse((req.query.include as string) ?? "[]");
+    const entry = await api.getEntry(req.params.collection, req.params.id, {
+      include,
+    });
     if (!entry) {
       res.status(404).json({ error: "Entry not found" });
       return;
@@ -271,8 +364,33 @@ export async function startLocalServer(options?: {
 
   // Start server
   app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+    // console.log(`Server running at http://localhost:${port}`);
   });
 
-  await startViteServer();
+  if (options?.useViteServer) {
+    await startViteServer(options?.viteRoot ?? __dirname);
+  } else {
+    const uiServer = express();
+    uiServer.use(express.static(path.join(__dirname, "editorClient")));
+
+    // app.use(express.static(path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'dist/client'), { index: false }));
+
+    uiServer.use("*", async (_, res) => {
+      try {
+        const template = await fs.readFile(
+          path.join(__dirname, "editorClient", "index.html"),
+          "utf-8"
+        );
+        // const { render } = await import("./dist/server/entry-server.js");
+        // const html = template.replace(`<!--outlet-->`, render);
+        res.status(200).set({ "Content-Type": "text/html" }).end(template);
+      } catch (error) {
+        res.status(500).end(error);
+      }
+    });
+
+    uiServer.listen(7120, () => {
+      console.log(`UI server running at http://localhost:7120`);
+    });
+  }
 }

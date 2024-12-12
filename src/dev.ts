@@ -62,5 +62,7 @@ async function startExample() {
 startLocalServer({
   configFile: "example/src/config.ts",
   contentDir: "example/content",
+  viteRoot: path.join(__dirname, ".."),
+  useViteServer: true,
 });
 startExample();

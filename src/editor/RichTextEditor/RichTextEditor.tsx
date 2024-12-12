@@ -32,7 +32,6 @@ export function RichTextEditor({
       const htmlString = $generateHtmlFromNodes(editor);
       onChange(htmlString);
     });
-
   };
   const config = useMemo(() => {
     const config: InitialConfigType = {

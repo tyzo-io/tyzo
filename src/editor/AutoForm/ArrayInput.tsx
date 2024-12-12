@@ -10,8 +10,9 @@ export const ArrayInput = React.forwardRef<
     renderItem: (value: any, onChange: (value: any) => void) => React.ReactNode;
     minItems?: number;
     maxItems?: number;
+    defaultValue?: any;
   }
->(({ value = [], onChange, renderItem, minItems, maxItems }, ref) => {
+>(({ value = [], onChange, renderItem, minItems, maxItems, defaultValue = "" }, ref) => {
   const [draggedIndex, setDraggedIndex] = React.useState<number | null>(null);
   const [dropIndex, setDropIndex] = React.useState<number | null>(null);
 
@@ -91,7 +92,7 @@ export const ArrayInput = React.forwardRef<
           variant="outline"
           className="w-full"
           disabled={!canAdd}
-          onClick={() => onChange([...value, undefined])}
+          onClick={() => onChange([...value, defaultValue])}
         >
           <Plus className="w-4 h-4 mr-2" />
           Add Item

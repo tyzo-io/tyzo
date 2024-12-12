@@ -30,44 +30,54 @@ export function convertZodSchema(
   schema: z.ZodType<any>,
   allCollections?: Record<string, z.ZodType>
 ) {
-  return zodToJsonSchema(schema, {
+  let hasMarkdown = false
+  let hasRichText = false
+  let hasImage = false
+  let hasVideo = false
+  let hasAsset = false
+  const jsonSchema = zodToJsonSchema(schema, {
     definitions: {
       imageSchema,
       videoSchema,
       assetSchema,
       markdownSchema,
       richTextSchema,
-      ...allCollections,
+      // ...allCollections,
     },
     override(def, refs, seen, forceResolution) {
       if (def === schema) {
         return undefined;
       }
       if (isMarkdown(def)) {
+        hasMarkdown = true
         return {
           type: "object",
           $ref: "#/definitions/markdownSchema",
         };
       }
       if (isRichText(def)) {
+        hasRichText = true
         return {
           type: "object",
           $ref: "#/definitions/richTextSchema",
         };
       }
       if (isImage(def)) {
+        hasImage = true;
         return {
           type: "object",
           $ref: "#/definitions/imageSchema",
         };
       }
       if (isVideo(def)) {
+        hasVideo = true;
         return {
           type: "object",
           $ref: "#/definitions/videoSchema",
         };
       }
       if (isAsset(def)) {
+        hasAsset = true;
         return {
           type: "object",
           $ref: "#/definitions/assetSchema",
@@ -75,12 +85,13 @@ export function convertZodSchema(
       }
       if (isEntryReference(def)) {
         const collection = (def as any).shape().collection._def.value;
-
         return {
           type: "object",
-          format: `#/ref/collections/${collection}`,
+          $ref: `#/definitions/${collection}`,
           properties: {
-            id: { type: "string" },
+            id: {
+              type: "string",
+            },
             collection: { type: "string", const: collection },
           },
           required: ["id", "collection"],
@@ -88,17 +99,41 @@ export function convertZodSchema(
       }
       return ignoreOverride;
     },
-    // override(def, refs, seen, forceResolution) {
-    //   if ("typeName" in def && def.typeName === "ZodLazy") {
-    //     console.log(def);
-    //     console.log(def.getter())
-    //     return {
-    //       type: "integer",
-    //     };
-    //   }
-    //   return ignoreOverride;
-    // },
   });
+
+  if (!jsonSchema.definitions) {
+    jsonSchema.definitions = {};
+  }
+  if (hasImage) {
+    jsonSchema.definitions.imageSchema = zodToJsonSchema(imageSchema);
+  }
+  if (hasVideo) {
+    jsonSchema.definitions.videoSchema = zodToJsonSchema(videoSchema);
+  }
+  if (hasAsset) {
+    jsonSchema.definitions.assetSchema = zodToJsonSchema(assetSchema);
+  }
+  if (hasMarkdown) {
+    jsonSchema.definitions.markdownSchema = zodToJsonSchema(markdownSchema);
+  }
+  if (hasRichText) {
+    jsonSchema.definitions.richTextSchema = zodToJsonSchema(richTextSchema);
+  }
+
+  for (const collectionKey of Object.keys(allCollections ?? {})) {
+    jsonSchema.definitions[collectionKey] = {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+        },
+        collection: { type: "string", const: collectionKey },
+      },
+      required: ["id", "collection"],
+    };
+  }
+
+  return jsonSchema;
 }
 
 export function isImageJsonSchema(schema: any) {

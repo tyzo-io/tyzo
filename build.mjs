@@ -18,7 +18,7 @@ await build({
   define: {
     "process.env": {},
   },
-  plugins: [react(), dts({ include: ["src/components.ts", 'src/editor'] })],
+  plugins: [react(), dts({ include: ["src/components.ts", "src/editor"] })],
   build: {
     outDir: path.join(__dirname, "dist", "components"),
     lib: {
@@ -31,13 +31,18 @@ await build({
         "react/jsx-runtime",
         "@hookform/resolvers",
         "@radix-ui/react-alert-dialog",
+        "@radix-ui/react-avatar",
         "@radix-ui/react-checkbox",
+        "@radix-ui/react-dialog",
+        "@radix-ui/react-dropdown-menu",
         "@radix-ui/react-label",
+        "@radix-ui/react-popover",
+        "@radix-ui/react-progress",
         "@radix-ui/react-select",
         "@radix-ui/react-slot",
-        "@tanstack/react-query",
         "@radix-ui/react-switch",
-        "@radix-ui/react-progress",
+        "@radix-ui/react-tabs",
+        "@tanstack/react-query",
         "@trpc/client",
         "@trpc/react-query",
         "@trpc/server",
@@ -51,6 +56,18 @@ await build({
       ],
     },
   },
+});
+await esbuild.build({
+  entryPoints: ["src/react.ts"],
+  format: "esm",
+  // target: ["node20.0"],
+  outfile: "dist/react.js",
+});
+await esbuild.build({
+  entryPoints: ["src/react.ts"],
+  format: "cjs",
+  // target: ["node20.0"],
+  outfile: "dist/react.cjs",
 });
 
 // await esbuild.build({
@@ -82,6 +99,7 @@ const files = [
   "src/apiClient/url.ts",
   "src/apiClient/values.ts",
   "src/sync.ts",
+  "src/dotenv.ts",
   "src/applyFilters.ts",
   "src/content.ts",
   "src/filters.ts",
@@ -99,7 +117,68 @@ for (const file of files) {
   });
 }
 
-await fs.chmod("dist/cli.js", 0o555);
+await fs.chmod("dist/cli.js", 0o755);
+
+// await fs.cp("./index.html", "dist/index.html");
+// await fs.cp("./src/editorClient.tsx", "dist/src/editorClient.tsx");
+// await fs.cp("./src/content.ts", "dist/src/content.ts");
+// await fs.cp("./src/types.ts", "dist/src/types.ts");
+// await fs.cp("./src/validate.ts", "dist/src/validate.ts");
+// await fs.cp("./src/sort.ts", "dist/src/sort.ts");
+// await fs.cp("./src/filters.ts", "dist/src/filters.ts");
+// await fs.cp("./src/schemas.ts", "dist/src/schemas.ts");
+// await fs.cp("./src/editor", "dist/src/editor", { recursive: true });
+// await fs.cp("./src/apiClient", "dist/src/apiClient", { recursive: true });
+
+await build({
+  root: __dirname,
+  configFile: false,
+  copyPublicDir: false,
+  define: {
+    "process.env": {},
+  },
+  plugins: [react(), 
+    // dts({ include: ["src/editorClient.tsx", "src/editor"] })
+  ],
+  build: {
+    outDir: path.join(__dirname, "dist", "editorClient"),
+    // lib: {
+    //   entry: path.resolve(__dirname, "src/components.ts"),
+    //   formats: ["es"],
+    // },
+    // rollupOptions: {
+    //   external: [
+    //     "react",
+    //     "react/jsx-runtime",
+    //     "@hookform/resolvers",
+    //     "@radix-ui/react-alert-dialog",
+    //     "@radix-ui/react-avatar",
+    //     "@radix-ui/react-checkbox",
+    //     "@radix-ui/react-dialog",
+    //     "@radix-ui/react-dropdown-menu",
+    //     "@radix-ui/react-label",
+    //     "@radix-ui/react-popover",
+    //     "@radix-ui/react-progress",
+    //     "@radix-ui/react-select",
+    //     "@radix-ui/react-slot",
+    //     "@radix-ui/react-switch",
+    //     "@radix-ui/react-tabs",
+    //     "@tanstack/react-query",
+    //     "@trpc/client",
+    //     "@trpc/react-query",
+    //     "@trpc/server",
+    //     "class-variance-authority",
+    //     "clsx",
+    //     "lucide-react",
+    //     "react-hook-form",
+    //     "react-router-dom",
+    //     "tailwind-merge",
+    //     "zod",
+    //   ],
+    // },
+  },
+});
+
 
 function compileTypes(fileNames, options) {
   // Create a Program with an in-memory emit
@@ -118,7 +197,8 @@ function compileTypes(fileNames, options) {
   });
 }
 
-compileTypes(["src/content.ts"], {
+compileTypes(["src/content.ts", "src/react.ts"], {
+  strict: true,
   allowJs: true,
   declaration: true,
   emitDeclarationOnly: true,

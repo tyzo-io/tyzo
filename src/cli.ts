@@ -1,10 +1,11 @@
-#!/usr/bin/env -S npx tsx
+const root = process.cwd();
 
 import inquirer from "inquirer";
 import { program } from "commander";
 import { startLocalServer } from "./localServer.js";
 import path from "node:path";
 import fs from "node:fs/promises";
+import { addToDotEnv } from "./dotenv.js";
 
 const configTemplate = `
 export const collections = {
@@ -26,7 +27,6 @@ export async function cli() {
     .option("-c, --config <configFile>", "Path to tyzo config file")
     .option("-d, --content <contentDir>", "Path to content dir")
     .action(async (options) => {
-      const root = process.cwd();
       const defaultConfigFile = path.join(root, "src", "tyzo-config.ts");
       let configFile = options.config ?? defaultConfigFile;
       if (
@@ -39,12 +39,15 @@ export async function cli() {
           {
             type: "confirm",
             name: "configFile",
-            message: "No tyzo config file found. Do you want to create one?",
+            message: `No tyzo config file found. Do you want to create one at ${configFile}?`,
           },
         ]);
         if (response.configFile) {
-          const configFile = path.join(root, "src", "tyzo-config.ts");
           await fs.writeFile(configFile, configTemplate);
+          await addToDotEnv(
+            "TYZO_API_URL",
+            `# This is your local content api. To hit tyzo's CDN, remove this env var and make sure that \`TYZO_SPACE\` is set.\nTYZO_API_URL=http://localhost:3456/api`
+          );
         } else {
           console.log("No tyzo config file found, exiting.");
           process.exit(1);

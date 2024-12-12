@@ -43,6 +43,7 @@ export function useSyncStatus() {
     try {
       const response = await fetch(`${localApiUrl}/sync/status`);
       const data = await response.json();
+      console.log("status update", data);
       setStatus(data);
     } catch (error) {
       console.error("Failed to fetch sync status:", error);

@@ -14,6 +14,7 @@ import type { Sharp } from "sharp";
 import { convertZodSchema } from "./schemas";
 import Ajv from "ajv";
 import { ajvFormats } from "./validate";
+import { isEntryReference } from "./content";
 
 // type SavedEntry<T> = {
 //   data: T;
@@ -74,41 +75,67 @@ export class LocalApi {
       (options.collections || []).map((c) => [c.name, c])
     );
     this.globals = new Map((options.globals || []).map((g) => [g.name, g]));
+    console.log(`The content dir is ${options.contentDir}`);
     this.contentDir = options.contentDir;
   }
 
-  private getCollectionRef<T>(ref: CollectionReference<T>): Collection<T> {
+  public setConfig(options: {
+    collections?: Collection<any>[];
+    globals?: Global<any>[];
+  }) {
+    this.collections = new Map(
+      (options.collections || []).map((c) => [c.name, c])
+    );
+    this.globals = new Map((options.globals || []).map((g) => [g.name, g]));
+  }
+
+  private getCollectionRef<T extends z.ZodRawShape, S extends z.ZodObject<T>>(
+    ref: CollectionReference
+  ): Collection<S> {
     if (typeof ref === "string") {
       const collection = this.collections.get(ref);
       if (!collection) {
         throw new Error(`Collection ${ref} not found`);
       }
-      return collection as Collection<T>;
+      return collection as Collection<S>;
     }
     return ref;
   }
 
-  private getGlobalRef<T>(ref: GlobalReference<T>): Global<T> {
+  private getGlobalRef<T extends z.ZodRawShape, S extends z.ZodObject<T>>(
+    ref: GlobalReference
+  ): Global<S> {
     if (typeof ref === "string") {
       const global = this.globals.get(ref);
       if (!global) {
         throw new Error(`Global ${ref} not found`);
       }
-      return global as Global<T>;
+      return global as Global<S>;
     }
     return ref;
   }
 
-  async getEntry<T>(
-    collection: CollectionReference<T>,
-    id: Id
+  async getEntry<T extends Record<string, any>>(
+    collection: CollectionReference,
+    id: Id,
+    options?: { include?: string[] }
   ): Promise<T | null> {
     const col = this.getCollectionRef(collection);
     try {
       const filePath = path.join(this.contentDir, col.name, `${id}.json`);
       const content = await fs.readFile(filePath, "utf-8");
       const data = JSON.parse(content) as { data: T };
-      return data.data;
+      const entry = data.data as T;
+      if (entry && options?.include?.length) {
+        for (const include of options?.include ?? []) {
+          const value = entry[include];
+          if (value?.id && value?.collection) {
+            const other = await this.getEntry(value.collection, value.id);
+            entry[include].entry = other;
+          }
+        }
+      }
+      return entry;
     } catch {
       return null;
     }
@@ -119,17 +146,18 @@ export class LocalApi {
     return collections;
   }
 
-  async getCollection<T>(
-    ref: CollectionReference<T>
-  ): Promise<Collection<T> | null> {
-    const collection = await this.getCollectionRef(ref);
+  async getCollection<T extends z.ZodRawShape, S extends z.ZodObject<T>>(
+    ref: CollectionReference
+  ): Promise<Collection<S> | null> {
+    const collection = await this.getCollectionRef<T, S>(ref);
     return collection;
   }
 
-  async getEntries<T>(
-    collection: CollectionReference<T>,
+  async getEntries<T extends Record<string, any>>(
+    collection: CollectionReference,
     options?: {
       includeCount?: boolean;
+      include?: string[];
       limit?: number;
       offset?: number;
       filters?: Record<string, any>;
@@ -177,6 +205,18 @@ export class LocalApi {
       });
     }
 
+    if (options?.include?.length) {
+      for (const entry of entries) {
+        for (const include of options?.include ?? []) {
+          const value = entry[include];
+          if (value?.id && value?.collection) {
+            const other = await this.getEntry(value.collection, value.id);
+            entry[include].entry = other;
+          }
+        }
+      }
+    }
+
     return {
       entries,
       limit,
@@ -186,7 +226,7 @@ export class LocalApi {
   }
 
   async setEntry<T>(
-    collection: CollectionReference<T>,
+    collection: CollectionReference,
     id: Id,
     data: T
   ): Promise<void> {
@@ -216,7 +256,7 @@ export class LocalApi {
   }
 
   async deleteEntry<T>(
-    collection: CollectionReference<T>,
+    collection: CollectionReference,
     id: Id
   ): Promise<boolean> {
     const col = this.getCollectionRef(collection);
@@ -234,7 +274,7 @@ export class LocalApi {
     return globals;
   }
 
-  async getGlobal(ref: GlobalReference<any>): Promise<Global<any> | null> {
+  async getGlobal(ref: GlobalReference): Promise<Global<any> | null> {
     const glob = this.getGlobalRef(ref);
     return glob;
   }
@@ -244,12 +284,12 @@ export class LocalApi {
     return await Promise.all(globs.map((glob) => this._getGlobalValue(glob)));
   }
 
-  async getGlobalValue<T>(ref: GlobalReference<T>): Promise<T | null> {
+  async getGlobalValue<T>(ref: GlobalReference): Promise<T | null> {
     const global = await this.getGlobalRef(ref);
     return this._getGlobalValue(global);
   }
 
-  async setGlobalValue<T>(global: GlobalReference<T>, data: T): Promise<void> {
+  async setGlobalValue<T>(global: GlobalReference, data: T): Promise<void> {
     const glob = this.getGlobalRef(global);
     const dir = path.join(this.contentDir, "globals");
     await fs.mkdir(dir, { recursive: true });
@@ -466,7 +506,7 @@ export class LocalApi {
     return Array.from(this.globals.values());
   }
 
-  private async _getGlobalValue<T>(glob: Global<T>): Promise<T | null> {
+  private async _getGlobalValue<T>(glob: Global<any>): Promise<T | null> {
     const filePath = path.join(this.contentDir, "globals", `${glob.name}.json`);
     try {
       const content = await fs.readFile(filePath, "utf-8");

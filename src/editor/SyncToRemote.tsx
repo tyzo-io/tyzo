@@ -42,7 +42,7 @@ export const SyncToRemote: React.FC = () => {
   };
 
   const handleSync = async () => {
-    await fetch(`${localApiUrl}/sync/up`, {
+    fetch(`${localApiUrl}/sync/up`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

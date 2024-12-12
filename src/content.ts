@@ -1,6 +1,14 @@
 export { z } from "zod";
 import { z } from "zod";
-import type { Collection, Global, Id } from "./types";
+import type {
+  Collection,
+  CollectionEntry,
+  Global,
+  GlobalValue,
+  Id,
+  PickRelationshipValues,
+  RelationshipsFlags,
+} from "./types";
 import { apiClient } from "./apiClient/values";
 import type { Where } from "./filters";
 import type { Sort } from "./sort";
@@ -10,87 +18,162 @@ export { whereSchema } from "./filters.js";
 export type { Sort } from "./sort";
 export { sortSchema } from "./sort.js";
 
-const collections: Record<string, Collection<any>> = {};
-const globals: Record<string, Global<any>> = {};
-
-export function isLocal() {
-  return process.env.DEV === "true";
+/**
+ * Loads a variable from env, if it exists. Tries to load it for nextjs, and vite
+ * 
+ */
+function getEnv(key: string, defaultValue?: string) {
+  if (typeof process !== "undefined") {
+    let value = process.env[key];
+    if (value !== undefined) {
+      return value;
+    }
+    value = process.env[`NEXT_PUBLIC_${key}`];
+    if (value !== undefined) {
+      return value;
+    }
+    value = process.env[`VITE_${key}`];
+    if (value !== undefined) {
+      return value;
+    }
+  }
+  // @ts-expect-error
+  if (import.meta && import.meta.env) {
+    // @ts-expect-error
+    if (import.meta.env[key]) {
+      // @ts-expect-error
+      return import.meta.env[key];
+    }
+    // @ts-expect-error
+    if (import.meta.env[`VITE_${key}`]) {
+      // @ts-expect-error
+      return import.meta.env[`VITE_${key}`];
+    }
+  }
+  return defaultValue;
 }
 
-const apiUrl = process.env.TYZO_API_URL ?? "http://localhost:3456/api";
+export function isLocal() {
+  return getEnv("DEV", "false") === "true";
+}
+
+const spaceSlug = getEnv("TYZO_SPACE");
+const stageSlug = getEnv("TYZO_STAGE", "main");
+// const apiUrl = getEnv("TYZO_API_URL", "http://localhost:3456/api");
+const apiUrl = getEnv(
+  "TYZO_API_URL",
+  `https://cd.tyzo.io/content/${spaceSlug}:${stageSlug}`
+);
 
 const client = apiClient({
-  // API_URL: import.meta.env.VITE_API_URL,
   API_URL: apiUrl,
 });
 
-export function defineCollection<T>(options: {
-  name: string;
-  idField: keyof T;
-  schema: z.ZodType<T>;
-}): Collection<T> {
-  const collection = {
-    name: options.name,
-    idField: options.idField,
-    schema: options.schema,
-  };
-  collections[collection.name] = collection;
+export function defineCollection<
+  Name extends string,
+  T extends z.ZodObject<any>
+>(collection: {
+  name: Name;
+  idField: keyof T["shape"];
+  schema: T;
+}): Collection<T, Name> {
   return collection;
 }
 
-export function defineGlobal<T>(options: {
-  name: string;
-  schema: z.ZodType<T>;
-}): Global<T> {
-  const global = {
-    name: options.name,
-    schema: options.schema,
-  };
-  globals[global.name] = global;
+export function defineGlobal<
+  Name extends string,
+  T extends z.ZodObject<any>
+>(global: { name: Name; schema: T }): Global<T, Name> {
   return global;
 }
 
-export type InferredCollectionItem<C extends Collection<any>> = z.infer<
-  C["schema"]
->;
-//  & {
-//   _id: string;
-//   _createdAt: Date;
-//   _updatedAt: Date;
-// };
-
-export async function getEntries<C extends Collection<any>>(
+export async function getEntries<
+  C extends Collection<any>,
+  I extends C extends Collection<infer T, infer U>
+    ? RelationshipsFlags<T>
+    : Record<string, boolean>
+>(
   collection: C,
   options?: {
     includeCount?: boolean;
+    include?: I;
     limit?: number;
     offset?: number;
-    filters?: Where<InferredCollectionItem<C>>;
-    sort?: Sort<InferredCollectionItem<C>>;
+    filters?: Where<CollectionEntry<C>>;
+    sort?: Sort<CollectionEntry<C>>;
   }
-): Promise<{ entries: InferredCollectionItem<C>[] }> {
-  const entries = await client.getEntries(collection.name, options);
+) {
+  const entries = await client.getEntries(collection.name, {
+    include: options?.include ? Object.keys(options.include) : undefined,
+  });
   return entries as {
-    entries: InferredCollectionItem<C>[];
+    entries: (CollectionEntry<C> & {
+      [key in keyof I]: {
+        entry: C extends Collection<infer T, infer U>
+          ? // @ts-expect-error not sure how to fix this, but type inference still works right
+            PickRelationshipValues<T>[key]
+          : {};
+      };
+    })[];
     limit: number;
     offset: number;
     count?: number;
   };
 }
 
-export async function getEntry<C extends Collection<any>>(
+export async function getEntry<
+  C extends Collection<any>,
+  I extends C extends Collection<infer T, infer U>
+    ? RelationshipsFlags<T>
+    : Record<string, boolean>
+>(
   collection: C,
-  id: Id
-): Promise<{ entry: InferredCollectionItem<C> }> {
-  const entry = await client.getEntry(collection.name, id);
-  return entry as { entry: InferredCollectionItem<C> };
+  id: Id,
+  options?: {
+    include?: I;
+  }
+) {
+  let include: string[] | undefined;
+  if (options?.include) {
+    include = Object.keys(options.include);
+  }
+
+  const entry = await client.getEntry(collection.name, id, { include });
+  return entry as {
+    entry: CollectionEntry<C> & {
+      [key in keyof I]: {
+        entry: C extends Collection<infer T, infer U>
+          ? // @ts-expect-error not sure how to fix this, but type inference still works right
+            PickRelationshipValues<T>[key]
+          : {};
+      };
+    };
+  };
 }
 
-export type InferredGlobalItem<G extends Global<any>> = z.infer<G["schema"]>;
-
-export async function getGlobal<G extends Global<any>>(global: G) {
-  const globalData = await client.getGlobalValue(global.name);
-  return globalData as { global: InferredGlobalItem<G> };
+export async function getGlobal<
+  G extends Global<any>,
+  I extends G extends Global<infer T, infer U>
+    ? RelationshipsFlags<T>
+    : Record<string, boolean>
+>(
+  global: G,
+  options?: {
+    include?: I;
+  }
+) {
+  const include = options?.include ? Object.keys(options.include) : undefined;
+  const globalData = await client.getGlobalValue(global.name, { include });
+  return globalData as {
+    global: GlobalValue<G> & {
+      [key in keyof I]: {
+        entry: G extends Global<infer T, infer U>
+          ? // @ts-expect-error not sure how to fix this, but type inference still works right
+            PickRelationshipValues<T>[key]
+          : {};
+      };
+    };
+  };
 }
 
 export async function getAsset(filename: string) {
@@ -134,15 +217,21 @@ export function isLink(schema: z.AnyZodObject) {
   return (schema as any)[isLinkSymbol];
 }
 
-export const entryReference = (collection: string) => {
+type Relationship<T, Schema> = Schema & {
+  _ValueType: T;
+};
+
+export function entryReference<T extends Collection<any>>(
+  collection: T["name"]
+) {
   const schema = z.object({
     id: z.string(),
     collection: z.literal(collection),
   });
   (schema._def as any)[isEntryReferenceSymbol] = true;
   (schema as any)[isEntryReferenceSymbol] = true;
-  return schema;
-};
+  return schema as Relationship<CollectionEntry<T>, typeof schema>;
+}
 
 const isEntryReferenceSymbol = Symbol.for("isEntryReference");
 

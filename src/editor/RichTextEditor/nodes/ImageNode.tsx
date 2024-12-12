@@ -1,6 +1,9 @@
 import React from "react";
 import {
+  DOMConversionMap,
+  DOMExportOutput,
   EditorConfig,
+  LexicalEditor,
   LexicalNode,
   NodeKey,
   SerializedLexicalNode,
@@ -159,6 +162,62 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
       srcset: this.__srcset,
       loading: this.__loading,
     };
+  }
+
+  static importDOM(): DOMConversionMap | null {
+    return {
+      img: () => ({
+        conversion: (node: HTMLElement) => {
+          const src = node.getAttribute('src');
+          const alt = node.getAttribute('alt');
+          const width = node.getAttribute('width');
+          const height = node.getAttribute('height');
+          const sizes = node.getAttribute('sizes');
+          const srcset = node.getAttribute('srcset');
+          const loading = node.getAttribute('loading');
+          if (!src) {
+            return null;
+          }
+          const payload: ImagePayload = {
+            url: src,
+            alt: alt || undefined,
+            width: width ? parseInt(width, 10) : undefined,
+            height: height ? parseInt(height, 10) : undefined,
+            sizes: sizes || undefined,
+            srcset: srcset || undefined,
+            loading: (loading as "eager" | "lazy") || undefined,
+          };
+          return {
+            node: $createImageNode(payload),
+          };
+        },
+        priority: 1,
+      }),
+    };
+  }
+
+  exportDOM(): DOMExportOutput {
+    const element = document.createElement('img');
+    element.setAttribute('src', this.__url);
+    if (this.__alt) {
+      element.setAttribute('alt', this.__alt);
+    }
+    if (this.__width) {
+      element.setAttribute('width', this.__width.toString());
+    }
+    if (this.__height) {
+      element.setAttribute('height', this.__height.toString());
+    }
+    if (this.__sizes) {
+      element.setAttribute('sizes', this.__sizes);
+    }
+    if (this.__srcset) {
+      element.setAttribute('srcset', this.__srcset);
+    }
+    if (this.__loading) {
+      element.setAttribute('loading', this.__loading);
+    }
+    return { element };
   }
 
   decorate(): JSX.Element {

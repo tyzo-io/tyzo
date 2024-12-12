@@ -1,7 +1,7 @@
 {
   "data": {
     "slug": "hello-world",
-    "title": "Hello!!",
+    "title": "Hello!",
     "content": "I'm here!",
     "id": "dbdfc4a7-ef59-4d53-b39c-93cbcbc3f026",
     "url": "http://localhost:3456/api/assets/dummy-200x200.webp",
@@ -33,10 +33,10 @@
       "collection": "author"
     },
     "markdown": {
-      "markdown": "## Hello\n\nOK"
+      "markdown": "## Hello\n\nOK\n\n![ok](http://localhost:3456/api/assets/dummy-200x200.webp)"
     },
     "richText": {
-      "richText": "<p dir=\"ltr\"><span style=\"white-space: pre-wrap;\">Hello</span></p><p dir=\"ltr\"><span style=\"white-space: pre-wrap;\"># Hekk</span></p><h1 dir=\"ltr\"><span style=\"white-space: pre-wrap;\">ok</span></h1>"
+      "richText": "<p dir=\"ltr\"><span style=\"white-space: pre-wrap;\">Hello</span></p><p dir=\"ltr\"><span style=\"white-space: pre-wrap;\"># Hekk</span></p><h1 dir=\"ltr\"><span style=\"white-space: pre-wrap;\">ok</span></h1><p><br></p><img src=\"http://localhost:3456/api/assets/dummy-200x200.webp\">"
     }
   }
 }

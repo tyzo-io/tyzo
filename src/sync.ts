@@ -2,6 +2,8 @@ import {
   convertZodSchema,
   isAssetJsonSchema,
   isImageJsonSchema,
+  isMarkdownJsonSchema,
+  isRichTextJsonSchema,
   isVideoJsonSchema,
   serializeCollection,
   SerializedCollection,
@@ -12,6 +14,7 @@ import { Request, Response } from "express";
 import { managementApiClient } from "./apiClient";
 import { LocalApi } from "./localApi";
 import { JSONSchemaType } from "ajv";
+import { z } from "zod";
 
 const localApiUrl = "http://localhost:3456/api";
 
@@ -68,23 +71,6 @@ export function convertLocalUrlsToRemote<T>({
     return url;
   }
 
-  // // Helper to convert URLs in text content (rich text or markdown)
-  // function convertUrlsInText(text: string): string {
-  //   // Match markdown image syntax ![alt](url) or plain URLs
-  //   const urlPattern = /(!?\[.*?\]\(\/api\/assets\/[^)]+\))|(?<![![(])\/api\/assets\/[^)\s]+/g;
-  //   return text.replace(urlPattern, (match) => {
-  //     if (match.startsWith('![') || match.startsWith('[')) {
-  //       // Handle markdown image/link syntax
-  //       return match.replace(
-  //         /(\/api\/assets\/[^)]+)/,
-  //         (url) => convertUrl(url)
-  //       );
-  //     }
-  //     // Handle plain URLs
-  //     return convertUrl(match);
-  //   });
-  // }
-
   // Helper to process an object based on its schema
   function processValue(value: any, schema: JSONSchemaType<any>): any {
     if (!value) return value;
@@ -129,25 +115,17 @@ export function convertLocalUrlsToRemote<T>({
       return value;
     }
 
-    // // Handle rich text and markdown (they might contain asset URLs)
-    // if (isRichText(schema) || isMarkdown(schema)) {
-    //   if (typeof value === 'string') {
-    //     return convertUrlsInText(value);
-    //   }
-    //   if (typeof value === 'object') {
-    //     const key = isRichText(schema) ? 'richText' : 'markdown';
-    //     return {
-    //       ...value,
-    //       [key]: convertUrlsInText(value[key])
-    //     };
-    //   }
-    //   return value;
-    // }
+    if (isRichTextJsonSchema(schema)) {
+      if (typeof value?.richText === "string") {
+        return { richText: convertUrl(value.richText) };
+      }
+    }
 
-    // // Handle strings (might be direct URLs)
-    // if (schema.type === "string" && typeof value === "string") {
-    //   return convertUrl(value);
-    // }
+    if (isMarkdownJsonSchema(schema)) {
+      if (typeof value?.markdown === "string") {
+        return { markdown: convertUrl(value.markdown) };
+      }
+    }
 
     return value;
   }
@@ -157,7 +135,7 @@ export function convertLocalUrlsToRemote<T>({
 
 export function syncRoutesFactory(api: LocalApi) {
   function getRemoteConfig(stage: string | undefined) {
-    const remoteBaseUrl = process.env.REMOTE_TYZO_URL ?? "https://api.tyzo.io";
+    const remoteBaseUrl = process.env.REMOTE_TYZO_URL ?? "https://cd.tyzo.io";
     const space = process.env.TYZO_SPACE as string;
 
     return {
@@ -237,13 +215,13 @@ export function syncRoutesFactory(api: LocalApi) {
       const collections = await api.getCollections();
       const globals = await api.getGlobals();
 
-      // const otherCollections = collections.filter(c => c).reduce((acc, c) => {
-      //   acc[c.name] = serializeCollection(c);
-      //   return acc;
-      // }, {} as Record<string, SerializedCollection>),
-
       let total = 0;
       let current = 0;
+
+      const allCollections = collections.reduce((acc, col) => {
+        acc[col.name] = col.schema;
+        return acc;
+      }, {} as Record<string, z.ZodType<any>>)
 
       // Syncing the assets first
       // They take the longest to sync and they don't reference anything else
@@ -261,7 +239,6 @@ export function syncRoutesFactory(api: LocalApi) {
           addSyncLog(`Syncing asset ${asset.key}`);
           const file = await api.getAsset(asset.key);
           if (file) {
-            console.log(1, file.contentType);
             await remoteApi.uploadAsset(file.data, {
               filename: asset.name,
               contentType: file.contentType,
@@ -282,11 +259,11 @@ export function syncRoutesFactory(api: LocalApi) {
         const res = await remoteApi.updateSchema({
           stage,
           collections: collections.reduce((acc, c) => {
-            acc[c.name] = serializeCollection(c);
+            acc[c.name] = serializeCollection(c, allCollections);
             return acc;
           }, {} as Record<string, SerializedCollection>),
           globals: globals.reduce((acc, g) => {
-            acc[g.name] = serializeGlobal(g);
+            acc[g.name] = serializeGlobal(g, allCollections);
             return acc;
           }, {} as Record<string, SerializedGlobal>),
         });
@@ -315,7 +292,10 @@ export function syncRoutesFactory(api: LocalApi) {
             const convertedEntry = convertLocalUrlsToRemote({
               entry,
               remoteBaseUrl: remoteConfig.remoteBaseUrl,
-              schema: convertZodSchema(collection.schema) as any,
+              schema: convertZodSchema(
+                collection.schema,
+                allCollections
+              ) as any,
             });
             await remoteApi.setEntry(
               collection.name,
@@ -339,7 +319,7 @@ export function syncRoutesFactory(api: LocalApi) {
             const convertedValue = convertLocalUrlsToRemote({
               entry: value,
               remoteBaseUrl: remoteConfig.remoteBaseUrl,
-              schema: convertZodSchema(global.schema) as any,
+              schema: convertZodSchema(global.schema, allCollections) as any,
             });
             await remoteApi.setGlobalValue(global.name, convertedValue);
             currentSyncStatus.progress.current++;
