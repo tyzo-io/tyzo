@@ -13,6 +13,7 @@ import { serializeCollection, serializeGlobal } from "./schemas.js";
 import { syncRoutesFactory } from "./sync.js";
 import chokidar from "chokidar";
 import { addToDotEnv } from './dotenv.js';
+import multer from "multer";
 
 if (typeof __filename === "undefined") {
   // @ts-expect-error
@@ -54,13 +55,15 @@ export async function startLocalServer(options?: {
   const port = 3456;
 
   const currentDir = process.cwd();
-  const configPath = path.join(currentDir, options?.configFile ?? "config.ts");
+  const configPath =
+    options?.configFile && path.isAbsolute(options?.configFile)
+      ? options?.configFile
+      : path.join(currentDir, options?.configFile ?? "config.ts");
 
   async function loadConfig() {
     const api = tsxEsm.register({
       namespace: Date.now().toString(),
     });
-
     const loaded = await api.import(configPath, __filename);
     api.unregister();
 
@@ -113,14 +116,16 @@ export async function startLocalServer(options?: {
     })
     .on("all", async () => {
       // console.log("file changed");
-      const newConfig = await loadConfig();
-      // delete require.cache[require.resolve(configPath)];
-      // const newConfig = require(configPath);
-      config = newConfig;
-      api.setConfig({
-        collections: Object.values(config.collections ?? {}),
-        globals: Object.values(config.globals ?? {}),
-      });
+      try {
+        const newConfig = await loadConfig();
+        // delete require.cache[require.resolve(configPath)];
+        // const newConfig = require(configPath);
+        config = newConfig;
+        api.setConfig({
+          collections: Object.values(config.collections ?? {}),
+          globals: Object.values(config.globals ?? {}),
+        });
+      } catch (err) {}
     });
 
   // Create LocalApi instance with collections and globals
@@ -136,6 +141,8 @@ export async function startLocalServer(options?: {
   // Middleware
   app.use(cors());
   app.use(express.json());
+
+  const upload = multer();
 
   const syncRoutes = syncRoutesFactory(api);
 
@@ -169,13 +176,13 @@ export async function startLocalServer(options?: {
     // locate .env file
     const dotenv = path.join(process.cwd(), ".env");
     if (
-      !(await fs
+      await fs
         .stat(dotenv)
         .then(() => true)
-        .catch(() => false))
+        .catch(() => false)
     ) {
       const content = await fs.readFile(dotenv, "utf-8");
-      const spaceMatch = content.match(/TYZO_SPACE=([^\\n]+)/)?.[1];
+      const spaceMatch = content.match(/TYZO_SPACE=([^\n]+)/)?.[1];
       if (spaceMatch) {
         process.env.TYZO_SPACE = spaceMatch;
         res.status(200).json({ space: spaceMatch });
@@ -297,13 +304,31 @@ export async function startLocalServer(options?: {
   });
 
   app.get("/api/assets/*", async (req, res) => {
-    const { width, height, format, quality } = req.query;
-    const key = req.path.substring("/api/assets/".length);
+    const { width, height, format, quality,
+      fit, position, background, withoutEnlargement, withoutReduction
+
+     } = req.query;
+    const key = decodeURIComponent(req.path.substring("/api/assets/".length));
     const asset = await api.getAsset(key, {
       width: width ? Number(width) : undefined,
       height: height ? Number(height) : undefined,
       format: format ? (format as "webp") : undefined,
       quality: quality ? Number(quality) : undefined,
+      fit: fit as
+        | "contain"
+        | "cover"
+        | "fill"
+        | "inside"
+        | "outside"
+        | undefined,
+      position: position ? Number(position) : undefined,
+      background: background as string | undefined,
+      withoutEnlargement: withoutEnlargement
+        ? JSON.parse(withoutEnlargement as string)
+        : undefined,
+      withoutReduction: withoutReduction
+        ? JSON.parse(withoutReduction as string)
+        : undefined,
     });
     if (!asset) {
       res.status(404).json({ error: "Asset not found" });
@@ -311,8 +336,13 @@ export async function startLocalServer(options?: {
     }
     res
       .status(200)
-      .header("Content-Type", asset.contentType ?? "application/octet-stream")
-      .write(asset.data);
+      .header(
+        "Content-Type",
+        (format ? `image/${format}` : undefined) ??
+          asset.contentType ??
+          "application/octet-stream"
+      )
+      .send(asset.data);
   });
 
   const readBodyAsBuffer = (req: express.Request): Promise<Buffer> => {
@@ -330,10 +360,17 @@ export async function startLocalServer(options?: {
     });
   };
 
-  app.put("/api/assets/:filename", async (req, res) => {
-    const file = await readBodyAsBuffer(req);
-    const contentType = req.header("Content-Type");
-    await api.uploadAsset(file, {
+  app.put("/api/assets/:filename", upload.single("file"), async (req, res) => {
+    const file = req.file;
+    if (!file) {
+      res.status(400).json({ error: "No file uploaded" });
+      return;
+    }
+    const width = req.body.width;
+    const height = req.body.height;
+    const contentType = req.body.contentType ?? file?.mimetype;
+
+    await api.uploadAsset(file.buffer, {
       filename: req.params.filename,
       contentType,
     });
@@ -364,21 +401,21 @@ export async function startLocalServer(options?: {
 
   // Start server
   app.listen(port, () => {
-    // console.log(`Server running at http://localhost:${port}`);
+    console.log(`Local Content API running at http://localhost:${port}`);
   });
 
   if (options?.useViteServer) {
     await startViteServer(options?.viteRoot ?? __dirname);
   } else {
     const uiServer = express();
-    uiServer.use(express.static(path.join(__dirname, "editorClient")));
+    uiServer.use(express.static(path.join(__dirname, "..", "editorClient")));
 
     // app.use(express.static(path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'dist/client'), { index: false }));
 
     uiServer.use("*", async (_, res) => {
       try {
         const template = await fs.readFile(
-          path.join(__dirname, "editorClient", "index.html"),
+          path.join(__dirname, "..", "editorClient", "index.html"),
           "utf-8"
         );
         // const { render } = await import("./dist/server/entry-server.js");

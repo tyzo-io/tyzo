@@ -61,13 +61,13 @@ await esbuild.build({
   entryPoints: ["src/react.ts"],
   format: "esm",
   // target: ["node20.0"],
-  outfile: "dist/react.js",
+  outfile: "dist/esm/react.js",
 });
 await esbuild.build({
   entryPoints: ["src/react.ts"],
   format: "cjs",
   // target: ["node20.0"],
-  outfile: "dist/react.cjs",
+  outfile: "dist/cjs/react.cjs",
 });
 
 // await esbuild.build({
@@ -96,8 +96,8 @@ const files = [
   "src/schemas.ts",
   "src/apiClient/index.ts",
   "src/apiClient/management.ts",
-  "src/apiClient/url.ts",
   "src/apiClient/values.ts",
+  "src/apiClient/assetUrls.ts",
   "src/sync.ts",
   "src/dotenv.ts",
   "src/applyFilters.ts",
@@ -113,11 +113,19 @@ for (const file of files) {
     platform: "node",
     format: "cjs",
     target: ["node20.0"],
-    outfile: file.replace("src/", "dist/").replace(".ts", ".js"),
+    outfile: file.replace("src/", "dist/cjs/").replace(".ts", ".js"),
+  });
+  await esbuild.build({
+    entryPoints: [file],
+    platform: "node",
+    format: "esm",
+    target: ["node20.0"],
+    outfile: file.replace("src/", "dist/esm/").replace(".ts", ".js"),
   });
 }
 
-await fs.chmod("dist/cli.js", 0o755);
+await fs.chmod("dist/cjs/cli.js", 0o755);
+await fs.chmod("dist/esm/cli.js", 0o755);
 
 // await fs.cp("./index.html", "dist/index.html");
 // await fs.cp("./src/editorClient.tsx", "dist/src/editorClient.tsx");

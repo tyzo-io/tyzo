@@ -2,8 +2,8 @@
   "name": "tyzo",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/cli.js",
-  "bin": "dist/cli.js",
+  "main": "dist/cjs/cli.js",
+  "bin": "dist/cjs/cli.js",
   "files": [
     "dist"
   ],
@@ -12,18 +12,18 @@
   ],
   "exports": {
     ".": {
-      "import": "./dist/content.js",
+      "import": "./dist/esm/content.js",
       "types": "./dist/content.d.ts",
-      "require": "./dist/content.js"
+      "require": "./dist/cjs/content.js"
     },
     "./components": {
       "import": "./dist/components/tyzo.mjs",
       "types": "./dist/components/components.d.ts"
     },
     "./react": {
-      "import": "./dist/react.js",
+      "import": "./dist/esm/react.js",
       "types": "./dist/react.d.ts",
-      "require": "./dist/react.cjs"
+      "require": "./dist/cjs/react.js"
     },
     "./components/tyzo.css": "./dist/components/tyzo.css"
   },
@@ -79,6 +79,7 @@
     "json-schema-to-zod": "^2.4.1",
     "lexical": "^0.21.0",
     "lucide-react": "^0.462.0",
+    "multer": "1.4.5-lts.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.2",
@@ -94,6 +95,7 @@
     "@tailwindcss/typography": "^0.5.15",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
+    "@types/multer": "^1.4.12",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",

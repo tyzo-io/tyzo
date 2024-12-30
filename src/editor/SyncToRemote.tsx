@@ -3,11 +3,7 @@ import { Alert, AlertDescription } from "./ui/alert";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
-import {
-  notifySyncStatusListeners,
-  SyncStatus,
-  useSyncStatus,
-} from "./SyncStatus";
+import { SyncStatus, useSyncStatus } from "./SyncStatus";
 import { localApiUrl } from "./useApi";
 import { getAuthToken } from "./utils";
 import { Input } from "./ui/input";
@@ -29,7 +25,7 @@ export const SyncToRemote: React.FC = () => {
     stage: "main",
   });
 
-  const { status } = useSyncStatus();
+  const { status, notifySyncStatusChange } = useSyncStatus();
 
   const handleOptionChange = <T extends keyof SyncOptions>(
     id: T,
@@ -42,21 +38,26 @@ export const SyncToRemote: React.FC = () => {
   };
 
   const handleSync = async () => {
-    fetch(`${localApiUrl}/sync/up`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        schema: syncOptions.schema,
-        entries: syncOptions.entries,
-        globals: syncOptions.globals,
-        assets: syncOptions.assets,
-        stage: syncOptions.stage,
-        token: getAuthToken(),
-      }),
-    });
-    notifySyncStatusListeners();
+    try {
+      fetch(`${localApiUrl}/sync/up`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          schema: syncOptions.schema,
+          entries: syncOptions.entries,
+          globals: syncOptions.globals,
+          assets: syncOptions.assets,
+          stage: syncOptions.stage,
+          token: getAuthToken(),
+        }),
+      }).then(() => {
+        notifySyncStatusChange();
+      });
+    } catch (error) {
+      console.error("Error during sync:", error);
+    }
   };
 
   return (

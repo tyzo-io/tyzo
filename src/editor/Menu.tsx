@@ -41,6 +41,7 @@ import { Avatar, AvatarFallback } from "./ui/avatar";
 import { MenuLayout, type MenuGroup } from "./MenuLayout";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Input } from "./ui/input";
+import { SyncStatus } from "./SyncStatus";
 
 export const Menu = () => {
   const { data, loading } = useSchema();
@@ -88,77 +89,77 @@ export const Menu = () => {
   }, [window.location.search]);
 
   const header = (
-    <div className="flex flex-col p-3 rounded-lg border border-border bg-muted/30 mb-8">
-      <div className="flex flex-row items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <div
-            className={cn(
-              "h-2 w-2 rounded-full transition-colors duration-200",
-              isLocal ? "bg-green-500" : "bg-red-500"
-            )}
-          />
-          <span className="text-sm font-medium">
-            {isLocal ? "Local API" : "CDN API"}
-          </span>
-        </div>
-        <Switch
-          disabled={userLoading}
-          checked={!isLocal}
-          onCheckedChange={(checked) => {
-            console.log(user, space)
-            if (!checked || (user?.user && space)) {
-              setTarget(
-                checked ? { remote: true, stage: "main" } : { local: true }
-              );
-            } else {
-              setShowDialog(true);
-            }
-          }}
-        />
-      </div>
-      <AnimatePresence initial={false}>
-        {!isLocal && (
-          <motion.div
-            initial={{ opacity: 0, height: 0, marginTop: 0 }}
-            animate={{ opacity: 1, height: "auto", marginTop: 8 }}
-            exit={{ opacity: 0, height: 0, marginTop: 0 }}
-            transition={{
-              duration: 0.2,
-              height: {
-                type: "spring",
-                damping: 20,
-                stiffness: 200,
-              },
+    <div className="mb-8">
+      <div className="flex flex-col p-3 rounded-lg border border-border bg-muted/30">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <div
+              className={cn(
+                "h-2 w-2 rounded-full transition-colors duration-200",
+                isLocal ? "bg-green-500" : "bg-red-500"
+              )}
+            />
+            <span className="text-sm font-medium">
+              {isLocal ? "Local API" : "CDN API"}
+            </span>
+          </div>
+          <Switch
+            disabled={userLoading}
+            checked={!isLocal}
+            onCheckedChange={(checked) => {
+              if (!checked || (user?.user && space)) {
+                setTarget(
+                  checked ? { remote: true, stage: "main" } : { local: true }
+                );
+              } else {
+                setShowDialog(true);
+              }
             }}
-            className="overflow-hidden"
-          >
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">
-                  Space: {space || "Not selected"}
-                </span>
+          />
+        </div>
+        <AnimatePresence initial={false}>
+          {!isLocal && (
+            <motion.div
+              initial={{ opacity: 0, height: 0, marginTop: 0 }}
+              animate={{ opacity: 1, height: "auto", marginTop: 8 }}
+              exit={{ opacity: 0, height: 0, marginTop: 0 }}
+              transition={{
+                duration: 0.2,
+                height: {
+                  type: "spring",
+                  damping: 20,
+                  stiffness: 200,
+                },
+              }}
+              className="overflow-hidden"
+            >
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">
+                    Space: {space || "Not selected"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Stage:</span>
+                  <Input
+                    type="text"
+                    className="focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                    placeholder="main"
+                    value={stage ?? ""}
+                    onChange={(e) => {
+                      setTarget({
+                        remote: true,
+                        stage: e.target.value || "main",
+                      });
+                    }}
+                  />
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">Stage:</span>
-                <Input
-                  type="text"
-                  className="focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                  placeholder="main"
-                  value={stage ?? ""}
-                  onChange={(e) => {
-                    setTarget({
-                      remote: true,
-                      stage: e.target.value || "main",
-                    });
-                  }}
-                />
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <div className="flex flex-col items-stretch mt-4">
-        {/* {isLocal && (
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <div className="flex flex-col items-stretch mt-4">
+          {/* {isLocal && (
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="outline">Sync remote to local</Button>
@@ -175,51 +176,54 @@ export const Menu = () => {
             </DialogContent>
           </Dialog>
         )} */}
-        {!isLocal && (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline">Sync local to remote</Button>
-            </DialogTrigger>
+          {!isLocal && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline">Sync local to remote</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Sync local to remote</DialogTitle>
+                  <DialogDescription>
+                    Sync the schema as well as all local changes to the live
+                    CDN.
+                  </DialogDescription>
+                </DialogHeader>
+                <SyncToRemote />
+              </DialogContent>
+            </Dialog>
+          )}
+          <Dialog open={showDialog} onOpenChange={setShowDialog}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Sync local to remote</DialogTitle>
-                <DialogDescription>
-                  Sync the schema as well as all local changes to the live CDN.
-                </DialogDescription>
+                <DialogTitle>Authentication Required</DialogTitle>
               </DialogHeader>
-              <SyncToRemote />
+              <p className="mb-4">
+                You need to be authenticated and select a space to use the
+                remote API. You will be redirected to the authentication page.
+              </p>
+              <DialogFooter>
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    const authUrl = `${
+                      process.env.TYZO_AUTH_URL ?? "https://www.tyzo.io"
+                    }/auth/local-auth?redirect_url=${encodeURIComponent(
+                      window.location.href
+                    )}`;
+                    window.location.href = authUrl;
+                    return false;
+                  }}
+                >
+                  Proceed
+                </Button>
+              </DialogFooter>
             </DialogContent>
           </Dialog>
-        )}
-        <Dialog open={showDialog} onOpenChange={setShowDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Authentication Required</DialogTitle>
-            </DialogHeader>
-            <p className="mb-4">
-              You need to be authenticated and select a space to use the remote
-              API. You will be redirected to the authentication page.
-            </p>
-            <DialogFooter>
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  const authUrl = `${
-                    process.env.TYZO_AUTH_URL ?? "https://www.tyzo.io"
-                  }/auth/local-auth?redirect_url=${encodeURIComponent(
-                    window.location.href
-                  )}`;
-                  window.location.href = authUrl;
-                  return false;
-                }}
-              >
-                Proceed
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        </div>
       </div>
+      <SyncStatus withClose />
     </div>
   );
 

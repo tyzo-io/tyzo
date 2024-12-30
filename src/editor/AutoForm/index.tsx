@@ -38,28 +38,93 @@ import {
   isRichTextJsonSchema,
   isVideoJsonSchema,
 } from "../../schemas";
+import { Undo, X } from "lucide-react";
 
-const renderField = (
-  key: string,
-  form: UseFormReturn<any, any, undefined>,
-  fieldSchema: JSONSchemaType<any>,
-  allCollections?: Record<string, { schema: JSONSchemaType<any>; name: string }>
-) => {
-  const title = capitalizeFirstLetter(key);
+function ClearButton({ onClick }: { onClick: () => void }) {
+  return (
+    <Button type="button" variant="ghost" size="sm" onClick={onClick}>
+      <X className="h-4 w-4" />
+    </Button>
+  );
+}
+
+// function ResetButton({ onClick }: { onClick: () => void }) {
+//   return (
+//     <Button type="button" variant="ghost" size="sm" onClick={onClick}>
+//       <Undo className="h-4 w-4" />
+//     </Button>
+//   );
+// }
+
+function FormFieldHeader({
+  children,
+  form,
+  resetValue,
+  fieldKey,
+}: {
+  children: React.ReactNode;
+  form: UseFormReturn<any, any, undefined>;
+  resetValue: any,
+  fieldKey: string;
+}) {
+  return (
+    <div className="flex flex-row items-center gap-2 justify-between">
+      <FormLabel>{children}</FormLabel>
+      <div className="flex flex-row items-center gap-2">
+        {/* {form.getFieldState(fieldKey).isDirty && (
+          <ResetButton
+            onClick={() => {
+              form.resetField(fieldKey);
+            }}
+          />
+        )} */}
+        <ClearButton
+          onClick={() => {
+            form.setValue(fieldKey, resetValue);
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+const FieldEdit = ({
+  fieldKey,
+  form,
+  fieldSchema,
+  allCollections,
+}: {
+  fieldKey: string;
+  form: UseFormReturn<any, any, undefined>;
+  fieldSchema: JSONSchemaType<any>;
+  allCollections?: Record<
+    string,
+    { schema: JSONSchemaType<any>; name: string }
+  >;
+}) => {
+  const parts = fieldKey.split(".");
+  const lastPart = parts[parts.length - 1];
+  const title = (
+    <div className="flex flex-row items-center gap-2">
+      <span>{capitalizeFirstLetter(lastPart)}</span>
+    </div>
+  );
 
   const commonProps = {
     control: form.control,
-    name: key,
+    name: fieldKey,
   };
 
   if (isImageJsonSchema(fieldSchema)) {
     return (
       <FormField
-        key={key}
+        key={fieldKey}
         {...commonProps}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{title}</FormLabel>
+            <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={null}>
+              {title}
+            </FormFieldHeader>
             <FormControl>
               <ImageInput
                 value={field.value || { url: "", alt: "" }}
@@ -76,11 +141,13 @@ const renderField = (
   if (isVideoJsonSchema(fieldSchema)) {
     return (
       <FormField
-        key={key}
+        key={fieldKey}
         {...commonProps}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{title}</FormLabel>
+            <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={null}>
+              {title}
+            </FormFieldHeader>
             <FormControl>
               <VideoInput
                 value={field.value || { url: "", alt: "" }}
@@ -97,11 +164,13 @@ const renderField = (
   if (isAssetJsonSchema(fieldSchema)) {
     return (
       <FormField
-        key={key}
+        key={fieldKey}
         {...commonProps}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{title}</FormLabel>
+            <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={null}>
+              {title}
+            </FormFieldHeader>
             <FormControl>
               <AssetInput
                 value={field.value || { url: "" }}
@@ -118,7 +187,7 @@ const renderField = (
   if (isMarkdownJsonSchema(fieldSchema)) {
     return (
       <FormField
-        key={key}
+        key={fieldKey}
         {...commonProps}
         render={({ field }) => (
           <FormItem>
@@ -139,7 +208,7 @@ const renderField = (
   if (isRichTextJsonSchema(fieldSchema)) {
     return (
       <FormField
-        key={key}
+        key={fieldKey}
         {...commonProps}
         render={({ field }) => (
           <FormItem>
@@ -165,11 +234,17 @@ const renderField = (
     if (collectionReference) {
       return (
         <FormField
-          key={key}
+          key={fieldKey}
           {...commonProps}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{title}</FormLabel>
+              <FormFieldHeader
+                form={form}
+                fieldKey={fieldKey}
+                resetValue={null}
+              >
+                {title}
+              </FormFieldHeader>
               <FormControl>
                 <ReferenceInput
                   value={
@@ -193,16 +268,20 @@ const renderField = (
     if (fieldSchema.enum) {
       return (
         <FormField
-          key={key}
+          key={fieldKey}
           {...commonProps}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{title}</FormLabel>
+              <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={""}>
+                {title}
+              </FormFieldHeader>
               <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue
-                      placeholder={`Select ${title.toLowerCase()}`}
+                      placeholder={`Select ${parts[
+                        parts.length - 1
+                      ].toLowerCase()}`}
                     />
                   </SelectTrigger>
                 </FormControl>
@@ -224,11 +303,13 @@ const renderField = (
     if (format === "email") {
       return (
         <FormField
-          key={key}
+          key={fieldKey}
           {...commonProps}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{title}</FormLabel>
+              <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={""}>
+                {title}
+              </FormFieldHeader>
               <FormControl>
                 <Input type="email" {...field} />
               </FormControl>
@@ -242,11 +323,13 @@ const renderField = (
     if (format === "uri") {
       return (
         <FormField
-          key={key}
+          key={fieldKey}
           {...commonProps}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{title}</FormLabel>
+              <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={""}>
+                {title}
+              </FormFieldHeader>
               <FormControl>
                 <Input type="url" {...field} />
               </FormControl>
@@ -260,7 +343,7 @@ const renderField = (
     if (format === "uuid") {
       return (
         <FormField
-          key={key}
+          key={fieldKey}
           {...commonProps}
           render={({ field }) => (
             <FormItem>
@@ -287,7 +370,7 @@ const renderField = (
     if (format === "date-time") {
       return (
         <FormField
-          key={key}
+          key={fieldKey}
           {...commonProps}
           render={({ field }) => (
             <FormItem>
@@ -318,7 +401,7 @@ const renderField = (
     if (format === "duration") {
       return (
         <FormField
-          key={key}
+          key={fieldKey}
           {...commonProps}
           render={({ field }) => (
             <FormItem>
@@ -339,11 +422,13 @@ const renderField = (
     if (fieldSchema.maxLength && fieldSchema.maxLength > 100) {
       return (
         <FormField
-          key={key}
+          key={fieldKey}
           {...commonProps}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{title}</FormLabel>
+              <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={""}>
+                {title}
+              </FormFieldHeader>
               <FormControl>
                 <Textarea {...field} />
               </FormControl>
@@ -356,13 +441,23 @@ const renderField = (
 
     return (
       <FormField
-        key={key}
+        key={fieldKey}
         {...commonProps}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{title}</FormLabel>
+            <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={""}>
+              {title}
+            </FormFieldHeader>
             <FormControl>
-              <Input type="text" {...field} />
+              <Input
+                type="text"
+                {...field}
+                onChange={(e) =>
+                  field.onChange(
+                    e.target.value.length === 0 ? undefined : e.target.value
+                  )
+                }
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -374,7 +469,7 @@ const renderField = (
   if (fieldSchema.type === "number" || fieldSchema.type === "integer") {
     return (
       <FormField
-        key={key}
+        key={fieldKey}
         {...commonProps}
         render={({ field }) => (
           <FormItem>
@@ -396,17 +491,19 @@ const renderField = (
   if (fieldSchema.type === "boolean") {
     return (
       <FormField
-        key={key}
+        key={fieldKey}
         {...commonProps}
         render={({ field }) => (
-          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+          <FormItem className="flex flex-row items-center space-x-3 space-y-0">
             <FormControl>
               <Checkbox
                 checked={field.value}
                 onCheckedChange={field.onChange}
               />
             </FormControl>
-            <FormLabel>{title}</FormLabel>
+            <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={null}>
+              {title}
+            </FormFieldHeader>
             <FormMessage />
           </FormItem>
         )}
@@ -422,14 +519,16 @@ const renderField = (
 
     return (
       <FormField
-        key={key}
+        key={fieldKey}
         {...commonProps}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{title}</FormLabel>
+            <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={null}>
+              {title}
+            </FormFieldHeader>
             <FormControl>
               <ArrayInput
-                value={field.value || []}
+                value={form.watch(fieldKey) || []}
                 onChange={field.onChange}
                 minItems={fieldSchema.minItems}
                 maxItems={fieldSchema.maxItems}
@@ -446,7 +545,7 @@ const renderField = (
                     ? []
                     : ""
                 }
-                renderItem={(value, onChange) =>
+                renderItem={(value, onChange, index) =>
                   isPrimitiveArray ? (
                     <Input
                       type={
@@ -467,11 +566,11 @@ const renderField = (
                       }}
                     />
                   ) : (
-                    <AutoForm
-                      schema={fieldSchema.items}
-                      defaultValues={value}
-                      onSubmit={onChange}
-                      withSubmit={false}
+                    <FieldEdit
+                      fieldKey={`${fieldKey}.${index}`}
+                      form={form}
+                      fieldSchema={fieldSchema.items}
+                      allCollections={allCollections}
                     />
                   )
                 }
@@ -486,15 +585,20 @@ const renderField = (
 
   if (fieldSchema.type === "object") {
     return (
-      <div key={key} className="space-y-4">
-        <h3 className="text-lg font-medium">{title}</h3>
+      <div key={fieldKey} className="space-y-4">
+        <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={null}>
+          {title}
+        </FormFieldHeader>
         <div className="grid gap-4">
-          {Object.entries(fieldSchema.properties || {}).map(([key, schema]) =>
-            renderField(
-              key,
-              form,
-              schema as JSONSchemaType<any>,
-              allCollections
+          {Object.entries(fieldSchema.properties || {}).map(
+            ([propertyKey, schema]) => (
+              <FieldEdit
+                key={`${fieldKey}.${propertyKey}`}
+                fieldKey={`${fieldKey}.${propertyKey}`}
+                form={form}
+                fieldSchema={schema as JSONSchemaType<any>}
+                allCollections={allCollections}
+              />
             )
           )}
         </div>
@@ -533,7 +637,7 @@ const AutoForm: React.FC<AutoFormProps> = ({
     resolver: ajvResolver(schema, {
       formats: ajvFormats(Object.keys(allCollections ?? {})),
     }),
-    defaultValues: defaultValues || getDefaultValue(schema),
+    values: defaultValues ?? getDefaultValue(schema),
   });
 
   return (
@@ -545,14 +649,15 @@ const AutoForm: React.FC<AutoFormProps> = ({
         })}
         className="space-y-6"
       >
-        {Object.entries(schema.properties || {}).map(([key, fieldSchema]) =>
-          renderField(
-            key,
-            form,
-            fieldSchema as JSONSchemaType<any>,
-            allCollections
-          )
-        )}
+        {Object.entries(schema.properties || {}).map(([key, fieldSchema]) => (
+          <FieldEdit
+            key={key}
+            fieldKey={key}
+            form={form}
+            fieldSchema={fieldSchema as JSONSchemaType<any>}
+            allCollections={allCollections}
+          />
+        ))}
         {withSubmit && (
           <Button type="submit" disabled={form.formState.isSubmitting}>
             {form.formState.isSubmitting ? "Saving..." : "Save"}

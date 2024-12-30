@@ -9,65 +9,15 @@ import type {
   PickRelationshipValues,
   RelationshipsFlags,
 } from "./types";
-import { apiClient } from "./apiClient/values";
-import type { Where } from "./filters";
-import type { Sort } from "./sort";
+import { apiClient } from "./apiClient/values.js";
+import type { Where } from "./filters.js";
+import type { Sort } from "./sort.js";
+import { makeAssetUrl } from "./apiClient/assetUrls.js";
 
-export type { Where } from "./filters";
+export type { Where } from "./filters.js";
 export { whereSchema } from "./filters.js";
-export type { Sort } from "./sort";
+export type { Sort } from "./sort.js";
 export { sortSchema } from "./sort.js";
-
-/**
- * Loads a variable from env, if it exists. Tries to load it for nextjs, and vite
- * 
- */
-function getEnv(key: string, defaultValue?: string) {
-  if (typeof process !== "undefined") {
-    let value = process.env[key];
-    if (value !== undefined) {
-      return value;
-    }
-    value = process.env[`NEXT_PUBLIC_${key}`];
-    if (value !== undefined) {
-      return value;
-    }
-    value = process.env[`VITE_${key}`];
-    if (value !== undefined) {
-      return value;
-    }
-  }
-  // @ts-expect-error
-  if (import.meta && import.meta.env) {
-    // @ts-expect-error
-    if (import.meta.env[key]) {
-      // @ts-expect-error
-      return import.meta.env[key];
-    }
-    // @ts-expect-error
-    if (import.meta.env[`VITE_${key}`]) {
-      // @ts-expect-error
-      return import.meta.env[`VITE_${key}`];
-    }
-  }
-  return defaultValue;
-}
-
-export function isLocal() {
-  return getEnv("DEV", "false") === "true";
-}
-
-const spaceSlug = getEnv("TYZO_SPACE");
-const stageSlug = getEnv("TYZO_STAGE", "main");
-// const apiUrl = getEnv("TYZO_API_URL", "http://localhost:3456/api");
-const apiUrl = getEnv(
-  "TYZO_API_URL",
-  `https://cd.tyzo.io/content/${spaceSlug}:${stageSlug}`
-);
-
-const client = apiClient({
-  API_URL: apiUrl,
-});
 
 export function defineCollection<
   Name extends string,
@@ -87,121 +37,149 @@ export function defineGlobal<
   return global;
 }
 
-export async function getEntries<
-  C extends Collection<any>,
-  I extends C extends Collection<infer T, infer U>
-    ? RelationshipsFlags<T>
-    : Record<string, boolean>
->(
-  collection: C,
-  options?: {
-    includeCount?: boolean;
-    include?: I;
-    limit?: number;
-    offset?: number;
-    filters?: Where<CollectionEntry<C>>;
-    sort?: Sort<CollectionEntry<C>>;
+export function tyzoApi(options?: {
+  space: string;
+  stage?: string;
+  apiUrl?: string;
+  useLocalApi?: boolean;
+}) {
+  if (!options?.useLocalApi && !options?.space) {
+    throw new Error("You must provide a space when using the CDN");
   }
-) {
-  const entries = await client.getEntries(collection.name, {
-    include: options?.include ? Object.keys(options.include) : undefined,
+  const apiUrl =
+    options?.apiUrl ?? options?.useLocalApi
+      ? "http://localhost:3456/api"
+      : `https://cd.tyzo.io/content/${options?.space}:${
+          options?.stage ?? "main"
+        }`;
+  const client = apiClient({
+    API_URL: apiUrl,
   });
-  return entries as {
-    entries: (CollectionEntry<C> & {
-      [key in keyof I]: {
-        entry: C extends Collection<infer T, infer U>
-          ? // @ts-expect-error not sure how to fix this, but type inference still works right
-            PickRelationshipValues<T>[key]
-          : {};
-      };
-    })[];
-    limit: number;
-    offset: number;
-    count?: number;
-  };
-}
 
-export async function getEntry<
-  C extends Collection<any>,
-  I extends C extends Collection<infer T, infer U>
-    ? RelationshipsFlags<T>
-    : Record<string, boolean>
->(
-  collection: C,
-  id: Id,
-  options?: {
-    include?: I;
-  }
-) {
-  let include: string[] | undefined;
-  if (options?.include) {
-    include = Object.keys(options.include);
+  async function getEntries<
+    C extends Collection<any>,
+    I extends C extends Collection<infer T, infer U>
+      ? RelationshipsFlags<T>
+      : Record<string, boolean>
+  >(
+    collection: C,
+    options?: {
+      includeCount?: boolean;
+      include?: I;
+      limit?: number;
+      offset?: number;
+      filters?: Where<CollectionEntry<C>>;
+      sort?: Sort<CollectionEntry<C>>;
+    }
+  ) {
+    const entries = await client.getEntries(collection.name, {
+      ...options,
+      include: options?.include ? Object.keys(options.include) : undefined,
+    });
+    return entries as {
+      entries: (CollectionEntry<C> & {
+        [key in keyof I]: {
+          entry: C extends Collection<infer T, infer U>
+            ? // @ts-expect-error not sure how to fix this, but type inference still works right
+              PickRelationshipValues<T>[key]
+            : {};
+        };
+      })[];
+      limit: number;
+      offset: number;
+      count?: number;
+    };
   }
 
-  const entry = await client.getEntry(collection.name, id, { include });
-  return entry as {
-    entry: CollectionEntry<C> & {
-      [key in keyof I]: {
-        entry: C extends Collection<infer T, infer U>
-          ? // @ts-expect-error not sure how to fix this, but type inference still works right
-            PickRelationshipValues<T>[key]
-          : {};
+  async function getEntry<
+    C extends Collection<any>,
+    I extends C extends Collection<infer T, infer U>
+      ? RelationshipsFlags<T>
+      : Record<string, boolean>
+  >(
+    collection: C,
+    id: Id,
+    options?: {
+      include?: I;
+    }
+  ) {
+    let include: string[] | undefined;
+    if (options?.include) {
+      include = Object.keys(options.include);
+    }
+
+    const entry = await client.getEntry(collection.name, id, { include });
+    return entry as {
+      entry: CollectionEntry<C> & {
+        [key in keyof I]: {
+          entry: C extends Collection<infer T, infer U>
+            ? // @ts-expect-error not sure how to fix this, but type inference still works right
+              PickRelationshipValues<T>[key]
+            : {};
+        };
       };
     };
-  };
-}
-
-export async function getGlobal<
-  G extends Global<any>,
-  I extends G extends Global<infer T, infer U>
-    ? RelationshipsFlags<T>
-    : Record<string, boolean>
->(
-  global: G,
-  options?: {
-    include?: I;
   }
-) {
-  const include = options?.include ? Object.keys(options.include) : undefined;
-  const globalData = await client.getGlobalValue(global.name, { include });
-  return globalData as {
-    global: GlobalValue<G> & {
-      [key in keyof I]: {
-        entry: G extends Global<infer T, infer U>
-          ? // @ts-expect-error not sure how to fix this, but type inference still works right
-            PickRelationshipValues<T>[key]
-          : {};
+
+  async function getGlobal<
+    G extends Global<any>,
+    I extends G extends Global<infer T, infer U>
+      ? RelationshipsFlags<T>
+      : Record<string, boolean>
+  >(
+    global: G,
+    options?: {
+      include?: I;
+    }
+  ) {
+    const include = options?.include ? Object.keys(options.include) : undefined;
+    const globalData = await client.getGlobalValue(global.name, { include });
+    return globalData as {
+      global: GlobalValue<G> & {
+        [key in keyof I]: {
+          entry: G extends Global<infer T, infer U>
+            ? // @ts-expect-error not sure how to fix this, but type inference still works right
+              PickRelationshipValues<T>[key]
+            : {};
+        };
       };
     };
+  }
+
+  async function getAsset(filename: string) {
+    const assetData = await client.getAsset(filename);
+    return assetData;
+  }
+
+  function getAssetUrl(
+    filepath: string,
+    options?: {
+      baseUrl?: string;
+      width?: number;
+      height?: number;
+      format?: "avif" | "webp" | "jpeg" | "png";
+      quality?: number;
+      fit?: "contain" | "cover" | "fill" | "inside" | "outside" | undefined;
+      position?: number | undefined;
+      background?: string | undefined;
+      withoutEnlargement?: boolean | undefined;
+      withoutReduction?: boolean | undefined;
+    }
+  ) {
+    return makeAssetUrl(apiUrl, filepath, options);
+  }
+
+  return {
+    getEntries,
+    getEntry,
+    getGlobal,
+    getAsset,
+    getAssetUrl,
   };
 }
 
-export async function getAsset(filename: string) {
-  const assetData = await client.getAsset(filename);
-  return assetData;
-}
+export type Tyzo = ReturnType<typeof tyzoApi>;
 
-export function makeAssetUrl(
-  filepath: string,
-  options?: {
-    baseUrl?: string;
-    width?: number;
-    height?: number;
-    format?: "avif" | "webp" | "jpeg" | "png";
-    quality?: number;
-  }
-) {
-  const query = new URLSearchParams();
-  if (options?.width) query.set("width", options.width.toString());
-  if (options?.height) query.set("height", options.height.toString());
-  if (options?.format) query.set("format", options.format);
-  if (options?.quality) query.set("quality", options.quality.toString());
-  const baseUrl = options?.baseUrl ?? apiUrl;
-  if (query.toString()) {
-    return `${baseUrl}/assets/${filepath}?${query.toString()}`;
-  }
-  return `${baseUrl}/assets/${filepath}`;
-}
 
 export const linkSchema = z.object({
   url: z.string(),

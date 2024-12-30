@@ -4,16 +4,17 @@ import {
   defineCollection,
   defineGlobal,
   entryReference,
-  getEntries,
-  getGlobal,
   imageSchema,
   markdownSchema,
   richTextSchema,
   videoSchema,
+  tyzoApi,
   z,
 } from "../../src/content";
 import { useState } from "react";
 import { useEffect } from "react";
+
+const cms = tyzoApi({ space: "example", useLocalApi: true });
 
 const authorCollection = defineCollection({
   name: "author",
@@ -36,10 +37,12 @@ const postCollection = defineCollection({
     id: z.string().uuid(),
     url: z.string().url(),
     bool: z.boolean(),
+    someNume: z.number(),
     email: z.string().email(),
     date: z.date(),
     duration: z.string().duration(),
     tags: z.array(z.string()),
+    objectArray: z.array(z.object({ key: z.string(), value: z.string() })),
     image: imageSchema,
     video: videoSchema,
     file: assetSchema,
@@ -62,12 +65,12 @@ export const globals = {
 };
 
 async function loadData() {
-  const { entries: posts } = await getEntries(collections.posts, {
+  const { entries: posts } = await cms.getEntries(collections.posts, {
     include: {
       author: true,
     },
   });
-  const { global: pageSettings } = await getGlobal(globals.pageSettings);
+  const { global: pageSettings } = await cms.getGlobal(globals.pageSettings);
   return { posts, pageSettings };
 }
 

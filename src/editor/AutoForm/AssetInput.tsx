@@ -9,9 +9,10 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { useAssets, useUploadAsset } from "../useApi";
-import { AssetType, makeAssetUrl } from "../../content";
-import { Link, Upload, File } from "lucide-react";
+import { useApiClient, useAssets, useUploadAsset } from "../useApi";
+import { AssetType } from "../../content";
+import { Upload, File, Search } from "lucide-react";
+import { useDebouncedValue } from "../utils";
 
 export const AssetInput = React.forwardRef<
   HTMLInputElement,
@@ -20,8 +21,11 @@ export const AssetInput = React.forwardRef<
     onChange: (value: AssetType) => void;
   }
 >(({ value, onChange }, ref) => {
+  const apiClient = useApiClient();
   const [isOpen, setIsOpen] = React.useState(false);
-  const { data: assets } = useAssets();
+  const [search, setSearch] = React.useState("");
+  const debouncedSearch = useDebouncedValue(search, 300);
+  const { data: assets } = useAssets({ search: debouncedSearch });
   const uploadAsset = useUploadAsset();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -33,7 +37,6 @@ export const AssetInput = React.forwardRef<
           type="text"
           disabled
           value={value?.url || ""}
-          // onChange={(e) => onChange({ url: e.target.value })}
           placeholder="Asset URL"
         />
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -42,16 +45,12 @@ export const AssetInput = React.forwardRef<
               Browse
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-3xl">
+          <DialogContent className="max-w-4xl max-h-screen overflow-y-scroll">
             <DialogHeader>
               <DialogTitle>Select Asset</DialogTitle>
             </DialogHeader>
-            <Tabs defaultValue="assets">
+            <Tabs defaultValue="assets" className="flex-1 overflow-hidden">
               <TabsList>
-                {/* <TabsTrigger value="url">
-                  <Link className="w-4 h-4 mr-2" />
-                  URL
-                </TabsTrigger> */}
                 <TabsTrigger value="assets">
                   <File className="w-4 h-4 mr-2" />
                   Assets
@@ -61,30 +60,34 @@ export const AssetInput = React.forwardRef<
                   Upload
                 </TabsTrigger>
               </TabsList>
-              {/* <TabsContent value="url" className="space-y-4">
-                <Input
-                  type="url"
-                  value={value?.url || ""}
-                  onChange={(e) => onChange({ url: e.target.value })}
-                  placeholder="Enter asset URL"
-                />
-              </TabsContent> */}
-              <TabsContent value="assets" className="space-y-4">
-                <div className="grid grid-cols-4 gap-4">
+              <TabsContent
+                value="assets"
+                className="flex flex-col space-y-4 mt-4 h-[calc(80vh-10rem)]"
+              >
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search assets..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pr-4">
                   {assets?.assets?.map((asset) => (
                     <div
                       key={asset.key}
-                      className="relative group cursor-pointer rounded-lg overflow-hidden border hover:border-primary p-4"
+                      className="relative group cursor-pointer rounded-lg overflow-hidden border hover:border-primary p-4 bg-card transition-colors"
                       onClick={() => {
                         onChange({
                           key: asset.key,
-                          url: makeAssetUrl(asset.key),
+                          url: apiClient.getAssetUrl(asset.key),
                         });
                         setIsOpen(false);
                       }}
                     >
                       <div className="flex items-center gap-2">
-                        <File className="w-4 h-4" />
+                        <File className="w-4 h-4 shrink-0" />
                         <span className="text-sm truncate">{asset.key}</span>
                       </div>
                       <div className="text-xs text-muted-foreground mt-1">
@@ -92,6 +95,11 @@ export const AssetInput = React.forwardRef<
                       </div>
                     </div>
                   ))}
+                  {assets?.assets?.length === 0 && (
+                    <div className="col-span-full text-center py-8 text-muted-foreground">
+                      No assets found
+                    </div>
+                  )}
                 </div>
               </TabsContent>
               <TabsContent value="upload" className="space-y-4">
@@ -113,7 +121,7 @@ export const AssetInput = React.forwardRef<
                         const asset = await uploadAsset.mutate(file);
                         onChange({
                           key: asset.key,
-                          url: makeAssetUrl(asset.key),
+                          url: apiClient.getAssetUrl(asset.key),
                         });
                         setIsOpen(false);
                       }

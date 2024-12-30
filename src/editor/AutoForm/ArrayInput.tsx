@@ -7,7 +7,7 @@ export const ArrayInput = React.forwardRef<
   {
     value: any[];
     onChange: (value: any[]) => void;
-    renderItem: (value: any, onChange: (value: any) => void) => React.ReactNode;
+    renderItem: (value: any, onChange: (value: any) => void, index: number) => React.ReactNode;
     minItems?: number;
     maxItems?: number;
     defaultValue?: any;
@@ -15,6 +15,7 @@ export const ArrayInput = React.forwardRef<
 >(({ value = [], onChange, renderItem, minItems, maxItems, defaultValue = "" }, ref) => {
   const [draggedIndex, setDraggedIndex] = React.useState<number | null>(null);
   const [dropIndex, setDropIndex] = React.useState<number | null>(null);
+  const [renderIteration, setRenderIteration] = React.useState(0);
 
   const handleDragStart = (index: number) => {
     setDraggedIndex(index);
@@ -32,6 +33,7 @@ export const ArrayInput = React.forwardRef<
       const [draggedItem] = newItems.splice(draggedIndex, 1);
       newItems.splice(dropIndex, 0, draggedItem);
       onChange(newItems);
+      setRenderIteration((prev) => prev + 1);
     }
     setDraggedIndex(null);
     setDropIndex(null);
@@ -45,7 +47,7 @@ export const ArrayInput = React.forwardRef<
       <div className="space-y-2">
         {value.map((item, index) => (
           <div
-            key={index}
+            key={`${index}-${renderIteration}`}
             draggable
             onDragStart={() => handleDragStart(index)}
             onDragEnter={() => handleDragEnter(index)}
@@ -61,11 +63,15 @@ export const ArrayInput = React.forwardRef<
               <GripVertical className="w-4 h-4" />
             </Button>
             <div className="flex-1">
-              {renderItem(item, (newValue) => {
-                const newItems = [...value];
-                newItems[index] = newValue;
-                onChange(newItems);
-              })}
+              {renderItem(
+                item,
+                (newValue) => {
+                  const newItems = [...value];
+                  newItems[index] = newValue;
+                  onChange(newItems);
+                },
+                index
+              )}
             </div>
             <Button
               variant="ghost"
@@ -76,10 +82,13 @@ export const ArrayInput = React.forwardRef<
                   : "text-muted-foreground opacity-50"
               }
               disabled={!canRemove}
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 const newItems = [...value];
                 newItems.splice(index, 1);
                 onChange(newItems);
+                setRenderIteration((prev) => prev + 1);
               }}
             >
               <Trash2 className="w-4 h-4" />
@@ -92,7 +101,12 @@ export const ArrayInput = React.forwardRef<
           variant="outline"
           className="w-full"
           disabled={!canAdd}
-          onClick={() => onChange([...value, defaultValue])}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onChange([...value, defaultValue]);
+            setRenderIteration((prev) => prev + 1);
+          }}
         >
           <Plus className="w-4 h-4 mr-2" />
           Add Item

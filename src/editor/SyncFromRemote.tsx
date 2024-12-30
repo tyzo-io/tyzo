@@ -3,7 +3,7 @@ import { Alert, AlertDescription } from "./ui/alert";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
-import { notifySyncStatusListeners } from "./SyncStatus";
+// import { notifySyncStatusListeners } from "./SyncStatus";
 
 interface SyncOptions {
   schema: boolean;
@@ -26,7 +26,7 @@ export const SyncFromRemote: React.FC = () => {
   const handleSync = () => {
     // TODO: Implement sync logic
     console.log("Syncing from remote with options:", syncOptions);
-    notifySyncStatusListeners();
+    // notifySyncStatusListeners();
   };
 
   return (

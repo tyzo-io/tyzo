@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { createServer } from "vite";
-import { startLocalServer } from "./localServer";
+import { startLocalServer } from "./localServer.js";
 import path from "node:path";
 
 async function startExample() {

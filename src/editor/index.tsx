@@ -6,6 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { ApiProvider, useApiClientContext } from "./useApi";
+import { SyncStatusProvider } from "./SyncStatus";
 import "./index.css";
 
 import { CollectionItemEditor } from "./EditEntry";
@@ -17,14 +18,16 @@ import { Menu } from "./Menu";
 function Shell() {
   return (
     <ApiProvider>
-      <div className="flex flex-col lg:flex-row h-screen">
-        <div className="border-r h-full overflow-y-auto">
-          <Menu />
+      <SyncStatusProvider>
+        <div className="flex flex-col lg:flex-row lg:h-screen">
+          <div className="border-r h-full overflow-y-auto">
+            <Menu />
+          </div>
+          <main className="flex-1 p-2 lg:p-6 overflow-y-auto">
+            <Outlet />
+          </main>
         </div>
-        <main className="flex-1 p-2 lg:p-6 overflow-y-auto">
-          <Outlet />
-        </main>
-      </div>
+      </SyncStatusProvider>
     </ApiProvider>
   );
 }

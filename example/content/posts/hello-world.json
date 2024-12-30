@@ -37,6 +37,17 @@
     },
     "richText": {
       "richText": "<p dir=\"ltr\"><span style=\"white-space: pre-wrap;\">Hello</span></p><p dir=\"ltr\"><span style=\"white-space: pre-wrap;\"># Hekk</span></p><h1 dir=\"ltr\"><span style=\"white-space: pre-wrap;\">ok</span></h1><p><br></p><img src=\"http://localhost:3456/api/assets/dummy-200x200.webp\">"
-    }
+    },
+    "someNume": 1,
+    "objectArray": [
+      {
+        "key": "bb",
+        "value": "kk"
+      },
+      {
+        "key": "jkhj",
+        "value": "mm"
+      }
+    ]
   }
 }

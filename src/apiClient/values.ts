@@ -1,4 +1,4 @@
-import { makeAssetUrl } from "../content";
+import { makeAssetUrl } from "./assetUrls.js";
 import { Asset, Id } from "../types";
 
 export function apiClient(options: { API_URL: string }) {
@@ -81,9 +81,15 @@ export function apiClient(options: { API_URL: string }) {
       height?: number;
       format?: "avif" | "webp" | "jpeg" | "png";
       quality?: number;
+      fit?: "contain" | "cover" | "fill" | "inside" | "outside" | undefined;
+      position?: number | undefined;
+      background?: string | undefined;
+      withoutEnlargement?: boolean | undefined;
+      withoutReduction?: boolean | undefined;
+      skipVector?: boolean;
     }
   ) {
-    return makeAssetUrl(filename, options);
+    return makeAssetUrl(API_URL, filename, options);
   }
 
   return {

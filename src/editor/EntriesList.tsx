@@ -27,7 +27,6 @@ import { FilterUI } from "./Filters";
 import { FileIcon, Link2Icon, ExternalLink } from "lucide-react";
 import { isImageJsonSchema, isMarkdownJsonSchema, isRichTextJsonSchema } from "../schemas";
 import Markdown from "react-markdown";
-import { makeAssetUrl } from "../content";
 import { Badge } from "./ui/badge";
 import {
   Popover,
@@ -264,9 +263,7 @@ export const EntriesList = ({ linkPrefix }: { linkPrefix?: string }) => {
         );
       }
       if (isImageJsonSchema(schema)) {
-        const url = makeAssetUrl(value.key, {
-          baseUrl: apiClient.apiUrl,
-        });
+        const url = apiClient.getAssetUrl(value.key);
         return (
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 relative bg-muted rounded overflow-hidden">

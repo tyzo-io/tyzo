@@ -1,4 +1,4 @@
-import { Where } from "./filters";
+import { Where } from "./filters.js";
 
 export function doesMatchFilter<T>(entry: T, where: Where<T>): boolean {
   // Handle logical operators first
@@ -49,6 +49,7 @@ export function doesMatchFilter<T>(entry: T, where: Where<T>): boolean {
 
   // Check each field in the where clause
   return Object.entries(where).every(([key, condition]) => {
+    console.log(key,entry[key as keyof T], condition)
     if (key.startsWith("$")) return true; // Skip logical operators we already handled
 
     const value = entry[key as keyof T];
@@ -75,6 +76,7 @@ export function doesMatchFilter<T>(entry: T, where: Where<T>): boolean {
     }
     if ("$nin" in comp)
       return Array.isArray(comp.$nin) && !comp.$nin.includes(value);
+    console.log(comp, value)
     if ("$exists" in comp)
       return comp.$exists ? value !== undefined : value === undefined;
 

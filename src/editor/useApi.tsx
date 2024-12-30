@@ -143,6 +143,7 @@ function useApi<T>(
 
   useEffect(() => {
     if (!isLocal && !space) return;
+    setState({ data: null, loading: options.enabled !== false, error: null });
     if (options.enabled === false) return;
     fetchData();
   }, [...deps, options.enabled, apiClient.apiUrl]);
@@ -302,13 +303,29 @@ export function useAssets(options?: {
 export function useUploadAsset() {
   const api = useApiClient();
   return useMutation(async (file: File) => {
+    let width: number | undefined;
+    let height: number | undefined;
+    if (file.type.startsWith("image/")) {
+      const image = new Image();
+      image.src = URL.createObjectURL(file);
+      await new Promise((resolve) => {
+        image.onload = resolve;
+      });
+      width = image.width;
+      height = image.height;
+    }
     const formData = new FormData();
     formData.append("file", file);
-    const response = await fetch(`${localApiUrl}/assets/${file.name}`, {
+    formData.append("contentType", file.type);
+    if (width && height) {
+      formData.append("width", width.toString());
+      formData.append("height", height.toString());
+    }
+    const response = await fetch(`${api.apiUrl}/assets/${file.name}`, {
       method: "PUT",
-      body: file,
+      body: formData,
       headers: {
-        "Content-Type": file.type,
+        Authorization: `Bearer ${getAuthToken()}`,
       },
     });
     if (!response.ok) {
@@ -321,8 +338,11 @@ export function useUploadAsset() {
 export function useDeleteAsset() {
   const api = useApiClient();
   return useMutation(async (key: string) => {
-    const response = await fetch(`${localApiUrl}/assets/${key}`, {
+    const response = await fetch(`${api.apiUrl}/assets/${key}`, {
       method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${getAuthToken()}`,
+      },
     });
     if (!response.ok) {
       throw new Error("Failed to delete file");

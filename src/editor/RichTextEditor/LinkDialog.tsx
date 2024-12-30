@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -20,8 +20,15 @@ interface LinkDialogProps {
 export function LinkDialog({ isOpen, onClose, onSubmit, url = "" }: LinkDialogProps) {
   const [inputUrl, setInputUrl] = useState(url);
 
+  useEffect(() => {
+    if (isOpen) {
+      setInputUrl(url);
+    }
+  }, [isOpen, url]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     onSubmit(inputUrl);
     onClose();
   };

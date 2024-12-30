@@ -64,6 +64,10 @@ export interface Asset {
   key: string;
   size: number;
   httpMetadata?: Record<string, string>;
+  metadata?: {
+    width?: number;
+    height?: number;
+  };
   etag?: string;
   httpEtag?: string;
 }

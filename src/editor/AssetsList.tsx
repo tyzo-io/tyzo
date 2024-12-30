@@ -7,7 +7,7 @@ import {
   localApiUrl,
   useApiClientContext,
 } from "./useApi";
-import { cn, getAuthToken, useDebouncedValue } from "./utils";
+import { getAuthToken, useDebouncedValue } from "./utils";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import {
@@ -26,7 +26,6 @@ import {
   Download,
   Loader2Icon,
 } from "lucide-react";
-import { makeAssetUrl } from "../content";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -66,7 +65,6 @@ async function downloadAsset(stage: string, token: string, key: string) {
     body: JSON.stringify({ stage, token, key }),
   });
 }
-
 
 function getFileType(contentType: string | undefined) {
   if (!contentType) return "unknown";
@@ -202,36 +200,6 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
 
   if (assetsLoading && !paginationToken) return <div>Loading...</div>;
 
-  if (!assets?.length && !uploading) {
-    return (
-      <div className="p-4">
-        <div className="flex flex-row items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold">Assets</h1>
-          <Button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-          >
-            {uploading ? (
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            ) : (
-              <Upload className="w-4 h-4 mr-2" />
-            )}
-            {uploading ? "Uploading..." : "Upload File"}
-          </Button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            className="hidden"
-            onChange={handleFileChange}
-          />
-        </div>
-        <div className="text-center mt-8">
-          <p className="mb-4">No assets found</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="p-4">
       <div className="flex flex-row items-center justify-between mb-4">
@@ -268,6 +236,12 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
         />
       </div>
 
+      {!assets?.length && !uploading && (
+        <div className="text-center mt-8">
+          <p className="mb-4">No assets found</p>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {assets?.map((asset) => {
           const fileType = getFileType(asset.httpMetadata?.contentType);
@@ -293,10 +267,10 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
                 </Button>
                 {fileType === "image" ? (
                   <img
-                    src={makeAssetUrl(asset.key, {
-                      width: 200,
-                      height: 200,
-                      baseUrl: apiClient.apiUrl,
+                    src={apiClient.getAssetUrl(asset.key, {
+                      width: 400,
+                      height: 400,
+                      skipVector: true,
                     })}
                     alt={asset.name}
                     className="w-full h-full object-cover"
@@ -398,6 +372,16 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
                 <div>{formatFileSize(selectedAsset?.size ?? 0)}</div>
                 <div>Type:</div>
                 <div>{selectedAsset?.httpMetadata?.contentType}</div>
+                {selectedAsset?.metadata?.width &&
+                  selectedAsset?.metadata?.height && (
+                    <>
+                      <div>Dimensions:</div>
+                      <div>
+                        {selectedAsset.metadata.width} ×{" "}
+                        {selectedAsset.metadata.height}px
+                      </div>
+                    </>
+                  )}
                 <div>Key:</div>
                 <div>{selectedAsset?.key}</div>
               </div>
@@ -485,8 +469,7 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
                         readOnly
                         value={
                           selectedAsset
-                            ? makeAssetUrl(selectedAsset.key, {
-                                baseUrl: apiClient.apiUrl,
+                            ? apiClient.getAssetUrl(selectedAsset.key, {
                                 width: urlParams.width
                                   ? Number(urlParams.width)
                                   : undefined,
@@ -513,8 +496,7 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
                         onClick={() => {
                           if (!selectedAsset) return;
                           navigator.clipboard.writeText(
-                            makeAssetUrl(selectedAsset.key, {
-                              baseUrl: apiClient.apiUrl,
+                            apiClient.getAssetUrl(selectedAsset.key, {
                               width: urlParams.width
                                 ? Number(urlParams.width)
                                 : undefined,
@@ -551,9 +533,7 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
                       readOnly
                       value={
                         selectedAsset
-                          ? makeAssetUrl(selectedAsset.key, {
-                              baseUrl: apiClient.apiUrl,
-                            })
+                          ? apiClient.getAssetUrl(selectedAsset.key)
                           : ""
                       }
                     />
@@ -564,7 +544,7 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
                       onClick={() => {
                         if (!selectedAsset) return;
                         navigator.clipboard.writeText(
-                          makeAssetUrl(selectedAsset.key)
+                          apiClient.getAssetUrl(selectedAsset.key)
                         );
                       }}
                     >

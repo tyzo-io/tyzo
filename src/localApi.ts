@@ -9,12 +9,11 @@ import {
   GlobalReference,
   Id,
 } from "./types";
-import { doesMatchFilter } from "./applyFilters";
+import { doesMatchFilter } from "./applyFilters.js";
 import type { Sharp } from "sharp";
-import { convertZodSchema } from "./schemas";
+import { convertZodSchema } from "./schemas.js";
 import Ajv from "ajv";
-import { ajvFormats } from "./validate";
-import { isEntryReference } from "./content";
+import { ajvFormats } from "./validate.js";
 
 // type SavedEntry<T> = {
 //   data: T;
@@ -199,9 +198,40 @@ export class LocalApi {
         const [key, direction] = sort;
         const valueA = a[key];
         const valueB = b[key];
+
+        // Handle null/undefined values
+        if (valueA == null && valueB == null) return 0;
+        if (valueA == null) return direction === "asc" ? -1 : 1;
+        if (valueB == null) return direction === "asc" ? 1 : -1;
+
+        // Handle different data types
+        if (typeof valueA === "number" && typeof valueB === "number") {
+          return direction === "asc" ? valueA - valueB : valueB - valueA;
+        }
+
+        if (valueA instanceof Date && valueB instanceof Date) {
+          return direction === "asc"
+            ? valueA.getTime() - valueB.getTime()
+            : valueB.getTime() - valueA.getTime();
+        }
+
+        // Try to parse dates if they're strings in ISO format
+        if (typeof valueA === "string" && typeof valueB === "string") {
+          const dateA = new Date(valueA);
+          const dateB = new Date(valueB);
+          if (!isNaN(dateA.getTime()) && !isNaN(dateB.getTime())) {
+            return direction === "asc"
+              ? dateA.getTime() - dateB.getTime()
+              : dateB.getTime() - dateA.getTime();
+          }
+        }
+
+        // Default to string comparison
+        const stringA = String(valueA);
+        const stringB = String(valueB);
         return direction === "asc"
-          ? valueA.localeCompare(valueB)
-          : valueB.localeCompare(valueA);
+          ? stringA.localeCompare(stringB)
+          : stringB.localeCompare(stringA);
       });
     }
 
@@ -367,6 +397,11 @@ export class LocalApi {
       height?: number;
       format?: "avif" | "webp" | "jpeg" | "png";
       quality?: number;
+      fit?: "contain" | "cover" | "fill" | "inside" | "outside" | undefined;
+      position?: number | string | undefined;
+      background?: string | undefined
+      withoutEnlargement?: boolean | undefined;
+      withoutReduction?: boolean | undefined;
     }
   ): Promise<{ data: Buffer; contentType?: string } | null> {
     try {
@@ -376,10 +411,11 @@ export class LocalApi {
       const contentType = this.getContentType(filename);
 
       if (
-        options?.width ||
-        options?.height ||
-        options?.format ||
-        options?.quality
+        contentType?.startsWith("image/") &&
+        (options?.width ||
+          options?.height ||
+          options?.format ||
+          options?.quality)
       ) {
         try {
           const sharp = require("sharp");
@@ -387,8 +423,11 @@ export class LocalApi {
 
           if (options?.width || options?.height) {
             transform = transform.resize(options?.width, options?.height, {
-              fit: "contain",
-              withoutEnlargement: true,
+              fit: options.fit,
+              position: options.position,
+              background: options.background,
+              withoutEnlargement: options.withoutEnlargement,
+              withoutReduction: options.withoutReduction,
             });
           }
 
@@ -421,7 +460,9 @@ export class LocalApi {
     try {
       let files = await fs.readdir(dir);
       if (options?.search) {
-        files = files.filter((file) => file.includes(options!.search!));
+        files = files.filter((file) =>
+          file.toLowerCase().includes(options!.search!.toLowerCase())
+        );
       }
       if (options?.startAfter) {
         const index = files.indexOf(options!.startAfter!);
@@ -437,10 +478,24 @@ export class LocalApi {
           const filePath = path.join(dir, filename);
           const stats = await fs.stat(filePath);
           const contentType = this.getContentType(filename);
+          let width: number | undefined;
+          let height: number | undefined;
+          if (contentType?.startsWith("image/")) {
+            try {
+              const sharp = require("sharp");
+              const { width: w, height: h } = await sharp(filePath).metadata();
+              width = w;
+              height = h;
+            } catch {}
+          }
           return {
             name: filename.split("/").pop()!,
             key: filename,
             size: stats.size,
+            metadata: {
+              width,
+              height,
+            },
             httpMetadata: contentType
               ? {
                   contentType,
@@ -511,7 +566,7 @@ export class LocalApi {
     try {
       const content = await fs.readFile(filePath, "utf-8");
       const data = JSON.parse(content) as { data: T };
-      const parsed = glob.schema.parse(data.data);
+      const parsed = data.data;
       return parsed;
     } catch (err) {
       return null;

@@ -1,26 +1,30 @@
-import React from "react";
-import { useCallback, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { localApiUrl } from "./useApi";
 import { SyncStatus } from "../sync";
 import { Progress } from "./ui/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { Button } from "./ui/button";
+import { X } from "lucide-react";
 
-const listeners = new Set<() => void>();
-
-export function addSyncStatusListener(listener: () => void) {
-  listeners.add(listener);
-  return () => {
-    listeners.delete(listener);
-  };
+interface SyncStatusContextType {
+  status: SyncStatus;
+  checkStatus: () => Promise<void>;
+  notifySyncStatusChange: () => void;
 }
 
-export function notifySyncStatusListeners() {
-  listeners.forEach((listener) => listener());
-}
+const SyncStatusContext = createContext<SyncStatusContextType | undefined>(undefined);
 
-export function useSyncStatus() {
+export function SyncStatusProvider({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<SyncStatus>({
     inProgress: false,
     type: null,
+    startedAt: undefined,
     progress: {
       total: 0,
       current: 0,
@@ -29,21 +33,10 @@ export function useSyncStatus() {
     syncLogs: [],
   });
 
-  useEffect(() => {
-    const listener = () => {
-      checkStatus();
-    };
-    listeners.add(listener);
-    return () => {
-      listeners.delete(listener);
-    };
-  }, []);
-
   const checkStatus = useCallback(async () => {
     try {
       const response = await fetch(`${localApiUrl}/sync/status`);
       const data = await response.json();
-      console.log("status update", data);
       setStatus(data);
     } catch (error) {
       console.error("Failed to fetch sync status:", error);
@@ -51,61 +44,95 @@ export function useSyncStatus() {
   }, []);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    // Initial status check
+    checkStatus();
 
-    if (status.inProgress) {
-      interval = setInterval(checkStatus, 1000);
-    } else {
-      checkStatus();
-    }
+    // Set up polling interval
+    const intervalId = setInterval(checkStatus, 1000);
+    return () => clearInterval(intervalId);
+  }, [checkStatus]);
 
-    return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
-  }, [status.inProgress]);
+  const notifySyncStatusChange = useCallback(() => {
+    checkStatus();
+  }, [checkStatus]);
 
-  return { status, checkStatus };
+  const value = {
+    status,
+    checkStatus,
+    notifySyncStatusChange,
+  };
+
+  return (
+    <SyncStatusContext.Provider value={value}>
+      {children}
+    </SyncStatusContext.Provider>
+  );
 }
 
-export function SyncStatus() {
-  const { status } = useSyncStatus();
-
-  if (!status.inProgress) {
-    if (status.syncLogs.length > 0) {
-      return (
-        <div className="mt-4">
-          <h3 className="text-lg font-semibold mb-2">Sync Complete</h3>
-          {status.syncLogs.map((log, index) => (
-            <p key={index}>{log}</p>
-          ))}
-        </div>
-      );
-    } else {
-      return null;
-    }
+export function useSyncStatus() {
+  const context = useContext(SyncStatusContext);
+  if (context === undefined) {
+    throw new Error("useSyncStatus must be used within a SyncStatusProvider");
   }
+  return context;
+}
 
+export function SyncStatus({ withClose }: { withClose?: boolean }) {
+  const { status } = useSyncStatus();
+  const [hideTimestamp, setHidetimestamp] = useState<number>();
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const lastLog = status.syncLogs[status.syncLogs.length - 1];
   const progress = Math.round(
     (status.progress.current / status.progress.total) * 100
   );
 
+  if (!status.startedAt || status.startedAt === hideTimestamp) {
+    return null;
+  }
+
   return (
-    <div className="fixed bottom-4 right-4 bg-white p-4 rounded-lg shadow-lg">
-      <h3 className="text-lg font-semibold mb-2">
-        {status.type === "up" ? "Syncing to Remote" : "Syncing from Remote"}
-      </h3>
-      <p className="mb-2">{status.progress.phase}</p>
-      <div className="w-64 h-2 bg-gray-200 rounded-full">
-        <Progress value={progress} />
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <div className="p-4 w-full">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-lg font-semibold">
+            {status.type === "up" ? "Syncing to Remote" : "Syncing from Remote"}
+          </h3>
+          {withClose && status.startedAt && (
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setHidetimestamp(status.startedAt);
+              }}
+            >
+              <X />
+            </Button>
+          )}
+        </div>
+        <p className="mb-2">{status.progress.phase}</p>
+        <div className="w-64 h-2 bg-gray-200 rounded-full">
+          <Progress className="w-full" value={progress} />
+        </div>
+        <p className="mt-2 text-sm text-gray-600">
+          {status.progress.current} / {status.progress.total}
+        </p>
+        <DialogTrigger>{lastLog}</DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sync Logs</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-2 max-h-[60vh] overflow-y-auto">
+            {status.syncLogs.map((log, index) => (
+              <div
+                key={index}
+                className="text-sm text-gray-600 border-b border-gray-100 py-2 last:border-0"
+              >
+                {log}
+              </div>
+            ))}
+          </div>
+        </DialogContent>
       </div>
-      <p className="mt-2 text-sm text-gray-600">
-        {status.progress.current} / {status.progress.total}
-      </p>
-      {status.syncLogs.map((log, index) => (
-        <p key={index}>{log}</p>
-      ))}
-    </div>
+    </Dialog>
   );
 }

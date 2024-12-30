@@ -1,5 +1,5 @@
 import { ignoreOverride, zodToJsonSchema } from "zod-to-json-schema";
-import { Collection, Global, Id } from "./types";
+import type { Collection, Global, Id } from "./types";
 import {
   assetSchema,
   imageSchema,
@@ -13,7 +13,7 @@ import {
   richTextSchema,
   videoSchema,
   z,
-} from "./content";
+} from "./content.js";
 
 export interface SerializedCollection {
   name: string;
@@ -36,6 +36,7 @@ export function convertZodSchema(
   let hasVideo = false
   let hasAsset = false
   const jsonSchema = zodToJsonSchema(schema, {
+    $refStrategy: "none",
     definitions: {
       imageSchema,
       videoSchema,
@@ -49,14 +50,14 @@ export function convertZodSchema(
         return undefined;
       }
       if (isMarkdown(def)) {
-        hasMarkdown = true
+        hasMarkdown = true;
         return {
           type: "object",
           $ref: "#/definitions/markdownSchema",
         };
       }
       if (isRichText(def)) {
-        hasRichText = true
+        hasRichText = true;
         return {
           type: "object",
           $ref: "#/definitions/richTextSchema",

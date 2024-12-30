@@ -9,9 +9,10 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { useAssets, useUploadAsset } from "./useApi";
-import { makeAssetUrl, VideoType } from "../content";
-import { Link, Upload, Video } from "lucide-react";
+import { useApiClient, useAssets, useUploadAsset } from "./useApi";
+import { VideoType } from "../content";
+import { Link, Upload, Video, Search } from "lucide-react";
+import { useDebouncedValue } from "./utils";
 
 export const VideoInput = React.forwardRef<
   HTMLInputElement,
@@ -20,8 +21,11 @@ export const VideoInput = React.forwardRef<
     onChange: (value: VideoType) => void;
   }
 >(({ value, onChange }, ref) => {
+  const apiClient = useApiClient();
   const [isOpen, setIsOpen] = React.useState(false);
-  const { data: assets } = useAssets();
+  const [search, setSearch] = React.useState("");
+  const debouncedSearch = useDebouncedValue(search, 300);
+  const { data: assets } = useAssets({ search: debouncedSearch });
   const uploadAsset = useUploadAsset();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -42,7 +46,7 @@ export const VideoInput = React.forwardRef<
               Browse
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-3xl">
+          <DialogContent className="max-w-4xl max-h-screen overflow-y-scroll">
             <DialogHeader>
               <DialogTitle>Select Video</DialogTitle>
             </DialogHeader>
@@ -72,7 +76,16 @@ export const VideoInput = React.forwardRef<
                 />
               </TabsContent>
               <TabsContent value="assets" className="space-y-4">
-                <div className="grid grid-cols-4 gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search videos..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {assets?.assets
                     ?.filter((asset) =>
                       asset.httpMetadata?.contentType?.startsWith("video/")
@@ -80,25 +93,32 @@ export const VideoInput = React.forwardRef<
                     .map((asset) => (
                       <div
                         key={asset.key}
-                        className="relative group cursor-pointer aspect-video rounded-lg overflow-hidden border hover:border-primary bg-muted"
+                        className="relative group cursor-pointer aspect-video rounded-lg overflow-hidden border hover:border-primary bg-muted transition-colors"
                         onClick={() => {
                           onChange({
                             ...value,
                             key: asset.key,
-                            url: makeAssetUrl(asset.key),
+                            url: apiClient.getAssetUrl(asset.key),
                           });
                           setIsOpen(false);
                         }}
                       >
                         <video
-                          src={makeAssetUrl(asset.key)}
+                          src={apiClient.getAssetUrl(asset.key)}
                           className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100">
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Video className="w-8 h-8 text-white" />
                         </div>
                       </div>
                     ))}
+                  {assets?.assets?.filter((asset) =>
+                    asset.httpMetadata?.contentType?.startsWith("video/")
+                  ).length === 0 && (
+                    <div className="col-span-full text-center py-8 text-muted-foreground">
+                      No videos found
+                    </div>
+                  )}
                 </div>
               </TabsContent>
               <TabsContent value="upload" className="space-y-4">
@@ -122,7 +142,7 @@ export const VideoInput = React.forwardRef<
                         onChange({
                           ...value,
                           key: asset.key,
-                          url: makeAssetUrl(asset.key),
+                          url: apiClient.getAssetUrl(asset.key),
                         });
                         setIsOpen(false);
                       }

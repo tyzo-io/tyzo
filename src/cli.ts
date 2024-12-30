@@ -8,6 +8,8 @@ import fs from "node:fs/promises";
 import { addToDotEnv } from "./dotenv.js";
 
 const configTemplate = `
+import { tyzoApi } from "tyzo";
+
 export const collections = {
   // place your collections here
 };
@@ -16,6 +18,10 @@ export const globals = {
   // place your globals here
 };
 
+export const cms = tyzoApi({
+  space: "example",
+  useLocalApi: process.env.TYZO_USE_LOCAL === "true",
+});
 `;
 
 export async function cli() {
@@ -44,9 +50,9 @@ export async function cli() {
         ]);
         if (response.configFile) {
           await fs.writeFile(configFile, configTemplate);
-          await addToDotEnv(
-            "TYZO_API_URL",
-            `# This is your local content api. To hit tyzo's CDN, remove this env var and make sure that \`TYZO_SPACE\` is set.\nTYZO_API_URL=http://localhost:3456/api`
+          await addToDotEnv("TYZO_USE_LOCAL", `TYZO_USE_LOCAL=true`);
+          console.log(
+            'Created the tyzo config. Please update the "space" property in the config file, and the environment variables if needed.'
           );
         } else {
           console.log("No tyzo config file found, exiting.");

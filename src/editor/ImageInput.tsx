@@ -16,9 +16,10 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { useAssets, useUploadAsset } from "./useApi";
-import { ImageType, makeAssetUrl } from "../content";
-import { ImageIcon, Link, Upload } from "lucide-react";
+import { useApiClient, useAssets, useUploadAsset } from "./useApi";
+import { ImageType } from "../content";
+import { ImageIcon, Link, Upload, Search } from "lucide-react";
+import { useDebouncedValue } from "./utils";
 
 export const ImageInput = React.forwardRef<
   HTMLInputElement,
@@ -27,8 +28,11 @@ export const ImageInput = React.forwardRef<
     onChange: (value: ImageType) => void;
   }
 >(({ value, onChange }, ref) => {
+  const apiClient = useApiClient();
   const [isOpen, setIsOpen] = React.useState(false);
-  const { data: assets } = useAssets();
+  const [search, setSearch] = React.useState("");
+  const debouncedSearch = useDebouncedValue(search, 300);
+  const { data: assets } = useAssets({ search: debouncedSearch });
   const uploadAsset = useUploadAsset();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -37,30 +41,34 @@ export const ImageInput = React.forwardRef<
     metadata?: { width?: number; height?: number }
   ) => {
     // Default widths for responsive images
-    const widths = [640, 750, 828, 1080, 1200, 1920, 2048];
+    const widths = [320, 400, 480, 640, 750, 828, 1080, 1200, 1920, 2048];
     const formats = ["webp", "jpeg"] as const;
 
     // Generate srcset for each format and width
     const srcsetParts = formats.flatMap((format) =>
       widths.map((w) => {
-        const url = makeAssetUrl(assetKey, {
+        const url = apiClient.getAssetUrl(assetKey, {
           width: w,
           format,
           quality: format === "webp" ? 80 : 85,
         });
-        return `${url} ${w}w`;
+        return `${encodeURI(url)} ${w}w`;
       })
     );
 
     // Generate sizes based on common breakpoints
     const sizes = [
-      "(max-width: 640px) 100vw",
-      "(max-width: 1024px) 75vw",
-      "50vw",
+      ...widths.map((size) => `(max-width: ${size}px) ${size}px`),
+      "2048px",
     ].join(", ");
+    // [
+    //   "(max-width: 640px) 100vw",
+    //   "(max-width: 1024px) 75vw",
+    //   "50vw",
+    // ].join(", ");
 
     return {
-      url: makeAssetUrl(assetKey),
+      url: apiClient.getAssetUrl(assetKey),
       srcset: srcsetParts.join(", "),
       sizes,
       ...(metadata?.width && { width: metadata.width }),
@@ -86,7 +94,7 @@ export const ImageInput = React.forwardRef<
               Browse
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-3xl">
+          <DialogContent className="max-w-4xl max-h-screen overflow-y-scroll">
             <DialogHeader>
               <DialogTitle>Select Image</DialogTitle>
             </DialogHeader>
@@ -116,7 +124,16 @@ export const ImageInput = React.forwardRef<
                 />
               </TabsContent>
               <TabsContent value="assets" className="space-y-4">
-                <div className="grid grid-cols-4 gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search images..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {assets?.assets
                     ?.filter((asset) =>
                       asset.httpMetadata?.contentType?.startsWith("image/")
@@ -124,27 +141,36 @@ export const ImageInput = React.forwardRef<
                     .map((asset) => (
                       <div
                         key={asset.key}
-                        className="relative group cursor-pointer aspect-square rounded-lg overflow-hidden border hover:border-primary"
+                        className="relative group cursor-pointer aspect-square rounded-lg overflow-hidden border hover:border-primary bg-muted"
                         onClick={() => {
-                          const config = generateImageConfig(asset.key, {
-                            // width: asset.width,
-                            // height: asset.height,
-                          });
                           onChange({
+                            ...generateImageConfig(asset.key, asset.metadata),
                             key: asset.key,
-                            ...value,
-                            ...config,
                           });
                           setIsOpen(false);
                         }}
                       >
                         <img
-                          src={makeAssetUrl(asset.key)}
+                          src={apiClient.getAssetUrl(asset.key, {
+                            width: 400,
+                            height: 400,
+                            skipVector: true,
+                          })}
                           alt={asset.key}
-                          className="object-cover w-full h-full"
+                          className="w-full h-full object-cover"
                         />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <ImageIcon className="w-8 h-8 text-white" />
+                        </div>
                       </div>
                     ))}
+                  {assets?.assets?.filter((asset) =>
+                    asset.httpMetadata?.contentType?.startsWith("image/")
+                  ).length === 0 && (
+                    <div className="col-span-full text-center py-8 text-muted-foreground">
+                      No images found
+                    </div>
+                  )}
                 </div>
               </TabsContent>
               <TabsContent value="upload" className="space-y-4">
@@ -165,7 +191,10 @@ export const ImageInput = React.forwardRef<
                       const file = e.target.files?.[0];
                       if (file) {
                         const asset = await uploadAsset.mutate(file);
-                        const config = generateImageConfig(asset.key);
+                        const config = generateImageConfig(
+                          asset.key,
+                          asset.metadata
+                        );
                         onChange({
                           key: asset.key,
                           ...value,

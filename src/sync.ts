@@ -9,10 +9,10 @@ import {
   SerializedCollection,
   SerializedGlobal,
   serializeGlobal,
-} from "./schemas";
+} from "./schemas.js";
 import { Request, Response } from "express";
-import { managementApiClient } from "./apiClient";
-import { LocalApi } from "./localApi";
+import { managementApiClient } from "./apiClient/index.js";
+import { LocalApi } from "./localApi.js";
 import { JSONSchemaType } from "ajv";
 import { z } from "zod";
 
@@ -22,6 +22,7 @@ const localApiUrl = "http://localhost:3456/api";
 export interface SyncStatus {
   inProgress: boolean;
   type: "up" | "down" | null;
+  startedAt: number | undefined;
   progress: {
     total: number;
     current: number;
@@ -34,6 +35,7 @@ export interface SyncStatus {
 let currentSyncStatus: SyncStatus = {
   inProgress: false,
   type: null,
+  startedAt: undefined,
   progress: {
     total: 0,
     current: 0,
@@ -80,20 +82,6 @@ export function convertLocalUrlsToRemote<T>({
       return value.map((item: any) => processValue(item, schema.items));
     }
 
-    // Handle objects
-    if (schema.type === "object") {
-      const result: any = {};
-
-      for (const key in value) {
-        if (key in (schema.properties ?? {})) {
-          result[key] = processValue(value[key], schema.properties[key]);
-        } else {
-          result[key] = value[key];
-        }
-      }
-      return result;
-    }
-
     // Handle asset types
     if (isImageJsonSchema(schema)) {
       if (typeof value === "object" && value.url) {
@@ -126,6 +114,21 @@ export function convertLocalUrlsToRemote<T>({
         return { markdown: convertUrl(value.markdown) };
       }
     }
+
+    // Handle objects
+    if (schema.type === "object") {
+      const result: any = {};
+
+      for (const key in value) {
+        if (key in (schema.properties ?? {})) {
+          result[key] = processValue(value[key], schema.properties[key]);
+        } else {
+          result[key] = value[key];
+        }
+      }
+      return result;
+    }
+
 
     return value;
   }
@@ -166,6 +169,33 @@ export function syncRoutesFactory(api: LocalApi) {
     return remoteApi;
   }
 
+  const MAX_RETRIES = 3;
+  const INITIAL_RETRY_DELAY = 1000;
+
+  async function withRetry<T>(
+    operation: () => Promise<T>,
+    description: string
+  ): Promise<T> {
+    let lastError: Error | undefined;
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      try {
+        return await operation();
+      } catch (error) {
+        lastError = error as Error;
+        if (attempt < MAX_RETRIES - 1) {
+          const delay = INITIAL_RETRY_DELAY * Math.pow(2, attempt);
+          addSyncLog(
+            `Failed to ${description}. Retrying in ${delay / 1000}s... (${
+              attempt + 1
+            }/${MAX_RETRIES})`
+          );
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        }
+      }
+    }
+    throw lastError;
+  }
+
   const syncUp = async (req: Request, res: Response) => {
     if (currentSyncStatus.inProgress) {
       res.status(409).json({
@@ -199,6 +229,7 @@ export function syncRoutesFactory(api: LocalApi) {
     currentSyncStatus = {
       inProgress: true,
       type: "up",
+      startedAt: Date.now(),
       progress: {
         total: 0,
         current: 0,
@@ -218,6 +249,41 @@ export function syncRoutesFactory(api: LocalApi) {
       let total = 0;
       let current = 0;
 
+      // const doTest = false
+      // if (doTest) {
+      //   currentSyncStatus.progress.total = 10;
+      //   while (current < 10) {
+      //     await new Promise((resolve) => {
+      //       setTimeout(() => {
+      //         resolve(true);
+      //       }, 1000);
+      //     });
+      //     current++;
+      //     currentSyncStatus.progress.current = current;
+      //   }
+      //   res.json({ success: true });
+      //   return
+      // }
+
+      if (assets) {
+        const assetEntries = await api.listAssets();
+        total += assetEntries.length;
+      }
+      if (schema) {
+        total += 1;
+      }
+      if (syncEntries) {
+        for (const collection of collections) {
+          const { entries } = await api.getEntries(collection.name);
+          total += entries.length;
+        }
+      }
+      if (syncGlobals) {
+        total += globals.length;
+      }
+
+      currentSyncStatus.progress.total = total;
+
       const allCollections = collections.reduce((acc, col) => {
         acc[col.name] = col.schema;
         return acc;
@@ -228,7 +294,6 @@ export function syncRoutesFactory(api: LocalApi) {
       // but they are likely to be referenced by antries or globals
       if (assets) {
         const assetEntries = await api.listAssets();
-        total += assetEntries.length;
         currentSyncStatus.progress = {
           total,
           current,
@@ -244,12 +309,12 @@ export function syncRoutesFactory(api: LocalApi) {
               contentType: file.contentType,
             });
           }
-          currentSyncStatus.progress.current++;
+          current++;
+          currentSyncStatus.progress.current = current;
         }
       }
 
       if (schema) {
-        total += 1;
         currentSyncStatus.progress = {
           total,
           current,
@@ -268,49 +333,61 @@ export function syncRoutesFactory(api: LocalApi) {
           }, {} as Record<string, SerializedGlobal>),
         });
 
-        currentSyncStatus.progress.current++;
+        current++;
+        currentSyncStatus.progress.current = current;
       }
 
       if (syncEntries) {
         for (const collection of collections) {
           const { entries } = await api.getEntries(collection.name);
-          total += entries.length;
           currentSyncStatus.progress = {
             total,
             current,
             phase: "Syncing content...",
           };
           addSyncLog(`Syncing content for ${collection.name}`);
-          for (const entry of entries) {
-            addSyncLog(
-              `Syncing content for ${collection.name}, entry ${
-                (entry as Record<string | number | symbol, any>)[
-                  collection.idField
-                ]
-              }`
+
+          // Process entries in parallel with a concurrency limit
+          const BATCH_SIZE = 5;
+          for (let i = 0; i < entries.length; i += BATCH_SIZE) {
+            const batch = entries.slice(i, i + BATCH_SIZE);
+            await Promise.all(
+              batch.map(async (entry) => {
+                addSyncLog(
+                  `Syncing content for ${collection.name}, entry ${
+                    (entry as Record<string | number | symbol, any>)[
+                      collection.idField
+                    ]
+                  }`
+                );
+                const convertedEntry = convertLocalUrlsToRemote({
+                  entry,
+                  remoteBaseUrl: remoteApi.apiUrl,
+                  schema: convertZodSchema(
+                    collection.schema,
+                    allCollections
+                  ) as any,
+                });
+                await withRetry(
+                  () =>
+                    remoteApi.setEntry(
+                      collection.name,
+                      (convertedEntry as Record<string | number | symbol, any>)[
+                        collection.idField
+                      ],
+                      convertedEntry
+                    ),
+                  `sync entry ${collection.name}`
+                );
+                current++;
+                currentSyncStatus.progress.current = current;
+              })
             );
-            const convertedEntry = convertLocalUrlsToRemote({
-              entry,
-              remoteBaseUrl: remoteConfig.remoteBaseUrl,
-              schema: convertZodSchema(
-                collection.schema,
-                allCollections
-              ) as any,
-            });
-            await remoteApi.setEntry(
-              collection.name,
-              (convertedEntry as Record<string | number | symbol, any>)[
-                collection.idField
-              ],
-              convertedEntry
-            );
-            currentSyncStatus.progress.current++;
           }
         }
       }
 
       if (syncGlobals) {
-        total += globals.length;
         for (const global of globals) {
           const value = await api.getGlobalValue(global.name);
           if (value) {
@@ -318,11 +395,12 @@ export function syncRoutesFactory(api: LocalApi) {
             // Convert local URLs to remote URLs before syncing
             const convertedValue = convertLocalUrlsToRemote({
               entry: value,
-              remoteBaseUrl: remoteConfig.remoteBaseUrl,
+              remoteBaseUrl: remoteApi.apiUrl,
               schema: convertZodSchema(global.schema, allCollections) as any,
             });
             await remoteApi.setGlobalValue(global.name, convertedValue);
-            currentSyncStatus.progress.current++;
+            current++;
+            currentSyncStatus.progress.current = current;
           }
         }
       }
@@ -330,6 +408,7 @@ export function syncRoutesFactory(api: LocalApi) {
       currentSyncStatus = {
         inProgress: false,
         type: null,
+        startedAt: currentSyncStatus.startedAt,
         progress: {
           total,
           current,
@@ -350,8 +429,9 @@ export function syncRoutesFactory(api: LocalApi) {
       currentSyncStatus = {
         inProgress: false,
         type: null,
+        startedAt: currentSyncStatus.startedAt,
         progress: {
-          total: 2,
+          total: 0,
           current: 0,
           phase: "Sync failed",
         },
