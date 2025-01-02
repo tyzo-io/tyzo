@@ -62,7 +62,7 @@ export const ApiProvider = ({
       const { space } = await res.json();
       setSpace(space);
     });
-  }, []);
+  }, [localApiUrl]);
 
   const routePrefix =
     routePrefixFromProps ?? (isLocal ? "/local" : `/remote/${stage}`);
