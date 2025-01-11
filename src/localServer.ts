@@ -10,7 +10,7 @@ import "express-async-errors";
 import cors from "cors";
 import { LocalApi } from "./localApi.js";
 import { serializeCollection, serializeGlobal } from "./schemas.js";
-import { syncRoutesFactory } from "./sync.js";
+import { syncRoutesFactory } from "./sync/index.js";
 import chokidar from "chokidar";
 import { addToDotEnv } from './dotenv.js';
 import multer from "multer";
@@ -151,8 +151,8 @@ export async function startLocalServer(options?: {
     res.json(syncRoutes.currentSyncStatus());
   });
 
-  // Sync to remote endpoint
   app.post("/api/sync/up", syncRoutes.syncUp);
+  app.post("/api/sync/down", syncRoutes.syncDown);
 
   app.post("/api/sync/download-asset", async (req, res) => {
     const { key, stage, token } = req.body;

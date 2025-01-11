@@ -35,9 +35,9 @@ export const VideoInput = React.forwardRef<
         <Input
           ref={ref}
           type="text"
-          value={value?.url || ""}
+          value={value?.src || ""}
           disabled={Boolean(value?.key)}
-          onChange={(e) => onChange({ ...value, url: e.target.value })}
+          onChange={(e) => onChange({ ...value, src: e.target.value })}
           placeholder="Video URL"
         />
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -68,9 +68,9 @@ export const VideoInput = React.forwardRef<
               <TabsContent value="url" className="space-y-4">
                 <Input
                   type="url"
-                  value={value?.url || ""}
+                  value={value?.src || ""}
                   onChange={(e) =>
-                    onChange({ ...value, key: undefined, url: e.target.value })
+                    onChange({ ...value, key: undefined, src: e.target.value })
                   }
                   placeholder="Enter video URL"
                 />
@@ -98,7 +98,7 @@ export const VideoInput = React.forwardRef<
                           onChange({
                             ...value,
                             key: asset.key,
-                            url: apiClient.getAssetUrl(asset.key),
+                            src: apiClient.getAssetUrl(asset.key),
                           });
                           setIsOpen(false);
                         }}
@@ -142,7 +142,7 @@ export const VideoInput = React.forwardRef<
                         onChange({
                           ...value,
                           key: asset.key,
-                          url: apiClient.getAssetUrl(asset.key),
+                          src: apiClient.getAssetUrl(asset.key),
                         });
                         setIsOpen(false);
                       }
@@ -154,9 +154,9 @@ export const VideoInput = React.forwardRef<
           </DialogContent>
         </Dialog>
       </div>
-      {value?.url && (
+      {value?.src && (
         <div className="relative aspect-video w-full rounded-lg overflow-hidden border bg-muted">
-          <video src={value.url} controls className="w-full h-full" />
+          <video src={value.src} controls className="w-full h-full" />
         </div>
       )}
       <div className="grid grid-cols-2 gap-4">

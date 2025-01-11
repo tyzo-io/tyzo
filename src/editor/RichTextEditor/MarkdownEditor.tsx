@@ -26,14 +26,14 @@ const IMAGE_TRANSFORMER: ElementTransformer = {
     }
     const imageNode = node as ImageNode;
     const alt = imageNode.__alt || "";
-    return `![${alt}](${imageNode.__url})`;
+    return `![${alt}](${imageNode.__src})`;
   },
   regExp: IMAGE_REGEX,
   type: "element",
   replace: (textNode, _1, match) => {
     const [_, alt, src] = match;
     const imageNode = $createImageNode({
-      url: src,
+      src,
       alt: alt || undefined,
     });
     textNode.replace(imageNode);

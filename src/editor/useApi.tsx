@@ -58,11 +58,13 @@ export const ApiProvider = ({
   );
 
   useEffect(() => {
-    fetch(`${localApiUrl}/space`).then(async (res) => {
-      const { space } = await res.json();
-      setSpace(space);
-    });
-  }, [localApiUrl]);
+    if (!spaceFromProps) {
+      fetch(`${localApiUrl}/space`).then(async (res) => {
+        const { space } = await res.json();
+        setSpace(space);
+      });
+    }
+  }, [localApiUrl, spaceFromProps]);
 
   const routePrefix =
     routePrefixFromProps ?? (isLocal ? "/local" : `/remote/${stage}`);
@@ -325,7 +327,7 @@ export function useUploadAsset() {
       method: "PUT",
       body: formData,
       headers: {
-        Authorization: `Bearer ${getAuthToken()}`,
+        Authorization: `Bearer ${api.token()}`,
       },
     });
     if (!response.ok) {
@@ -341,7 +343,7 @@ export function useDeleteAsset() {
     const response = await fetch(`${api.apiUrl}/assets/${key}`, {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${getAuthToken()}`,
+        Authorization: `Bearer ${api.token()}`,
       },
     });
     if (!response.ok) {

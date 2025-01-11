@@ -68,7 +68,7 @@ export const ImageInput = React.forwardRef<
     // ].join(", ");
 
     return {
-      url: apiClient.getAssetUrl(assetKey),
+      src: apiClient.getAssetUrl(assetKey),
       srcset: srcsetParts.join(", "),
       sizes,
       ...(metadata?.width && { width: metadata.width }),
@@ -84,8 +84,8 @@ export const ImageInput = React.forwardRef<
           ref={ref}
           type="text"
           disabled={Boolean(value?.key)}
-          value={value?.url || ""}
-          onChange={(e) => onChange({ ...value, url: e.target.value })}
+          value={value?.src || ""}
+          onChange={(e) => onChange({ ...value, src: e.target.value })}
           placeholder="Image URL"
         />
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -116,9 +116,9 @@ export const ImageInput = React.forwardRef<
               <TabsContent value="url" className="space-y-4">
                 <Input
                   type="url"
-                  value={value?.url || ""}
+                  value={value?.src || ""}
                   onChange={(e) =>
-                    onChange({ ...value, key: undefined, url: e.target.value })
+                    onChange({ ...value, key: undefined, src: e.target.value })
                   }
                   placeholder="Enter image URL"
                 />
@@ -210,10 +210,10 @@ export const ImageInput = React.forwardRef<
           </DialogContent>
         </Dialog>
       </div>
-      {value?.url && (
+      {value?.src && (
         <div className="relative aspect-video w-full rounded-lg overflow-hidden border bg-muted">
           <img
-            src={value.url}
+            src={value.src}
             alt={value.alt}
             className="object-contain w-full h-full"
           />

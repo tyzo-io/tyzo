@@ -21,7 +21,7 @@ describe("convertLocalUrlsToRemote", () => {
 
       const entry = {
         image: {
-          url: "http://localhost:3456/api/assets/test-image.jpg",
+          src: "http://localhost:3456/api/assets/test-image.jpg",
           alt: "Test image",
           srcset:
             "http://localhost:3456/api/assets/test-image.jpg?w=200 200w, http://localhost:3456/api/assets/test-image.jpg?w=400 400w",
@@ -36,7 +36,7 @@ describe("convertLocalUrlsToRemote", () => {
 
       expect(result).toEqual({
         image: {
-          url: `${remoteBaseUrl}/assets/test-image.jpg`,
+          src: `${remoteBaseUrl}/assets/test-image.jpg`,
           alt: "Test image",
           srcset: `${remoteBaseUrl}/assets/test-image.jpg?w=200 200w, ${remoteBaseUrl}/assets/test-image.jpg?w=400 400w`,
         },
@@ -50,7 +50,7 @@ describe("convertLocalUrlsToRemote", () => {
 
       const entry = {
         video: {
-          url: "http://localhost:3456/api/assets/test-video.mp4",
+          src: "http://localhost:3456/api/assets/test-video.mp4",
           alt: "Test video",
         },
       };
@@ -63,7 +63,7 @@ describe("convertLocalUrlsToRemote", () => {
 
       expect(result).toEqual({
         video: {
-          url: `${remoteBaseUrl}/assets/test-video.mp4`,
+          src: `${remoteBaseUrl}/assets/test-video.mp4`,
           alt: "Test video",
         },
       });
@@ -105,11 +105,11 @@ describe("convertLocalUrlsToRemote", () => {
       const entry = {
         images: [
           {
-            url: "http://localhost:3456/api/assets/image1.jpg",
+            src: "http://localhost:3456/api/assets/image1.jpg",
             alt: "Image 1",
           },
           {
-            url: "http://localhost:3456/api/assets/image2.jpg",
+            src: "http://localhost:3456/api/assets/image2.jpg",
             alt: "Image 2",
           },
         ],
@@ -124,11 +124,11 @@ describe("convertLocalUrlsToRemote", () => {
       expect(result).toEqual({
         images: [
           {
-            url: `${remoteBaseUrl}/assets/image1.jpg`,
+            src: `${remoteBaseUrl}/assets/image1.jpg`,
             alt: "Image 1",
           },
           {
-            url: `${remoteBaseUrl}/assets/image2.jpg`,
+            src: `${remoteBaseUrl}/assets/image2.jpg`,
             alt: "Image 2",
           },
         ],
@@ -153,13 +153,13 @@ describe("convertLocalUrlsToRemote", () => {
         section: {
           header: {
             image: {
-              url: "http://localhost:3456/api/assets/header.jpg",
+              src: "http://localhost:3456/api/assets/header.jpg",
               alt: "Header image",
             },
           },
           content: {
             video: {
-              url: "http://localhost:3456/api/assets/content.mp4",
+              src: "http://localhost:3456/api/assets/content.mp4",
               alt: "Content video",
             },
           },
@@ -176,13 +176,13 @@ describe("convertLocalUrlsToRemote", () => {
         section: {
           header: {
             image: {
-              url: `${remoteBaseUrl}/assets/header.jpg`,
+              src: `${remoteBaseUrl}/assets/header.jpg`,
               alt: "Header image",
             },
           },
           content: {
             video: {
-              url: `${remoteBaseUrl}/assets/content.mp4`,
+              src: `${remoteBaseUrl}/assets/content.mp4`,
               alt: "Content video",
             },
           },
@@ -335,7 +335,7 @@ describe("convertRemoteUrlsToLocal", () => {
 
       const entry = {
         image: {
-          url: `${remoteBaseUrl}/assets/test-image.jpg`,
+          src: `${remoteBaseUrl}/assets/test-image.jpg`,
           alt: "Test image",
           srcset: `${remoteBaseUrl}/assets/test-image.jpg?w=200 200w, ${remoteBaseUrl}/assets/test-image.jpg?w=400 400w`,
         },
@@ -349,7 +349,7 @@ describe("convertRemoteUrlsToLocal", () => {
 
       expect(result).toEqual({
         image: {
-          url: "http://localhost:3456/api/assets/test-image.jpg",
+          src: "http://localhost:3456/api/assets/test-image.jpg",
           alt: "Test image",
           srcset: "http://localhost:3456/api/assets/test-image.jpg?w=200 200w, http://localhost:3456/api/assets/test-image.jpg?w=400 400w",
         },
@@ -363,7 +363,7 @@ describe("convertRemoteUrlsToLocal", () => {
 
       const entry = {
         video: {
-          url: `${remoteBaseUrl}/assets/test-video.mp4`,
+          src: `${remoteBaseUrl}/assets/test-video.mp4`,
           alt: "Test video",
         },
       };
@@ -376,7 +376,7 @@ describe("convertRemoteUrlsToLocal", () => {
 
       expect(result).toEqual({
         video: {
-          url: "http://localhost:3456/api/assets/test-video.mp4",
+          src: "http://localhost:3456/api/assets/test-video.mp4",
           alt: "Test video",
         },
       });
@@ -418,11 +418,11 @@ describe("convertRemoteUrlsToLocal", () => {
       const entry = {
         images: [
           {
-            url: `${remoteBaseUrl}/assets/image1.jpg`,
+            src: `${remoteBaseUrl}/assets/image1.jpg`,
             alt: "Image 1",
           },
           {
-            url: `${remoteBaseUrl}/assets/image2.jpg`,
+            src: `${remoteBaseUrl}/assets/image2.jpg`,
             alt: "Image 2",
           },
         ],
@@ -437,11 +437,11 @@ describe("convertRemoteUrlsToLocal", () => {
       expect(result).toEqual({
         images: [
           {
-            url: "http://localhost:3456/api/assets/image1.jpg",
+            src: "http://localhost:3456/api/assets/image1.jpg",
             alt: "Image 1",
           },
           {
-            url: "http://localhost:3456/api/assets/image2.jpg",
+            src: "http://localhost:3456/api/assets/image2.jpg",
             alt: "Image 2",
           },
         ],
@@ -461,11 +461,11 @@ describe("convertRemoteUrlsToLocal", () => {
       const entry = {
         content: {
           image: {
-            url: `${remoteBaseUrl}/assets/image.jpg`,
+            src: `${remoteBaseUrl}/assets/image.jpg`,
             alt: "Image",
           },
           video: {
-            url: `${remoteBaseUrl}/assets/video.mp4`,
+            src: `${remoteBaseUrl}/assets/video.mp4`,
             alt: "Video",
           },
         },
@@ -480,11 +480,11 @@ describe("convertRemoteUrlsToLocal", () => {
       expect(result).toEqual({
         content: {
           image: {
-            url: "http://localhost:3456/api/assets/image.jpg",
+            src: "http://localhost:3456/api/assets/image.jpg",
             alt: "Image",
           },
           video: {
-            url: "http://localhost:3456/api/assets/video.mp4",
+            src: "http://localhost:3456/api/assets/video.mp4",
             alt: "Video",
           },
         },

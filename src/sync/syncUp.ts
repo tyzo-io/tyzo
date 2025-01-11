@@ -299,5 +299,5 @@ export function syncUpFactory({
     }
   };
 
-  return { syncUp };
+  return syncUp;
 }

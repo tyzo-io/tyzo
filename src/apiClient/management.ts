@@ -174,5 +174,6 @@ export function managementApiClient(options: {
     deleteAsset,
     downloadAsset,
     apiUrl: API_URL,
+    token,
   };
 }

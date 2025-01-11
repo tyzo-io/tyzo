@@ -223,7 +223,7 @@ export const assetReference = z.object({
 
 export const imageSchema = assetReference.and(
   z.object({
-    url: z.string(),
+    src: z.string(),
     alt: z.string().optional(),
     width: z.number().optional(),
     height: z.number().optional(),
@@ -245,7 +245,7 @@ export function isImage(schema: z.ZodTypeDef | z.ZodTypeDef) {
 
 export const videoSchema = assetReference.and(
   z.object({
-    url: z.string(),
+    src: z.string(),
     alt: z.string().optional(),
     width: z.number().optional(),
     height: z.number().optional(),

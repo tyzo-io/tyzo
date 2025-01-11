@@ -304,7 +304,7 @@ function useDraggableBlockMenu(
               newNode = $createParagraphNode();
               break;
             case "image":
-              newNode = $createImageNode({ url: "", alt: "" }); // Placeholder for image node
+              newNode = $createImageNode({ src: "", alt: "" }); // Placeholder for image node
               break;
             // case "list":
             //   newNode = $createListNode("bullet").append($createListItemNode());

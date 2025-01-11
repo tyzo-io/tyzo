@@ -15,7 +15,7 @@ import { Button } from "../../ui/button";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
 export function ImageNodeElement({
-  url,
+  src,
   alt,
   width,
   height,
@@ -24,20 +24,20 @@ export function ImageNodeElement({
   loading,
   onUpdate,
 }: {
-  url: string;
+  src: string;
   alt?: string;
   width?: number;
   height?: number;
   sizes?: string;
   srcset?: string;
   loading?: "eager" | "lazy";
-  onUpdate: (opts: { url: string; alt?: string }) => void;
+  onUpdate: (opts: { src: string; alt?: string }) => void;
 }) {
   const [editor] = useLexicalComposerContext();
   return (
     <div className="relative">
       <img
-        src={url}
+        src={src}
         alt={alt}
         width={width}
         height={height}
@@ -54,13 +54,10 @@ export function ImageNodeElement({
         </PopoverTrigger>
         <PopoverContent>
           <ImageInput
-            value={{ url, alt }}
-            onChange={({ url, alt }) => {
+            value={{ src, alt }}
+            onChange={({ src, alt }) => {
               editor.update(() => {
-                onUpdate({ url, alt });
-                // const writableNode = this.getWritable();
-                // writableNode.__url = url;
-                // writableNode.__alt = alt;
+                onUpdate({ src, alt });
               });
             }}
           />
@@ -71,7 +68,7 @@ export function ImageNodeElement({
 }
 
 export interface ImagePayload {
-  url: string;
+  src: string;
   alt?: string;
   width?: number;
   height?: number;
@@ -87,7 +84,7 @@ export type SerializedImageNode = Omit<ImagePayload, "key"> & {
 };
 
 export class ImageNode extends DecoratorNode<JSX.Element> {
-  __url: string;
+  __src: string;
   __alt?: string;
   __width?: number;
   __height?: number;
@@ -101,7 +98,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 
   static clone(node: ImageNode): ImageNode {
     return new ImageNode({
-      url: node.__url,
+      src: node.__src,
       alt: node.__alt,
       width: node.__width,
       height: node.__height,
@@ -114,7 +111,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 
   constructor(payload: ImagePayload) {
     super(payload.key);
-    this.__url = payload.url;
+    this.__src = payload.src;
     this.__alt = payload.alt;
     this.__width = payload.width;
     this.__height = payload.height;
@@ -139,7 +136,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 
   static importJSON(serializedNode: SerializedImageNode): ImageNode {
     const node = $createImageNode({
-      url: serializedNode.url,
+      src: serializedNode.src,
       alt: serializedNode.alt,
       width: serializedNode.width,
       height: serializedNode.height,
@@ -154,7 +151,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     return {
       type: "image",
       version: 1,
-      url: this.__url,
+      src: this.__src,
       alt: this.__alt,
       width: this.__width,
       height: this.__height,
@@ -179,7 +176,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
             return null;
           }
           const payload: ImagePayload = {
-            url: src,
+            src: src,
             alt: alt || undefined,
             width: width ? parseInt(width, 10) : undefined,
             height: height ? parseInt(height, 10) : undefined,
@@ -198,7 +195,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 
   exportDOM(): DOMExportOutput {
     const element = document.createElement('img');
-    element.setAttribute('src', this.__url);
+    element.setAttribute('src', this.__src);
     if (this.__alt) {
       element.setAttribute('alt', this.__alt);
     }
@@ -223,54 +220,20 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   decorate(): JSX.Element {
     return (
       <ImageNodeElement
-        url={this.__url}
+        src={this.__src}
         alt={this.__alt}
         width={this.__width}
         height={this.__height}
         sizes={this.__sizes}
         srcset={this.__srcset}
         loading={this.__loading}
-        onUpdate={({ url, alt }) => {
+        onUpdate={({ src, alt }) => {
           const writableNode = this.getWritable();
-          writableNode.__url = url;
+          writableNode.__src = src;
           writableNode.__alt = alt;
         }}
       />
     );
-    // const [editor] = useLexicalComposerContext();
-    // return (
-    //   <div className="relative">
-    //     <img
-    //       src={this.__url}
-    //       alt={this.__alt}
-    //       width={this.__width}
-    //       height={this.__height}
-    //       sizes={this.__sizes}
-    //       srcSet={this.__srcset}
-    //       loading={this.__loading}
-    //       className="max-w-full h-auto"
-    //     />
-    //     <Popover>
-    //       <PopoverTrigger asChild>
-    //         <Button variant="secondary" className="absolute top-0 right-0">
-    //           ✎
-    //         </Button>
-    //       </PopoverTrigger>
-    //       <PopoverContent>
-    //         <ImageInput
-    //           value={{ url: this.__url, alt: this.__alt }}
-    //           onChange={({ url, alt }) => {
-    //             editor.update(() => {
-    //               const writableNode = this.getWritable();
-    //               writableNode.__url = url;
-    //               writableNode.__alt = alt;
-    //             });
-    //           }}
-    //         />
-    //       </PopoverContent>
-    //     </Popover>
-    //   </div>
-    // );
   }
 }
 

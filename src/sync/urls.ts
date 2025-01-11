@@ -39,16 +39,25 @@ export function convertLocalUrlsToRemote<T>({
 
     // Handle asset types
     if (isImageJsonSchema(schema)) {
-      if (typeof value === "object" && value.url) {
+      if (typeof value === "object" && value.src) {
         return {
           ...value,
-          url: convertUrl(value.url),
+          src: convertUrl(value.src),
           srcset: value.srcset ? convertUrl(value.srcset) : value.srcset,
         };
       }
       return value;
     }
-    if (isVideoJsonSchema(schema) || isAssetJsonSchema(schema)) {
+    if (isVideoJsonSchema(schema)) {
+      if (typeof value === "object" && value.src) {
+        return {
+          ...value,
+          src: convertUrl(value.src),
+        };
+      }
+      return value;
+    }
+    if (isAssetJsonSchema(schema)) {
       if (typeof value === "object" && value.url) {
         return {
           ...value,
@@ -120,16 +129,25 @@ export function convertRemoteUrlsToLocal<T>({
 
     // Handle asset types
     if (isImageJsonSchema(schema)) {
-      if (typeof value === "object" && value.url) {
+      if (typeof value === "object" && value.src) {
         return {
           ...value,
-          url: convertUrl(value.url),
+          src: convertUrl(value.src),
           srcset: value.srcset ? convertUrl(value.srcset) : value.srcset,
         };
       }
       return value;
     }
-    if (isVideoJsonSchema(schema) || isAssetJsonSchema(schema)) {
+    if (isVideoJsonSchema(schema)) {
+      if (typeof value === "object" && value.src) {
+        return {
+          ...value,
+          src: convertUrl(value.src),
+        };
+      }
+      return value;
+    }
+    if (isAssetJsonSchema(schema)) {
       if (typeof value === "object" && value.url) {
         return {
           ...value,
