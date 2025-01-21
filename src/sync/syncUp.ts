@@ -6,14 +6,12 @@ import {
   serializeGlobal,
 } from "../schemas.js";
 import { Request, Response } from "express";
-import { managementApiClient } from "../apiClient/index.js";
 import { LocalApi } from "../localApi.js";
-import { JSONSchemaType } from "ajv";
 import { z } from "zod";
-import { SyncStatus } from "./types.js";
+import { type SyncStatus } from "./types.js";
 import { convertLocalUrlsToRemote } from "./urls.js";
 import { getRemoteApiClient, getRemoteConfig, withRetry } from "./util.js";
-export { SyncStatus } from "./types.js";
+export { type SyncStatus } from "./types.js";
 
 export function syncUpFactory({
   api,

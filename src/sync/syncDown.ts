@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { LocalApi } from "../localApi.js";
-import { SyncStatus } from "./types.js";
+import { type SyncStatus } from "./types.js";
 import { convertRemoteUrlsToLocal } from "./urls.js";
 import { getRemoteApiClient, getRemoteConfig, withRetry } from "./util.js";
 import { JSONSchemaType } from "ajv";

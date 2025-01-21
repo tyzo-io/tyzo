@@ -3,7 +3,7 @@ import { SyncStatus } from "./types.js";
 import { getRemoteApiClient, getRemoteConfig } from "./util.js";
 import { syncUpFactory } from "./syncUp.js";
 import { syncDownFactory } from "./syncDown.js";
-export { SyncStatus } from "./types.js";
+export { type SyncStatus } from "./types.js";
 
 let currentSyncStatus: SyncStatus = {
   inProgress: false,

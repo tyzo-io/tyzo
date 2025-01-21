@@ -1,5 +1,5 @@
 export { z } from "zod";
-import { z } from "zod";
+import { z, ZodObject } from "zod";
 import type {
   Collection,
   CollectionEntry,
@@ -36,6 +36,30 @@ export function defineGlobal<
 >(global: { name: Name; schema: T }): Global<T, Name> {
   return global;
 }
+
+function convertDates<T>(data: T, schema: z.ZodType<any>): T {
+  if (!data || typeof data !== "object") return data;
+
+  const def = schema._def;
+  if ("typeName" in def && def.typeName === "ZodObject") {
+    const shape = (def as unknown as ZodObject<any>).shape();
+    const result = { ...data };
+
+    for (const [key, value] of Object.entries(result)) {
+      const fieldSchema = shape[key];
+      if (fieldSchema) {
+        if (fieldSchema._def.typeName === "ZodDate") {
+          result[key as keyof T] = value ? new Date(value) : value;
+        } else {
+          result[key as keyof T] = convertDates(value, fieldSchema);
+        }
+      }
+    }
+    return result;
+  }
+
+  return data;
+};
 
 export function tyzoApi(options?: {
   space: string;
@@ -76,7 +100,15 @@ export function tyzoApi(options?: {
       ...options,
       include: options?.include ? Object.keys(options.include) : undefined,
     });
-    return entries as {
+
+    const convertedEntries = entries.entries.map((entry) =>
+      convertDates(entry, collection.schema)
+    );
+
+    return {
+      ...entries,
+      entries: convertedEntries,
+    } as {
       entries: (CollectionEntry<C> & {
         [key in keyof I]: {
           entry: C extends Collection<infer T, infer U>
@@ -109,6 +141,8 @@ export function tyzoApi(options?: {
     }
 
     const entry = await client.getEntry(collection.name, id, { include });
+    const convertedEntry = convertDates(entry, collection.schema);
+    entry.entry = convertedEntry;
     return entry as {
       entry: CollectionEntry<C> & {
         [key in keyof I]: {
@@ -134,6 +168,8 @@ export function tyzoApi(options?: {
   ) {
     const include = options?.include ? Object.keys(options.include) : undefined;
     const globalData = await client.getGlobalValue(global.name, { include });
+    const convertedGlobal = convertDates(globalData.global, global.schema);
+    globalData.global = convertedGlobal;
     return globalData as {
       global: GlobalValue<G> & {
         [key in keyof I]: {

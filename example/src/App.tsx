@@ -92,8 +92,11 @@ export function App() {
             <h2>{post.title}</h2>
             <p>{post.content}</p>
             <p>By {post.author.entry.name}</p>
+            <p>
+              On {post.date.toLocaleDateString()}
+            </p>
             <img
-              src={"key" in post.image ? post.image.key : post.image.url}
+              src={"key" in post.image ? post.image.key : post.image.src}
               alt={post.image.alt}
               width={post.image.width}
               height={post.image.height}

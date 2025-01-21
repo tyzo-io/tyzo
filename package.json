@@ -12,18 +12,18 @@
   ],
   "exports": {
     ".": {
-      "import": "./dist/esm/content.js",
       "types": "./dist/content.d.ts",
-      "require": "./dist/cjs/content.js"
+      "require": "./dist/cjs/content.js",
+      "import": "./dist/esm/content.js"
     },
     "./components": {
-      "import": "./dist/components/tyzo.mjs",
-      "types": "./dist/components/components.d.ts"
+      "types": "./dist/components/components.d.ts",
+      "import": "./dist/components/tyzo.mjs"
     },
     "./react": {
-      "import": "./dist/esm/react.js",
       "types": "./dist/react.d.ts",
-      "require": "./dist/cjs/react.js"
+      "require": "./dist/cjs/react.js",
+      "import": "./dist/esm/react.js"
     },
     "./components/tyzo.css": "./dist/components/tyzo.css"
   },
