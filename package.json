@@ -1,6 +1,6 @@
 {
   "name": "tyzo",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "dist/cjs/cli.js",
   "bin": "dist/cjs/cli.js",

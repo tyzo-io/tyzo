@@ -143,7 +143,7 @@ export function tyzoApi(options?: {
     const entry = await client.getEntry(collection.name, id, { include });
     const convertedEntry = entry.entry
       ? convertDates(entry.entry, collection.schema)
-      : undefined;
+      : entry.entry;
     entry.entry = convertedEntry;
     return entry as {
       entry: CollectionEntry<C> & {
