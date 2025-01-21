@@ -33,9 +33,17 @@
     "test": "vitest",
     "preview": "dist/cli.js dev --config example/src/config.ts -d example/content"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "tyzo",
+    "cms"
+  ],
+  "author": "Denis Stadniczuk, tyzo",
+  "license": "MIT",
+  "homepage": "https://www.tyzo.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tyzo-io/tyzo-cli"
+  },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
     "@lexical/code": "^0.21.0",
