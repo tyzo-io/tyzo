@@ -69,7 +69,7 @@ function FormFieldHeader({
 }) {
   return (
     <div className="flex flex-row items-center gap-2 justify-between">
-      <FormLabel>{children}</FormLabel>
+      <FormLabel className="text-lg font-semibold">{children}</FormLabel>
       <div className="flex flex-row items-center gap-2">
         {/* {form.getFieldState(fieldKey).isDirty && (
           <ResetButton
@@ -93,6 +93,7 @@ const FieldEdit = ({
   form,
   fieldSchema,
   allCollections,
+  title: titleString,
 }: {
   fieldKey: string;
   form: UseFormReturn<any, any, undefined>;
@@ -101,12 +102,15 @@ const FieldEdit = ({
     string,
     { schema: JSONSchemaType<any>; name: string }
   >;
+  title?: string
 }) => {
   const parts = fieldKey.split(".");
   const lastPart = parts[parts.length - 1];
   const title = (
     <div className="flex flex-row items-center gap-2">
-      <span>{capitalizeFirstLetter(lastPart)}</span>
+      <span className="text-lg font-semibold">
+        {titleString ?? capitalizeFirstLetter(lastPart)}
+      </span>
     </div>
   );
 
@@ -121,7 +125,7 @@ const FieldEdit = ({
         key={fieldKey}
         {...commonProps}
         render={({ field }) => (
-          <FormItem>
+          <FormItem className="pb-2 space-y-2">
             <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={null}>
               {title}
             </FormFieldHeader>
@@ -144,7 +148,7 @@ const FieldEdit = ({
         key={fieldKey}
         {...commonProps}
         render={({ field }) => (
-          <FormItem>
+          <FormItem className="pb-2 space-y-2">
             <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={null}>
               {title}
             </FormFieldHeader>
@@ -167,7 +171,7 @@ const FieldEdit = ({
         key={fieldKey}
         {...commonProps}
         render={({ field }) => (
-          <FormItem>
+          <FormItem className="pb-2 space-y-2">
             <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={null}>
               {title}
             </FormFieldHeader>
@@ -190,8 +194,8 @@ const FieldEdit = ({
         key={fieldKey}
         {...commonProps}
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>{title}</FormLabel>
+          <FormItem className="pb-2 space-y-2">
+            <FormLabel className="text-lg font-semibold">{title}</FormLabel>
             <FormControl>
               <MarkdownEditor
                 value={field.value?.markdown}
@@ -211,8 +215,8 @@ const FieldEdit = ({
         key={fieldKey}
         {...commonProps}
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>{title}</FormLabel>
+          <FormItem className="pb-2 space-y-2">
+            <FormLabel className="text-lg font-semibold">{title}</FormLabel>
             <FormControl>
               <RichTextEditor
                 value={field.value?.richText}
@@ -237,7 +241,7 @@ const FieldEdit = ({
           key={fieldKey}
           {...commonProps}
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="pb-2 space-y-2">
               <FormFieldHeader
                 form={form}
                 fieldKey={fieldKey}
@@ -271,7 +275,7 @@ const FieldEdit = ({
           key={fieldKey}
           {...commonProps}
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="pb-2 space-y-2">
               <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={""}>
                 {title}
               </FormFieldHeader>
@@ -306,7 +310,7 @@ const FieldEdit = ({
           key={fieldKey}
           {...commonProps}
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="pb-2 space-y-2">
               <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={""}>
                 {title}
               </FormFieldHeader>
@@ -326,7 +330,7 @@ const FieldEdit = ({
           key={fieldKey}
           {...commonProps}
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="pb-2 space-y-2">
               <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={""}>
                 {title}
               </FormFieldHeader>
@@ -346,8 +350,8 @@ const FieldEdit = ({
           key={fieldKey}
           {...commonProps}
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>{title}</FormLabel>
+            <FormItem className="pb-2 space-y-2">
+              <FormLabel className="text-lh font-semibold">{title}</FormLabel>
               <FormControl>
                 <div className="flex gap-2">
                   <Input type="text" {...field} readOnly className="bg-muted" />
@@ -373,8 +377,8 @@ const FieldEdit = ({
           key={fieldKey}
           {...commonProps}
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>{title}</FormLabel>
+            <FormItem className="pb-2 space-y-2">
+              <FormLabel className="text-lh font-semibold">{title}</FormLabel>
               <FormControl>
                 <Input
                   type="date"
@@ -404,8 +408,8 @@ const FieldEdit = ({
           key={fieldKey}
           {...commonProps}
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>{title}</FormLabel>
+            <FormItem className="pb-2 space-y-2">
+              <FormLabel className="text-lh font-semibold">{title}</FormLabel>
               <FormControl>
                 <DurationInput
                   value={field.value || ""}
@@ -425,7 +429,7 @@ const FieldEdit = ({
           key={fieldKey}
           {...commonProps}
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="pb-2 space-y-2">
               <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={""}>
                 {title}
               </FormFieldHeader>
@@ -444,7 +448,7 @@ const FieldEdit = ({
         key={fieldKey}
         {...commonProps}
         render={({ field }) => (
-          <FormItem>
+          <FormItem className="pb-2 space-y-2">
             <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={""}>
               {title}
             </FormFieldHeader>
@@ -472,8 +476,8 @@ const FieldEdit = ({
         key={fieldKey}
         {...commonProps}
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>{title}</FormLabel>
+          <FormItem className="pb-2 space-y-2">
+            <FormLabel className="text-lh font-semibold">{title}</FormLabel>
             <FormControl>
               <Input
                 type="number"
@@ -494,7 +498,7 @@ const FieldEdit = ({
         key={fieldKey}
         {...commonProps}
         render={({ field }) => (
-          <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+          <FormItem className="flex flex-row items-center space-x-3 space-y-0 pb-2">
             <FormControl>
               <Checkbox
                 checked={field.value}
@@ -522,59 +526,70 @@ const FieldEdit = ({
         key={fieldKey}
         {...commonProps}
         render={({ field }) => (
-          <FormItem>
+          <FormItem className="pb-2 space-y-2">
             <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={null}>
               {title}
             </FormFieldHeader>
             <FormControl>
-              <ArrayInput
-                value={form.watch(fieldKey) || []}
-                onChange={field.onChange}
-                minItems={fieldSchema.minItems}
-                maxItems={fieldSchema.maxItems}
-                defaultValue={
-                  fieldSchema.items.type === "string"
-                    ? ""
-                    : fieldSchema.items.type === "number"
-                    ? 0
-                    : fieldSchema.items.type === "boolean"
-                    ? false
-                    : fieldSchema.items.type === "object"
-                    ? {}
-                    : fieldSchema.items.type === "array"
-                    ? []
-                    : ""
-                }
-                renderItem={(value, onChange, index) =>
-                  isPrimitiveArray ? (
-                    <Input
-                      type={
-                        fieldSchema.items.type === "number" ? "number" : "text"
-                      }
-                      value={value || ""}
-                      onChange={(e) => {
-                        let newValue: string | number | boolean | undefined =
-                          e.target.value;
-                        if (fieldSchema.items.type === "number") {
-                          newValue = e.target.value
-                            ? Number(e.target.value)
-                            : undefined;
-                        } else if (fieldSchema.items.type === "boolean") {
-                          newValue = e.target.value === "true";
-                        }
-                        onChange(newValue);
-                      }}
-                    />
-                  ) : (
-                    <FieldEdit
-                      fieldKey={`${fieldKey}.${index}`}
-                      form={form}
-                      fieldSchema={fieldSchema.items}
-                      allCollections={allCollections}
-                    />
-                  )
-                }
-              />
+              <div className="pl-4">
+                <ArrayInput
+                  value={form.watch(fieldKey) || []}
+                  onChange={field.onChange}
+                  minItems={fieldSchema.minItems}
+                  maxItems={fieldSchema.maxItems}
+                  defaultValue={
+                    fieldSchema.items.type === "string"
+                      ? ""
+                      : fieldSchema.items.type === "number"
+                      ? 0
+                      : fieldSchema.items.type === "boolean"
+                      ? false
+                      : fieldSchema.items.type === "object"
+                      ? {}
+                      : fieldSchema.items.type === "array"
+                      ? []
+                      : ""
+                  }
+                  renderItem={(value, onChange, index) =>
+                    isPrimitiveArray ? (
+                      <div className="flex flex-row items-center gap-4">
+                        {index + 1}
+                        <Input
+                          type={
+                            fieldSchema.items.type === "number"
+                              ? "number"
+                              : "text"
+                          }
+                          value={value || ""}
+                          onChange={(e) => {
+                            let newValue:
+                              | string
+                              | number
+                              | boolean
+                              | undefined = e.target.value;
+                            if (fieldSchema.items.type === "number") {
+                              newValue = e.target.value
+                                ? Number(e.target.value)
+                                : undefined;
+                            } else if (fieldSchema.items.type === "boolean") {
+                              newValue = e.target.value === "true";
+                            }
+                            onChange(newValue);
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <FieldEdit
+                        title={`Element ${index + 1}`}
+                        fieldKey={`${fieldKey}.${index}`}
+                        form={form}
+                        fieldSchema={fieldSchema.items}
+                        allCollections={allCollections}
+                      />
+                    )
+                  }
+                />
+              </div>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -589,7 +604,7 @@ const FieldEdit = ({
         <FormFieldHeader form={form} fieldKey={fieldKey} resetValue={null}>
           {title}
         </FormFieldHeader>
-        <div className="grid gap-4">
+        <div className="grid gapb-2">
           {Object.entries(fieldSchema.properties || {}).map(
             ([propertyKey, schema]) => (
               <FieldEdit
@@ -649,19 +664,24 @@ const AutoForm: React.FC<AutoFormProps> = ({
         })}
         className="space-y-6"
       >
-        {Object.entries(schema.properties || {}).map(([key, fieldSchema]) => (
-          <FieldEdit
-            key={key}
-            fieldKey={key}
-            form={form}
-            fieldSchema={fieldSchema as JSONSchemaType<any>}
-            allCollections={allCollections}
-          />
-        ))}
+        <div className="space-y-2">
+          {Object.entries(schema.properties || {}).map(([key, fieldSchema]) => (
+            <div key={key} className="pb-8 last:pb-0">
+              <FieldEdit
+                fieldKey={key}
+                form={form}
+                fieldSchema={fieldSchema as JSONSchemaType<any>}
+                allCollections={allCollections}
+              />
+            </div>
+          ))}
+        </div>
         {withSubmit && (
-          <Button type="submit" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? "Saving..." : "Save"}
-          </Button>
+          <div className="pt-4">
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? "Saving..." : "Save"}
+            </Button>
+          </div>
         )}
         {children}
       </form>
