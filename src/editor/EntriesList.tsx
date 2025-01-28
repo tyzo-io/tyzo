@@ -186,11 +186,34 @@ export const EntriesList = ({ linkPrefix }: { linkPrefix?: string }) => {
       if (value.length === 0)
         return <span className="text-muted-foreground">Empty array</span>;
 
+      const formatItem = (item: any): string => {
+        if (item === null || item === undefined) return '—';
+        if (typeof item !== 'object') return String(item);
+        
+        // Try to find common readable properties
+        const nameProps = ['name', 'title', 'label', 'id'];
+        for (const prop of nameProps) {
+          if (item[prop]) return String(item[prop]);
+        }
+        
+        // If we have 2-3 simple key-value pairs, show them
+        const entries = Object.entries(item);
+        if (entries.length <= 3 && entries.every(([_, v]) => typeof v !== 'object')) {
+          return entries.map(([k, v]) => `${k}: ${v}`).join(', ');
+        }
+        
+        // Fallback for complex objects
+        return `Item with ${Object.keys(item).length} properties`;
+      };
+
       return (
         <div className="flex flex-wrap gap-1.5 max-w-md">
-          {value.map((item, index) => (
-            <Badge key={index}>{String(item)}</Badge>
+          {value.slice(0, 5).map((item, index) => (
+            <Badge key={index}>{formatItem(item)}</Badge>
           ))}
+          {value.length > 5 && (
+            <Badge variant="secondary">+{value.length - 5} more</Badge>
+          )}
         </div>
       );
     }
