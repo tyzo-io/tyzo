@@ -111,15 +111,31 @@ export function managementApiClient(options: {
   // Assets
   async function uploadAsset(
     file: Buffer,
-    options: { filename: string; contentType?: string }
+    options: {
+      filename: string;
+      contentType?: string;
+      width?: number;
+      height?: number;
+    }
   ): Promise<{ success: boolean }> {
+    const formData = new FormData();
+    const blob = new Blob([file], {
+      type: options.contentType || "application/octet-stream",
+    });
+    formData.append("file", blob, options.filename);
+    if (options.contentType) {
+      formData.append("contentType", options.contentType);
+    }
+    if (options.width && options.height) {
+      formData.append("width", options.width.toString());
+      formData.append("height", options.height.toString());
+    }
     const res = await fetch(`${API_URL}/assets/${options.filename}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token()}`,
-        "Content-Type": options.contentType ?? "application/octet-stream",
       },
-      body: file,
+      body: formData,
     });
     return res.json();
   }
@@ -159,7 +175,7 @@ export function managementApiClient(options: {
 
   async function downloadAsset(key: string) {
     const res = await fetch(`${API_URL}/assets/${key}`);
-    return res
+    return res;
   }
 
   return {

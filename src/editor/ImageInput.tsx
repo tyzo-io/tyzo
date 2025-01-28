@@ -42,7 +42,7 @@ export const ImageInput = React.forwardRef<
   ) => {
     // Default widths for responsive images
     const widths = [320, 400, 480, 640, 750, 828, 1080, 1200, 1920, 2048];
-    const formats = ["webp", "jpeg"] as const;
+    const formats = ["webp", "avif", "jpeg"] as const;
 
     // Generate srcset for each format and width
     const srcsetParts = formats.flatMap((format) =>

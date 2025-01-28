@@ -403,49 +403,59 @@ export class LocalApi {
       withoutEnlargement?: boolean | undefined;
       withoutReduction?: boolean | undefined;
     }
-  ): Promise<{ data: Buffer; contentType?: string } | null> {
+  ): Promise<{ data: Buffer; contentType?: string; width?: number; height?: number } | null> {
     try {
       const filePath = this.getAssetPath(filename);
       let data = await fs.readFile(filePath);
       const stats = await fs.stat(filePath);
       const contentType = this.getContentType(filename);
+      let width: number | undefined;
+      let height: number | undefined;
 
-      if (
-        contentType?.startsWith("image/") &&
-        (options?.width ||
-          options?.height ||
-          options?.format ||
-          options?.quality)
-      ) {
+      if (contentType?.startsWith("image/")) {
         try {
           const sharp = require("sharp");
           let transform = sharp(data) as Sharp;
+          const metadata = await transform.metadata();
+          width = metadata.width;
+          height = metadata.height;
 
-          if (options?.width || options?.height) {
-            transform = transform.resize(options?.width, options?.height, {
-              fit: options.fit,
-              position: options.position,
-              background: options.background,
-              withoutEnlargement: options.withoutEnlargement,
-              withoutReduction: options.withoutReduction,
-            });
+          if (
+            options?.width ||
+            options?.height ||
+            options?.format ||
+            options?.quality
+          ) {
+            if (options?.width || options?.height) {
+              transform = transform.resize(options?.width, options?.height, {
+                fit: options.fit,
+                position: options.position,
+                background: options.background,
+                withoutEnlargement: options.withoutEnlargement,
+                withoutReduction: options.withoutReduction,
+              });
+            }
+
+            if (options.format) {
+              transform = transform.toFormat(options.format, {
+                quality: options.quality,
+              });
+            }
+
+            data = await transform.toBuffer();
+            // Get the new dimensions after transformation
+            const newMetadata = await sharp(data).metadata();
+            width = newMetadata.width;
+            height = newMetadata.height;
           }
-
-          if (options.format) {
-            transform = transform.toFormat(options.format, {
-              quality: options.quality,
-            });
-          }
-
-          data = await transform.toBuffer();
         } catch {
           console.warn(
-            "Could not transform image. To use transformations locally, install sharp. Using the original file instead."
+            "Could not transform image or get metadata. To use transformations locally, install sharp. Using the original file instead."
           );
         }
       }
 
-      return { data, contentType };
+      return { data, contentType, width, height };
     } catch {
       return null;
     }
@@ -529,6 +539,7 @@ export class LocalApi {
       ".png": "image/png",
       ".gif": "image/gif",
       ".webp": "image/webp",
+      ".avif": "image/avif",
       ".svg": "image/svg+xml",
       // Videos
       ".mp4": "video/mp4",

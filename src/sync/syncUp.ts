@@ -146,6 +146,8 @@ export function syncUpFactory({
             await remoteApi.uploadAsset(file.data, {
               filename: asset.name,
               contentType: file.contentType,
+              width: file.width,
+              height: file.height,
             });
           }
           current++;
