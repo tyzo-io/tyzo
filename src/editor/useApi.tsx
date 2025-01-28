@@ -333,7 +333,16 @@ export function useUploadAsset() {
     if (!response.ok) {
       throw new Error("Failed to upload file");
     }
-    return response.json();
+    const result = await response.json();
+    return result as {
+      success: boolean;
+      key: string;
+      metadata?: {
+        contentType?: string;
+        width?: number;
+        height?: number;
+      };
+    };
   });
 }
 

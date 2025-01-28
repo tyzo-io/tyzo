@@ -370,11 +370,15 @@ export async function startLocalServer(options?: {
     const height = req.body.height;
     const contentType = req.body.contentType ?? file?.mimetype;
 
-    await api.uploadAsset(file.buffer, {
+    const asset = await api.uploadAsset(file.buffer, {
       filename: req.params.filename,
       contentType,
     });
-    res.status(201).json({ success: true });
+    res.status(201).json({
+      success: true,
+      key: asset.filename ?? req.params.filename,
+      metadata: { contentType, width, height },
+    });
   });
 
   app.delete("/api/assets/:filename", async (req, res) => {
