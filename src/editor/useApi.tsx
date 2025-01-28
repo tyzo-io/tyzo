@@ -294,11 +294,13 @@ export function useAssets(options?: {
   search?: string;
   limit?: number;
   startAfter?: string;
+  enabled?: boolean;
 }) {
   const api = useApiClient();
   return useApi(
     () => api.listAssets(options),
-    [options?.search, options?.limit, options?.startAfter]
+    [options?.search, options?.limit, options?.startAfter],
+    { enabled: options?.enabled }
   );
 }
 

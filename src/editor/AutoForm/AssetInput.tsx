@@ -25,7 +25,10 @@ export const AssetInput = React.forwardRef<
   const [isOpen, setIsOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const debouncedSearch = useDebouncedValue(search, 300);
-  const { data: assets } = useAssets({ search: debouncedSearch });
+  const { data: assets } = useAssets({
+    search: debouncedSearch,
+    enabled: isOpen
+  });
   const uploadAsset = useUploadAsset();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
