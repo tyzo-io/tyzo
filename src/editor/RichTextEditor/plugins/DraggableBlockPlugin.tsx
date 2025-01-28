@@ -12,12 +12,16 @@ import {
   DROP_COMMAND,
   LexicalEditor,
 } from "lexical";
+import { $createHeadingNode, HeadingTagType } from "@lexical/rich-text";
+import { $createQuoteNode } from "@lexical/rich-text";
+import { $createListNode, $createListItemNode } from "@lexical/list";
 import * as React from "react";
 import {
   DragEvent as ReactDragEvent,
   useEffect,
   useRef,
   useState,
+  useCallback,
 } from "react";
 import { createPortal } from "react-dom";
 import { GripVerticalIcon, PlusIcon } from "lucide-react";
@@ -306,9 +310,26 @@ function useDraggableBlockMenu(
             case "image":
               newNode = $createImageNode({ src: "", alt: "" }); // Placeholder for image node
               break;
-            // case "list":
-            //   newNode = $createListNode("bullet").append($createListItemNode());
-            //   break;
+            case "heading-1":
+              newNode = $createHeadingNode("h1");
+              break;
+            case "heading-2":
+              newNode = $createHeadingNode("h2");
+              break;
+            case "heading-3":
+              newNode = $createHeadingNode("h3");
+              break;
+            case "quote":
+              newNode = $createQuoteNode();
+              break;
+            case "bullet-list":
+              newNode = $createListNode("bullet");
+              newNode.append($createListItemNode());
+              break;
+            case "numbered-list":
+              newNode = $createListNode("number");
+              newNode.append($createListItemNode());
+              break;
             default:
               return;
           }
@@ -316,7 +337,20 @@ function useDraggableBlockMenu(
         }
       }
     });
+    setIsMenuOpen(false);
   };
+
+  const handleRemoveNode = useCallback(() => {
+    if (lastActiveElement) {
+      editor.update(() => {
+        const node = $getNearestNodeFromDOMNode(lastActiveElement);
+        if (node) {
+          node.remove();
+        }
+      });
+      setIsMenuOpen(false);
+    }
+  }, [lastActiveElement, editor]);
 
   return createPortal(
     <>
@@ -345,29 +379,15 @@ function useDraggableBlockMenu(
                 <PlusIcon className="pointer-events-none h-5" />
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                {/* <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator /> */}
-                <DropdownMenuItem>Duplicate</DropdownMenuItem>
-                <DropdownMenuItem>Remove</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddNode("paragraph")}>Add Paragraph</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddNode("heading-1")}>Add Heading 1</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddNode("heading-2")}>Add Heading 2</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddNode("heading-3")}>Add Heading 3</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddNode("quote")}>Add Quote</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddNode("bullet-list")}>Add Bullet List</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddNode("numbered-list")}>Add Numbered List</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleAddNode("paragraph")}>
-                  Paragraph
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAddNode("heading")}>
-                  Heading
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAddNode("quote")}>
-                  Quote
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAddNode("image")}>
-                  Image
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAddNode("list")}>
-                  List
-                </DropdownMenuItem>
-
-                {/* <DropdownMenuItem>Team</DropdownMenuItem>
-                <DropdownMenuItem>Subscription</DropdownMenuItem> */}
+                <DropdownMenuItem onClick={handleRemoveNode}>Remove</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
