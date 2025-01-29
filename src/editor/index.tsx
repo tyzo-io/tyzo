@@ -37,6 +37,10 @@ function EnriesListWithPrefix() {
   return <EntriesList linkPrefix={routePrefix} />;
 }
 
+function RemoteAssetsList() {
+  return <AssetsList useSyncForDownload />;
+}
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -88,7 +92,7 @@ const router = createBrowserRouter([
           },
           {
             path: "/remote/:stage/assets",
-            Component: AssetsList,
+            Component: RemoteAssetsList,
           },
         ],
       },

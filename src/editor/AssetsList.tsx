@@ -111,7 +111,11 @@ function formatFileSize(bytes: number) {
   return `${size.toFixed(1)} ${units[unitIndex]}`;
 }
 
-export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
+export const AssetsList = ({
+  useSyncForDownload,
+}: {
+  useSyncForDownload?: boolean;
+}) => {
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -155,7 +159,30 @@ export const AssetsList = ({ linkPrefix }: { linkPrefix?: string }) => {
   const handleDownload = async (key: string) => {
     try {
       setDownloadingAsset(key);
-      await downloadAsset(stage!, getAuthToken()!, key);
+      if (useSyncForDownload) {
+        await downloadAsset(stage!, getAuthToken()!, key);
+      } else {
+        const asset = assets?.find((a) => a.key === key);
+        if (!asset) {
+          throw new Error("Asset not found");
+        }
+
+        // Get the download URL from the API client
+        const url = apiClient.getAssetUrl(key);
+
+        // Create a temporary anchor element to trigger the download
+        const link = document.createElement("a");
+        link.href = url;
+
+        // Extract filename from the key (last part after the last slash)
+        const filename = key.split("/").pop() || "download";
+        link.download = filename;
+
+        // Append to body, click, and remove
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
     } catch (error) {
       console.error("Failed to download asset:", error);
     } finally {
