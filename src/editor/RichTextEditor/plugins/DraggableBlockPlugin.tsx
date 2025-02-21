@@ -379,15 +379,36 @@ function useDraggableBlockMenu(
                 <PlusIcon className="pointer-events-none h-5" />
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => handleAddNode("paragraph")}>Add Paragraph</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAddNode("heading-1")}>Add Heading 1</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAddNode("heading-2")}>Add Heading 2</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAddNode("heading-3")}>Add Heading 3</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAddNode("quote")}>Add Quote</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAddNode("bullet-list")}>Add Bullet List</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAddNode("numbered-list")}>Add Numbered List</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddNode("paragraph")}>
+                  Add Paragraph
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddNode("heading-1")}>
+                  Add Heading 1
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddNode("heading-2")}>
+                  Add Heading 2
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddNode("heading-3")}>
+                  Add Heading 3
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddNode("image")}>
+                  Image
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddNode("quote")}>
+                  Add Quote
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddNode("bullet-list")}>
+                  Add Bullet List
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => handleAddNode("numbered-list")}
+                >
+                  Add Numbered List
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleRemoveNode}>Remove</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleRemoveNode}>
+                  Remove
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
