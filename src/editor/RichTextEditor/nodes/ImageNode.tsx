@@ -13,6 +13,7 @@ import { ImageInput } from "../../ImageInput";
 import { Popover, PopoverTrigger, PopoverContent } from "../../ui/popover";
 import { Button } from "../../ui/button";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { Edit2 } from "lucide-react";
 
 export function ImageNodeElement({
   src,
@@ -31,7 +32,15 @@ export function ImageNodeElement({
   sizes?: string;
   srcset?: string;
   loading?: "eager" | "lazy";
-  onUpdate: (opts: { src: string; alt?: string }) => void;
+  onUpdate: (opts: {
+    src: string;
+    alt?: string;
+    width?: number;
+    height?: number;
+    sizes?: string;
+    srcset?: string;
+    loading?: "eager" | "lazy";
+  }) => void;
 }) {
   const [editor] = useLexicalComposerContext();
   return (
@@ -49,15 +58,15 @@ export function ImageNodeElement({
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="secondary" className="absolute top-0 right-0">
-            ✎
+            <Edit2 className="h-4 w-4" />
           </Button>
         </PopoverTrigger>
         <PopoverContent>
           <ImageInput
-            value={{ src, alt }}
-            onChange={({ src, alt }) => {
+            value={{ src, alt, width, height, sizes, srcset, loading }}
+            onChange={(image) => {
               editor.update(() => {
-                onUpdate({ src, alt });
+                onUpdate(image);
               });
             }}
           />
@@ -227,10 +236,15 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
         sizes={this.__sizes}
         srcset={this.__srcset}
         loading={this.__loading}
-        onUpdate={({ src, alt }) => {
+        onUpdate={({ src, alt, width, height, sizes, srcset, loading }) => {
           const writableNode = this.getWritable();
           writableNode.__src = src;
           writableNode.__alt = alt;
+          writableNode.__width = width;
+          writableNode.__height = height;
+          writableNode.__sizes = sizes;
+          writableNode.__srcset = srcset;
+          writableNode.__loading = loading;
         }}
       />
     );
