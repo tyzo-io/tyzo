@@ -26,8 +26,9 @@ export const ImageInput = React.forwardRef<
   {
     value: ImageType | undefined;
     onChange: (value: ImageType) => void;
+    onClose?: () => void;
   }
->(({ value, onChange }, ref) => {
+>(({ value, onChange, onClose }, ref) => {
   const apiClient = useApiClient();
   const [isOpen, setIsOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
@@ -91,7 +92,15 @@ export const ImageInput = React.forwardRef<
           onChange={(e) => onChange({ ...value, src: e.target.value })}
           placeholder="Image URL"
         />
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <Dialog
+          open={isOpen}
+          onOpenChange={(isOpen) => {
+            setIsOpen(isOpen);
+            if (!isOpen) {
+              onClose?.();
+            }
+          }}
+        >
           <DialogTrigger asChild>
             <Button variant="outline" type="button">
               Browse

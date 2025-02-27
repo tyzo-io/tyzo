@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   DOMConversionMap,
   DOMExportOutput,
@@ -14,6 +14,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "../../ui/popover";
 import { Button } from "../../ui/button";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Edit2 } from "lucide-react";
+import { ImageType } from "../../../content";
 
 export function ImageNodeElement({
   src,
@@ -43,6 +44,7 @@ export function ImageNodeElement({
   }) => void;
 }) {
   const [editor] = useLexicalComposerContext();
+  const [updated, setUpdated] = useState<ImageType>();
   return (
     <div className="relative">
       <img
@@ -63,11 +65,18 @@ export function ImageNodeElement({
         </PopoverTrigger>
         <PopoverContent>
           <ImageInput
-            value={{ src, alt, width, height, sizes, srcset, loading }}
+            value={
+              updated ?? { src, alt, width, height, sizes, srcset, loading }
+            }
             onChange={(image) => {
-              editor.update(() => {
-                onUpdate(image);
-              });
+              setUpdated(image);
+            }}
+            onClose={() => {
+              if (updated) {
+                editor.update(() => {
+                  onUpdate(updated);
+                });
+              }
             }}
           />
         </PopoverContent>
