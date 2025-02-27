@@ -144,6 +144,10 @@ export const AssetsList = ({
   const { mutate: uploadAsset, loading: uploading } = useUploadAsset();
   const { mutate: deleteAsset, loading: deleting } = useDeleteAsset();
   const [downloadingAsset, setDownloadingAsset] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<{
+    current: number;
+    total: number;
+  }>();
   const assets = data?.assets;
 
   const handleDelete = async (key: string) => {
@@ -191,15 +195,25 @@ export const AssetsList = ({
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
     try {
-      await uploadAsset(file);
+      let i = 0;
+      for (const file of files) {
+        setUploadProgress({
+          current: i,
+          total: files.length,
+        });
+        await uploadAsset(file);
+        i++;
+      }
+
+      setUploadProgress(undefined);
       refetch();
       e.target.value = ""; // Reset the input
     } catch (error) {
-      console.error("Failed to upload file:", error);
+      console.error("Failed to upload files:", error);
     }
   };
 
@@ -229,6 +243,28 @@ export const AssetsList = ({
 
   return (
     <div className="p-4">
+      {uploadProgress ? (
+        <div className="fixed bottom-4 right-4 bg-white rounded-lg shadow-lg p-4 space-y-2 max-w-md w-full">
+          <div className="space-y-1">
+            <div className="flex justify-between text-sm">
+              <span className="truncate">Upload in progress...</span>
+              <span>
+                {uploadProgress.current}/{uploadProgress.total} done
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                style={{
+                  width: `${
+                    (uploadProgress.current * 100) / uploadProgress.total
+                  }%`,
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      ) : null}
       <div className="flex flex-row items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">Assets</h1>
         <div className="flex items-center gap-4">
@@ -258,6 +294,7 @@ export const AssetsList = ({
         <input
           ref={fileInputRef}
           type="file"
+          multiple
           className="hidden"
           onChange={handleFileChange}
         />
