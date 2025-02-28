@@ -45,6 +45,7 @@ export function ImageNodeElement({
 }) {
   const [editor] = useLexicalComposerContext();
   const [updated, setUpdated] = useState<ImageType>();
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <div className="relative">
       <img
@@ -57,7 +58,13 @@ export function ImageNodeElement({
         loading={loading}
         className="max-w-full h-auto"
       />
-      <Popover>
+      <Popover open={isOpen} onOpenChange={isOpen => {setIsOpen(isOpen);
+        if (!isOpen && updated) {
+          editor.update(() => {
+            onUpdate(updated);
+          });
+        }
+      }}>
         <PopoverTrigger asChild>
           <Button variant="secondary" className="absolute top-0 right-0">
             <Edit2 className="h-4 w-4" />
