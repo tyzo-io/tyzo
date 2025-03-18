@@ -269,6 +269,13 @@ function useMutation<TData = any, TInput = any>(
 }
 
 // Collection mutation hooks
+export function useGetEntry<T = any>(collectionName: string | undefined) {
+  const api = useApiClient();
+  return useMutation<any, { id: string }>((data) =>
+    api.getEntry<T>(collectionName!, data.id)
+  );
+}
+
 export function usePutEntry<T = any>(collectionName: string | undefined) {
   const api = useApiClient();
   return useMutation<any, { id: string; data: T }>((data) =>

@@ -13,16 +13,18 @@
       "x"
     ],
     "image": {
-      "key": "dummy-200x200.webp",
-      "url": "http://localhost:3456/api/assets/dummy-200x200.webp",
-      "alt": "",
-      "srcset": "http://localhost:3456/api/assets/dummy-200x200.webp?width=640&format=webp&quality=80 640w, http://localhost:3456/api/assets/dummy-200x200.webp?width=750&format=webp&quality=80 750w, http://localhost:3456/api/assets/dummy-200x200.webp?width=828&format=webp&quality=80 828w, http://localhost:3456/api/assets/dummy-200x200.webp?width=1080&format=webp&quality=80 1080w, http://localhost:3456/api/assets/dummy-200x200.webp?width=1200&format=webp&quality=80 1200w, http://localhost:3456/api/assets/dummy-200x200.webp?width=1920&format=webp&quality=80 1920w, http://localhost:3456/api/assets/dummy-200x200.webp?width=2048&format=webp&quality=80 2048w, http://localhost:3456/api/assets/dummy-200x200.webp?width=640&format=jpeg&quality=85 640w, http://localhost:3456/api/assets/dummy-200x200.webp?width=750&format=jpeg&quality=85 750w, http://localhost:3456/api/assets/dummy-200x200.webp?width=828&format=jpeg&quality=85 828w, http://localhost:3456/api/assets/dummy-200x200.webp?width=1080&format=jpeg&quality=85 1080w, http://localhost:3456/api/assets/dummy-200x200.webp?width=1200&format=jpeg&quality=85 1200w, http://localhost:3456/api/assets/dummy-200x200.webp?width=1920&format=jpeg&quality=85 1920w, http://localhost:3456/api/assets/dummy-200x200.webp?width=2048&format=jpeg&quality=85 2048w",
-      "sizes": "(max-width: 640px) 100vw, (max-width: 1024px) 75vw, 50vw",
-      "loading": "lazy"
+      "src": "http://localhost:3456/api/assets/dummy-200x200.webp",
+      "srcset": "http://localhost:3456/api/assets/dummy-200x200.webp?width=320&format=webp&quality=80 320w, http://localhost:3456/api/assets/dummy-200x200.webp?width=400&format=webp&quality=80 400w, http://localhost:3456/api/assets/dummy-200x200.webp?width=480&format=webp&quality=80 480w, http://localhost:3456/api/assets/dummy-200x200.webp?width=640&format=webp&quality=80 640w, http://localhost:3456/api/assets/dummy-200x200.webp?width=750&format=webp&quality=80 750w, http://localhost:3456/api/assets/dummy-200x200.webp?width=828&format=webp&quality=80 828w, http://localhost:3456/api/assets/dummy-200x200.webp?width=1080&format=webp&quality=80 1080w, http://localhost:3456/api/assets/dummy-200x200.webp?width=1200&format=webp&quality=80 1200w, http://localhost:3456/api/assets/dummy-200x200.webp?width=1920&format=webp&quality=80 1920w, http://localhost:3456/api/assets/dummy-200x200.webp?width=2048&format=webp&quality=80 2048w, http://localhost:3456/api/assets/dummy-200x200.webp?width=320&format=avif&quality=85 320w, http://localhost:3456/api/assets/dummy-200x200.webp?width=400&format=avif&quality=85 400w, http://localhost:3456/api/assets/dummy-200x200.webp?width=480&format=avif&quality=85 480w, http://localhost:3456/api/assets/dummy-200x200.webp?width=640&format=avif&quality=85 640w, http://localhost:3456/api/assets/dummy-200x200.webp?width=750&format=avif&quality=85 750w, http://localhost:3456/api/assets/dummy-200x200.webp?width=828&format=avif&quality=85 828w, http://localhost:3456/api/assets/dummy-200x200.webp?width=1080&format=avif&quality=85 1080w, http://localhost:3456/api/assets/dummy-200x200.webp?width=1200&format=avif&quality=85 1200w, http://localhost:3456/api/assets/dummy-200x200.webp?width=1920&format=avif&quality=85 1920w, http://localhost:3456/api/assets/dummy-200x200.webp?width=2048&format=avif&quality=85 2048w, http://localhost:3456/api/assets/dummy-200x200.webp?width=320&format=jpeg&quality=85 320w, http://localhost:3456/api/assets/dummy-200x200.webp?width=400&format=jpeg&quality=85 400w, http://localhost:3456/api/assets/dummy-200x200.webp?width=480&format=jpeg&quality=85 480w, http://localhost:3456/api/assets/dummy-200x200.webp?width=640&format=jpeg&quality=85 640w, http://localhost:3456/api/assets/dummy-200x200.webp?width=750&format=jpeg&quality=85 750w, http://localhost:3456/api/assets/dummy-200x200.webp?width=828&format=jpeg&quality=85 828w, http://localhost:3456/api/assets/dummy-200x200.webp?width=1080&format=jpeg&quality=85 1080w, http://localhost:3456/api/assets/dummy-200x200.webp?width=1200&format=jpeg&quality=85 1200w, http://localhost:3456/api/assets/dummy-200x200.webp?width=1920&format=jpeg&quality=85 1920w, http://localhost:3456/api/assets/dummy-200x200.webp?width=2048&format=jpeg&quality=85 2048w",
+      "sizes": "(max-width: 320px) 320px, (max-width: 400px) 400px, (max-width: 480px) 480px, (max-width: 640px) 640px, (max-width: 750px) 750px, (max-width: 828px) 828px, (max-width: 1080px) 1080px, (max-width: 1200px) 1200px, (max-width: 1920px) 1920px, (max-width: 2048px) 2048px, 2048px",
+      "width": 200,
+      "height": 200,
+      "loading": "lazy",
+      "key": "dummy-200x200.webp"
     },
     "video": {
       "url": "http://localhost:3456/api/assets/dummy-200x200.webp",
-      "alt": ""
+      "alt": "",
+      "src": "m"
     },
     "file": {
       "key": "dummy-200x200.webp",
@@ -33,7 +35,7 @@
       "collection": "author"
     },
     "markdown": {
-      "markdown": "## Hello\n\nOK\n\n![ok](http://localhost:3456/api/assets/dummy-200x200.webp)"
+      "markdown": "## Hello\n\nOK\n\n![oktest](http://localhost:3456/api/assets/dummy-200x200.webp)"
     },
     "richText": {
       "richText": "<p dir=\"ltr\"><span style=\"white-space: pre-wrap;\">Hello</span></p><p dir=\"ltr\"><span style=\"white-space: pre-wrap;\"># Hekk</span></p><h1 dir=\"ltr\"><span style=\"white-space: pre-wrap;\">ok</span></h1><p><br></p><img src=\"http://localhost:3456/api/assets/dummy-200x200.webp\">"
